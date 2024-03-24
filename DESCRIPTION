@@ -1,0 +1,29 @@
+Package: daltoolboxdp
+Title: DAL ToolBox Data Preprocessing Extensions
+Version: 1.0.737
+Authors@R: 
+  c(    person(
+            given = "Eduardo",
+            family = "Ogasawara",
+            role = c("aut", "ths", "cre"),
+            email = "eogasawara@ieee.org",
+            comment = c(ORCID = "0000-0002-0466-0626")
+        ),
+        person(
+            given = "Federal Center for Technological Education of Rio de Janeiro (CEFET/RJ)",
+            role = "cph"
+        )
+   )
+Description: An important aspect of data analytics is related to data-centric AI. It is related to preparing data correctly. This package provides extensions to support data preparation in terms of both data sampling and data engineering. Overall, the package provides researchers with a comprehensive set of functionalities for data science based on experiment lines, promoting ease of use, extensibility, and integration with various tools and libraries. Information on Experiment Line is based on Ogasawara et al. (2009) <doi:10.1007/978-3-642-02279-1_20>.
+License: MIT + file LICENSE
+URL: https://github.com/cefet-rj-dal/daltoolboxdp
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports: 
+  daltoolbox,
+  leaps,
+  FSelector,
+  doBy,  
+  glmnet,
+  smotefamily
