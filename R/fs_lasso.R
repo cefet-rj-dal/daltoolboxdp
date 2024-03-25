@@ -2,19 +2,19 @@
 #'@description Feature selection using Lasso regression is a technique for selecting a subset of relevant features.
 #' It wraps the glmnet library.
 #'@param attribute The target variable.
-#'@return A `cla_fs_lasso` object.
+#'@return A `fs_lasso` object.
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(cla_fs_lasso("Species"), iris)
+#'myfeature <- daltoolbox::fit(fs_lasso("Species"), iris)
 #'data <- daltoolbox::transform(myfeature, iris)
 #'head(data)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform
 #'@export
-cla_fs_lasso <- function(attribute) {
-  obj <- cla_fs(attribute)
-  class(obj) <- append("cla_fs_lasso", class(obj))
+fs_lasso <- function(attribute) {
+  obj <- fs(attribute)
+  class(obj) <- append("fs_lasso", class(obj))
   return(obj)
 }
 
@@ -23,7 +23,7 @@ cla_fs_lasso <- function(attribute) {
 #'@importFrom glmnet cv.glmnet
 #'@importFrom glmnet glmnet
 #'@export
-fit.cla_fs_lasso <- function(obj, data, ...) {
+fit.fs_lasso <- function(obj, data, ...) {
   data = data.frame(data)
   if (!is.numeric(data[,obj$attribute]))
     data[,obj$attribute] =  as.numeric(data[,obj$attribute])

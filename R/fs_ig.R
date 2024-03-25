@@ -2,19 +2,19 @@
 #'@description Information Gain is a feature selection technique based on information theory. It measures the information obtained for the target variable by knowing the presence or absence of a feature.
 #' It wraps the FSelector library.
 #'@param attribute The target variable.
-#'@return A `cla_fs_ig` object.
+#'@return A `fs_ig` object.
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(cla_fs_ig("Species"), iris)
+#'myfeature <- daltoolbox::fit(fs_ig("Species"), iris)
 #'data <- daltoolbox::transform(myfeature, iris)
 #'head(data)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform
 #'@export
-cla_fs_ig <- function(attribute) {
-  obj <- cla_fs(attribute)
-  class(obj) <- append("cla_fs_ig", class(obj))
+fs_ig <- function(attribute) {
+  obj <- fs(attribute)
+  class(obj) <- append("fs_ig", class(obj))
   return(obj)
 }
 
@@ -22,7 +22,7 @@ cla_fs_ig <- function(attribute) {
 #'@importFrom doBy orderBy
 #'@importFrom daltoolbox fit
 #'@export
-fit.cla_fs_ig <- function(obj, data, ...) {
+fit.fs_ig <- function(obj, data, ...) {
   data <- data.frame(data)
   data[,obj$attribute] = as.factor(data[, obj$attribute])
 

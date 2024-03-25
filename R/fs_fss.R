@@ -2,26 +2,26 @@
 #'@description Forward stepwise selection is a technique for feature selection in which attributes are added to a model one at a time based on their ability to improve the model's performance. It stops adding once the candidate addition does not significantly improve model adjustment.
 #' It wraps the leaps library.
 #'@param attribute The target variable.
-#'@return A `cla_fs_fss` object.
+#'@return A `fs_fss` object.
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(cla_fs_fss("Species"), iris)
+#'myfeature <- daltoolbox::fit(fs_fss("Species"), iris)
 #'data <- daltoolbox::transform(myfeature, iris)
 #'head(data)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform
 #'@export
-cla_fs_fss <- function(attribute) {
-  obj <- cla_fs(attribute)
-  class(obj) <- append("cla_fs_fss", class(obj))
+fs_fss <- function(attribute) {
+  obj <- fs(attribute)
+  class(obj) <- append("fs_fss", class(obj))
   return(obj)
 }
 
 #'@importFrom daltoolbox fit
 #'@importFrom stats coef
 #'@export
-fit.cla_fs_fss <- function(obj, data, ...) {
+fit.fs_fss <- function(obj, data, ...) {
   data = data.frame(data)
   if (!is.numeric(data[, obj$attribute]))
     data[, obj$attribute] = as.numeric(data[, obj$attribute])

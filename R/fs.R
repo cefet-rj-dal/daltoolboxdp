@@ -3,21 +3,21 @@
 #'@param attribute The target variable.
 #'@return An instance of the FeatureSelection class.
 #'@examples
-#'#See ?cla_fs_fss for an example of feature selection
+#'#See ?fs_fss for an example of feature selection
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform
 #'@export
-cla_fs <- function(attribute) {
+fs <- function(attribute) {
   obj <- daltoolbox::dal_transform()
   obj$attribute <- attribute
-  class(obj) <- append("cla_fs", class(obj))
+  class(obj) <- append("fs", class(obj))
   return(obj)
 }
 
 #'@importFrom daltoolbox transform
 #'@export
-transform.cla_fs <- function(obj, data, ...) {
+transform.fs <- function(obj, data, ...) {
   data <- data[, c(obj$features, obj$attribute)]
   return(data)
 }

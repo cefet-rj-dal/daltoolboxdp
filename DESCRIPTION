@@ -1,6 +1,6 @@
 Package: daltoolboxdp
 Title: DAL ToolBox Data Preprocessing Extensions
-Version: 1.0.737
+Version: 1.0.747
 Authors@R: 
   c(    person(
             given = "Eduardo",
