@@ -37,7 +37,7 @@ devtools::install_github("cefet-rj-dal/daltoolboxdp", force=TRUE, dependencies=F
 The examples are organized according to general (data preprocessing).
 
 Examples:
-<https://nbviewer.org/github/cefet-rj-dal/daltoolboxdp/tree/main/examples/>
+<https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples>
 
 ## Bugs and new features request
 
