@@ -6,5 +6,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^develop$
 ^examples$
+^Rmd$
 package.R
