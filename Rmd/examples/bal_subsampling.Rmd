@@ -1,0 +1,37 @@
+---
+title: An R Markdown document converted from "Rmd/examples/bal_subsampling.ipynb"
+output: html_document
+---
+
+## Feature Selection
+
+```{r}
+# TSPredIT
+# version 1.0.727
+
+source("https://raw.githubusercontent.com/cefet-rj-dal/tspredit-examples/main/jupyter.R")
+
+#loading DAL
+load_library("daltoolbox") 
+load_library("tspredit")
+```
+
+### Example
+General function for exploring feature selection methods
+
+```{r}
+iris <- datasets::iris
+data(iris)
+mod_iris <- iris[c(1:50,51:71,101:111),]
+table(mod_iris$Species)
+```
+
+### subsampling
+
+```{r}
+bal <- bal_subsampling('Species')
+bal <- daltoolbox::fit(bal, mod_iris)
+adjust_iris <- daltoolbox::transform(bal, mod_iris)
+table(adjust_iris$Species)
+```
+

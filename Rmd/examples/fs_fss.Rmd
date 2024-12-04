@@ -1,0 +1,34 @@
+---
+title: An R Markdown document converted from "Rmd/examples/fs_fss.ipynb"
+output: html_document
+---
+
+## Feature Selection
+
+```{r}
+# DAL ToolBox
+# version 1.0.727
+
+source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox-examples/main/jupyter.R")
+
+#loading DAL
+load_library("daltoolbox") 
+load_github("cefet-rj-dal/tspredit")
+```
+
+### Example
+General function for exploring feature selection methods
+
+```{r}
+iris <- datasets::iris
+```
+
+### FSS
+
+```{r}
+myfeature <- fit(fs_fss("Species"), iris)
+print(myfeature$features)
+data <- transform(myfeature, iris)
+print(head(data))
+```
+
