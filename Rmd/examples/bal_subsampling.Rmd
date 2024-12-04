@@ -1,19 +1,12 @@
----
-title: An R Markdown document converted from "Rmd/examples/bal_subsampling.ipynb"
-output: html_document
----
-
 ## Feature Selection
 
 ```{r}
-# TSPredIT
-# version 1.0.727
-
-source("https://raw.githubusercontent.com/cefet-rj-dal/tspredit-examples/main/jupyter.R")
+# DALToolbox Data Preprocessing
+# version 1.0.777
 
 #loading DAL
-load_library("daltoolbox") 
-load_library("tspredit")
+library(daltoolbox) 
+library(daltoolboxdp)
 ```
 
 ### Example
