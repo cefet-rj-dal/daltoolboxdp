@@ -1,3 +1,9 @@
+#####################################################################
+# Tomek Links Testing Script
+# Demonstrates under-sampling using Tomek Links for imbalanced datasets
+#####################################################################
+
+# Import required libraries and source files
 # Load necessary R libraries
 library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
@@ -5,6 +11,9 @@ load_library("daltoolbox")
 source("daltoolbox/R/sklearn/imbalanced/tomek_links.R")
 source("daltoolbox/R/sklearn/cla_rf.R")
 
+#--------------------
+# Evaluation Function
+#--------------------
 evaluate <- function(obj, data, prediction, ...)
 {
   result <- list(data = data, prediction = prediction)
@@ -36,6 +45,11 @@ evaluate <- function(obj, data, prediction, ...)
                                precision = result$precision, recall = result$recall)
   return(result)
 }
+
+#--------------------
+# Data Preparation
+#--------------------
+# Load and prepare iris dataset
 # Load dataset
 iris <- datasets::iris
 head(iris)
@@ -55,10 +69,13 @@ iris_test <- sr$test
 # Prepare training data without target column
 iris_train_label <- iris_train[, !names(iris_train) %in% c("Species")]
 
-# Call Python Smote function
+#--------------------
+# Tomek Links Implementation
+#--------------------
+# Initialize Tomek Links model for under-sampling
 select_model <- create_tomek_model()
 
-# Apply feature selection on training data
+# Apply Tomek Links under-sampling
 list_tomek_model <- fit_resample(select_model, iris_train_label, "species_encoded")
 
 X_train_tomek <- list_tomek_model[[1]]
@@ -66,6 +83,10 @@ y_train_tomek <- list_tomek_model[[2]]
 
 merged_df <- data.frame(X_train_tomek, species_encoded = y_train_tomek)
 
+#--------------------
+# Model Training and Evaluation
+#--------------------
+# Train Random Forest on balanced dataset
 rf_tomek <- cla_rf("species_encoded", slevels)
 rf_tomek <- fit(rf_tomek, merged_df)
 
@@ -73,8 +94,8 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(rf_tomek, iris_test_label)
 
-
-cat("Distribuição das classes depois do Tomek Links::\n")
+# Display class distribution after Tomek Links
+cat("Class distribution after Tomek Links under-sampling:\n")
 print(table(merged_df$species_encoded))
 
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])

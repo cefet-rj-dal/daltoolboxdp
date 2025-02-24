@@ -1,9 +1,18 @@
-# Load necessary R libraries
+#####################################################################
+# Random Forest Feature Selection Testing Script
+# Demonstrates feature selection using Random Forest importance scores
+#####################################################################
+
+# Import dependencies
 library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
 load_library("daltoolbox")
 source("daltoolbox/R/sklearn/feature_select/selectf_model_rf.R")
-# Load dataset
+
+#--------------------
+# Data Preprocessing
+#--------------------
+# Load and prepare iris dataset
 iris <- datasets::iris
 head(iris)
 
@@ -20,13 +29,20 @@ iris_test <- sr$test
 # Prepare training data without target column
 iris_train_label <- iris_train[, !names(iris_train) %in% c("Species")]
 
-# Call Python RandomForest model and feature selection
+#--------------------
+# Feature Selection Implementation
+#--------------------
+# Initialize RF model and feature selector with mean threshold
 rf_model <- create_fit_rf_model(iris_train_label, "species_encoded", n_estimators=100, random_state=0)
 select_model <- create_fs_model(rf_model, threshold="mean", prefit=TRUE)
 
-# Apply feature selection on training data
+# Apply RF-based feature selection
 X_train_selected <- fit_transform_fs(select_model, iris_train_label, "species_encoded")
 
+#--------------------
+# Results Analysis
+#--------------------
+# Display dimensions and selected features
 cat("Original shape:", dim(iris_train_label), "\n")  # Should be (150, 5)
 
 # Print shape after feature selection

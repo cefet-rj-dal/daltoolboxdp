@@ -1,8 +1,16 @@
+#####################################################################
+# Multi-Layer Perceptron Classifier Testing Script
+# Demonstrates implementation and evaluation of MLP neural network
+#####################################################################
+
 # Load required libraries and source the appropriate files
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
 load_library("daltoolbox")
 source("daltoolbox/R/sklearn/cla_mlp.R")  # Assuming there's an R wrapper for MLPClassifier
 
+#--------------------
+# Evaluation Function
+#--------------------
 # Function to evaluate the results (same evaluation function)
 evaluate <- function(obj, data, prediction, ...) {
   result <- list(data = data, prediction = prediction)
@@ -29,6 +37,9 @@ evaluate <- function(obj, data, prediction, ...) {
   return(result)
 }
 
+#--------------------
+# Data Preparation
+#--------------------
 # Load and prepare data
 iris <- datasets::iris
 slevels <- levels(iris$Species)
@@ -42,6 +53,9 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
+#--------------------
+# Model Training and Evaluation
+#--------------------
 # Create, fit, and evaluate MLPClassifier model
 model <- cla_mlp("species_encoded", slevels)  # Assuming MLPClassifier implementation
 model <- fit(model, iris_train_label)

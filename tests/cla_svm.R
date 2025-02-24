@@ -1,8 +1,17 @@
+#####################################################################
+# Support Vector Machine Classifier Testing Script
+# Demonstrates implementation and evaluation of SVM classifier
+#####################################################################
+
+# Import required libraries
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
 load_library("daltoolbox")
 source("daltoolbox/R/sklearn/cla_svm.R")
 
-
+#--------------------
+# Evaluation Function
+#--------------------
+# Function to calculate various classification metrics
 evaluate <- function(obj, data, prediction, ...)
 {
   result <- list(data = data, prediction = prediction)
@@ -35,6 +44,10 @@ evaluate <- function(obj, data, prediction, ...)
   return(result)
 }
 
+#--------------------
+# Data Preparation
+#--------------------
+# Load iris dataset and split into train/test sets
 iris <- datasets::iris
 head(iris)
 
@@ -57,6 +70,10 @@ head(tbl)
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
+#--------------------
+# Model Training and Evaluation
+#--------------------
+# Train SVM classifier and evaluate performance
 model <- cla_svm("species_encoded", slevels)
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)

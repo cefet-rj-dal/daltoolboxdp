@@ -1,9 +1,17 @@
+#####################################################################
+# Naive Bayes Classifier Testing Script
+# Demonstrates implementation and evaluation of NB classifier
+#####################################################################
+
 # Load required libraries and source the appropriate files
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
 load_library("daltoolbox")
 source("daltoolbox/R/sklearn/cla_nb.R")  # Assuming there's an R wrapper for NaiveBayes
 
-# Function to evaluate the results
+#--------------------
+# Evaluation Function
+#--------------------
+# Function to calculate various classification metrics
 evaluate <- function(obj, data, prediction, ...) {
   result <- list(data = data, prediction = prediction)
   adjust_predictions <- function(predictions) {
@@ -29,7 +37,10 @@ evaluate <- function(obj, data, prediction, ...) {
   return(result)
 }
 
-# Load and prepare data
+#--------------------
+# Data Preparation
+#--------------------
+# Load and prepare iris dataset
 iris <- datasets::iris
 slevels <- levels(iris$Species)
 
@@ -42,7 +53,10 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-# Create, fit, and evaluate NaiveBayes model
+#--------------------
+# Model Training and Evaluation
+#--------------------
+# Train Naive Bayes classifier and evaluate performance
 model <- cla_nb("species_encoded", slevels)  # Assuming NaiveBayes implementation
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)

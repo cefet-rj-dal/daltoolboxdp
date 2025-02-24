@@ -1,3 +1,9 @@
+#####################################################################
+# SMOTE-Tomek Testing Script
+# Demonstrates combined over-sampling and cleaning using SMOTE-Tomek
+#####################################################################
+
+# Import required libraries
 # Load necessary R libraries
 library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
@@ -5,6 +11,9 @@ load_library("daltoolbox")
 source("daltoolbox/R/sklearn/imbalanced/smote_tomek.R")
 source("daltoolbox/R/sklearn/cla_rf.R")
 
+#--------------------
+# Evaluation Function
+#--------------------
 evaluate <- function(obj, data, prediction, ...)
 {
   result <- list(data = data, prediction = prediction)
@@ -36,6 +45,11 @@ evaluate <- function(obj, data, prediction, ...)
                                precision = result$precision, recall = result$recall)
   return(result)
 }
+
+#--------------------
+# Data Preparation
+#--------------------
+# Load and prepare iris dataset
 # Load dataset
 iris <- datasets::iris
 head(iris)
@@ -55,10 +69,13 @@ iris_test <- sr$test
 # Prepare training data without target column
 iris_train_label <- iris_train[, !names(iris_train) %in% c("Species")]
 
-# Call Python Smote function
+#--------------------
+# SMOTE-Tomek Implementation
+#--------------------
+# Initialize SMOTE-Tomek model for combined sampling
 select_model <- create_smotetomek_model()
 
-# Apply feature selection on training data
+# Apply SMOTE-Tomek resampling
 list_smotetomek_model <- fit_resample(select_model, iris_train_label, "species_encoded")
 
 X_train_smotetomek <- list_smotetomek_model[[1]]
@@ -66,6 +83,10 @@ y_train_smotetomek <- list_smotetomek_model[[2]]
 
 merged_df <- data.frame(X_train_smotetomek, species_encoded = y_train_smotetomek)
 
+#--------------------
+# Model Evaluation
+#--------------------
+# Train and evaluate Random Forest on balanced dataset
 rf_smotetomek<- cla_rf("species_encoded", slevels)
 rf_smotetomek <- fit(rf_smotetomek, merged_df)
 

@@ -1,3 +1,8 @@
+#####################################################################
+# SMOTE (Synthetic Minority Over-sampling Technique) Testing Script
+# This script demonstrates the use of SMOTE for handling imbalanced datasets
+#####################################################################
+
 # Load necessary R libraries
 library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
@@ -5,6 +10,10 @@ load_library("daltoolbox")
 source("daltoolbox/R/sklearn/feature_select/smote.R")
 source("daltoolbox/R/sklearn/cla_rf.R")
 
+#--------------------
+# Evaluation Function
+#--------------------
+# Function to calculate various classification metrics
 evaluate <- function(obj, data, prediction, ...)
 {
   result <- list(data = data, prediction = prediction)
@@ -36,6 +45,11 @@ evaluate <- function(obj, data, prediction, ...)
                                precision = result$precision, recall = result$recall)
   return(result)
 }
+
+#--------------------
+# Data Preparation
+#--------------------
+# Load and prepare iris dataset for imbalanced classification example
 # Load dataset
 iris <- datasets::iris
 head(iris)
@@ -55,10 +69,13 @@ iris_test <- sr$test
 # Prepare training data without target column
 iris_train_label <- iris_train[, !names(iris_train) %in% c("Species")]
 
-# Call Python Smote function
+#--------------------
+# SMOTE Implementation
+#--------------------
+# Create and apply SMOTE model with specific random state for reproducibility
 select_model <- create_smote_model(random_state=42)
 
-# Apply feature selection on training data
+# Generate synthetic samples for minority classes
 list_smote <- fit_transform_fs(select_model, iris_train_label, "species_encoded")
 
 X_train_smote <- list_smote[[1]]
@@ -66,6 +83,10 @@ y_train_smote <- list_smote[[2]]
 
 merged_df <- data.frame(X_train_smote, species_encoded = y_train_smote)
 
+#--------------------
+# Model Training and Evaluation
+#--------------------
+# Train Random Forest classifier on SMOTE-balanced data
 rf_smote <- cla_rf("species_encoded", slevels)
 rf_smote <- fit(rf_smote, merged_df)
 
@@ -73,7 +94,8 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(rf_smote, iris_test_label)
 
-cat("Distribuição das classes depois do SMOTE:\n")
+# Display class distribution after SMOTE balancing
+cat("Class distribution after SMOTE balancing:\n")
 print(table(merged_df$species_encoded))
 
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])

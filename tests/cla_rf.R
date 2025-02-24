@@ -1,7 +1,17 @@
+#####################################################################
+# Random Forest Classifier Testing Script
+# Demonstrates implementation and evaluation of RF classifier
+#####################################################################
+
+# Import required libraries
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
 load_library("daltoolbox")
 source("daltoolbox/R/sklearn/cla_rf.R")
 
+#--------------------
+# Evaluation Function
+#--------------------
+# Function to calculate classification metrics including accuracy, F1, etc.
 evaluate <- function(obj, data, prediction, ...)
 {
   result <- list(data = data, prediction = prediction)
@@ -33,6 +43,11 @@ evaluate <- function(obj, data, prediction, ...)
                                precision = result$precision, recall = result$recall)
   return(result)
 }
+
+#--------------------
+# Data Preparation
+#--------------------
+# Load iris dataset and split into train/test sets
 iris <- datasets::iris
 head(iris)
 
@@ -55,7 +70,10 @@ head(tbl)
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-
+#--------------------
+# Model Training
+#--------------------
+# Initialize and train Random Forest classifier
 model <- cla_rf("species_encoded", slevels)
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
@@ -65,7 +83,10 @@ iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
 
-
+#--------------------
+# Model Evaluation
+#--------------------
+# Evaluate model performance on training and test sets
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
