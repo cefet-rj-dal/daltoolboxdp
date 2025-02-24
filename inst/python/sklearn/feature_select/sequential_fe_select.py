@@ -1,7 +1,5 @@
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
-
 
 def fs_create(n_neighbors=3, direction="forward", n_features_to_select=2):
     model = KNeighborsClassifier(n_neighbors=int(n_neighbors))

@@ -1,6 +1,4 @@
 from sklearn.neural_network import MLPClassifier
-import pandas as pd
-import numpy as np
 
 def mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size='auto',
                learning_rate='constant', max_iter=200, tol=0.0001, random_state=None):

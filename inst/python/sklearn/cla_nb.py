@@ -1,6 +1,4 @@
 from sklearn.naive_bayes import GaussianNB
-import pandas as pd
-import numpy as np
 
 def nb_create(priors=None, var_smoothing=1e-9):
     model = GaussianNB(

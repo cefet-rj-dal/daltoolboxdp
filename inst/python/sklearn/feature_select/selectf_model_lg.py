@@ -1,6 +1,5 @@
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris
 
 def create_lg_model(C=0.1, penalty='l1', solver='liblinear', X=None, y=None):
     model = LogisticRegression(C=C, penalty=penalty, solver=solver)

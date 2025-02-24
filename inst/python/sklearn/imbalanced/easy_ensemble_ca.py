@@ -1,8 +1,5 @@
-from collections import Counter
 from imblearn.ensemble import EasyEnsembleClassifier
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+
 
 def inbalanced_create_model(random_state=42, n_estimators=10):
     easy = EasyEnsembleClassifier(random_state=random_state, n_estimators=n_estimators)

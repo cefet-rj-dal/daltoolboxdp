@@ -1,9 +1,4 @@
-from collections import Counter
 from imblearn.under_sampling import TomekLinks
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 
 def inbalanced_create_model():
     tomek = TomekLinks()

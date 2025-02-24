@@ -1,5 +1,4 @@
 from sklearn.feature_selection import SelectKBest, f_classif
-from sklearn.datasets import load_iris
 
 def fs_create(k=10):
     sf_method = SelectKBest(score_func=f_classif, k=int(k))

@@ -1,9 +1,4 @@
-from collections import Counter
 from imblearn.over_sampling import SMOTE
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 
 def inbalanced_create_model(random_state=42):
     smote = SMOTE(random_state=int(random_state))

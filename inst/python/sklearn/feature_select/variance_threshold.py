@@ -1,5 +1,4 @@
 from sklearn.feature_selection import VarianceThreshold
-from sklearn.datasets import load_iris
 
 def fs_create(threshold=0.2):
     sf_method = VarianceThreshold(threshold=float(threshold))

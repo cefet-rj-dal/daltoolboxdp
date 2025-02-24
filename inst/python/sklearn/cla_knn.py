@@ -1,7 +1,4 @@
 from sklearn.neighbors import KNeighborsRegressor
-import pandas as pd
-import numpy as np
-
 
 def cla_knn_create(n_neighbors=1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski'):
     model = KNeighborsRegressor(

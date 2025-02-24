@@ -1,6 +1,4 @@
 from sklearn.ensemble import RandomForestClassifier
-import pandas as pd
-import numpy as np
 
 def cla_rf_create(n_estimators=100, criterion='gini', max_depth=None, min_samples_split=2,
                   min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt',

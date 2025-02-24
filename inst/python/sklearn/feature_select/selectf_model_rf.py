@@ -1,6 +1,5 @@
 from sklearn.feature_selection import SelectFromModel
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
 
 def create_rf_model(n_estimators=100, random_state=0, X=None, y=None):
     model = RandomForestClassifier(n_estimators=int(n_estimators), random_state=int(random_state))
