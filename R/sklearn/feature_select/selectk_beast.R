@@ -1,33 +1,27 @@
 #'@title Feature Selection Using SelectKBest
-#'@description This module applies feature selection using SelectKBest with a specified score function.
+#'@description This module applies feature selection using SelectKBest.
 #'@import reticulate
 
-#' Create a SelectKBest feature selection model
-#'@param k The number of top features to select
+#' Create SelectKBest model
+#'@param k Number of top features to select
 #'@return A Python SelectKBest object
 #'@export
-create_fs_model <- function(k=10) {
-  reticulate::source_python("daltoolbox/inst/python/sklearn/feature_select/selectk_beast.py") # Correct the file name if different
-  sf_method <- fs_create(k=k)
-  return(sf_method)
+create_selectk_model <- function(k=10) {
+  reticulate::source_python("inst/python/sklearn/feature_select/selectk_beast.py")
+  model <- fs_create(k=k)
+  return(model)
 }
 
-#' Fit and transform the dataset using SelectKBest
-#'@param select_method The SelectKBest model (Python object)
+#' Fit and transform the dataset
+#'@param model The SelectKBest model
 #'@param df_train Data frame to transform
-#'@param target_column The target column name as string
-#'@return Transformed X_train with selected features
+#'@param target_column Target column name
+#'@return Transformed features
 #'@export
-fit_transform_fs <- function(select_method, df_train, target_column) {
-  cat("Column types:", sapply(df_train, class), "\n")
-  if (!exists("fit_transform")) {
-    reticulate::source_python("daltoolbox/inst/python/sklearn/feature_select/selectk_beast.py")
-  }
-
-  # Convert df_train to a pandas DataFrame
+fit_transform <- function(model, df_train, target_column) {
   df_train_py <- reticulate::r_to_py(df_train)
-
-  X_train_selected <- fit_transform(select_method, df_train_py, target_column)
-
-  return(X_train_selected)
+  X <- df_train_py$drop(target_column, axis=1)
+  y <- df_train_py[[target_column]]
+  result <- model$fit_transform(X, y)
+  return(reticulate::py_to_r(result))
 }

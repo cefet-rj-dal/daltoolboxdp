@@ -1,11 +1,11 @@
-#'@title Naive Bayes Classifier
-#'@description Classifies using the Naive Bayes algorithm.
+#'@title Gaussian Naive Bayes Classifier
+#'@description Classifies using the Gaussian Naive Bayes algorithm.
 #' It wraps the sklearn library.
-#'@param attribute attribute target to model building.
-#'@param slevels Possible values for the target classification.
-#'@param priors Prior probabilities of the classes. If specified, the priors are not adjusted according to the data.
-#'@param var_smoothing Portion of the largest variance of all features that is added to variances for stability.
-#'@return A nb object.
+#'@param attribute attribute target to model building
+#'@param slevels Possible values for the target classification
+#'@param priors Prior probabilities of the classes
+#'@param var_smoothing portion of the largest variance added for stability
+#'@return A Naive Bayes classifier object
 #'@examples
 #'data(iris)
 #'slevels <- levels(iris$Species)

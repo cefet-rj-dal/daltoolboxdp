@@ -1,12 +1,18 @@
-#'@title KNN
-#'@description Creates a time series prediction object that uses the KNN.
+#'@title Time Series K-Nearest Neighbors
+#'@description Creates a time series prediction object using KNN.
 #' It wraps the sklearn library.
-#'@param preprocess normalization
-#'@param n_neighbors number of neighbors for KNN
-#'@return a `ts_knn` object.
+#'@param preprocess preprocessing method for the time series data
+#'@param n_neighbors number of neighbors to use for prediction
+#'@param weights weight function used in prediction ('uniform', 'distance')
+#'@param algorithm algorithm used to compute nearest neighbors
+#'@param leaf_size leaf size passed to BallTree or KDTree
+#'@param p power parameter for the Minkowski metric
+#'@param metric distance metric for the tree
+#'@return A time series KNN object
 #'@examples
-#'#Use the same example of ts_mlp changing the constructor to:
+#'# Example code:
 #'model <- ts_knn(ts_norm_gminmax(), n_neighbors=5)
+#'# Add fitting and prediction examples
 #'@import reticulate
 #'@export
 ts_knn <- function(preprocess = NA, n_neighbors = 5) {

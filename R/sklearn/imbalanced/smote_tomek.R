@@ -1,38 +1,38 @@
 #'@title Imbalanced Data Handling with SMOTETomek
-#'@description This module applies SMOTETomek for handling imbalanced data.
+#'@description This module provides wrapper functions for SMOTETomek hybrid sampling method.
 #'@import reticulate
 
-#' Create a SMOTETomek model
-#'@param random_state The seed used by the random number generator
+#' Create SMOTETomek model
+#'@param sampling_strategy The sampling strategy to use. Default is 'auto'
+#'@param random_state Random state for reproducibility
 #'@return A Python SMOTETomek object
 #'@export
-create_smotetomek_model <- function(random_state=42) {
-  reticulate::source_python("path_to_your_python_script.py")
-  stomek <- inbalanced_create_model(random_state=random_state)
-  return(stomek)
+create_smotetomek_model <- function(sampling_strategy='auto', random_state=42) {
+  reticulate::source_python("inst/python/sklearn/imbalanced/smote_tomek.py")
+  smotetomek <- create_smotetomek_model(sampling_strategy=sampling_strategy, random_state=random_state)
+  return(smotetomek)
 }
 
-#' Fit and resample the dataset using SMOTETomek
-#'@param select_method The SMOTETomek model (Python object)
+#' Fit and resample dataset using SMOTETomek
+#'@param model The SMOTETomek model
 #'@param df_train Data frame to resample
-#'@param target_column The target column name as string
-#'@return List containing resampled X_train and y_train
+#'@param target_column Target column name
+#'@return List containing resampled features and target
 #'@export
-fit_resample_smotetomek <- function(select_method, df_train, target_column) {
-  cat("Column types:", sapply(df_train, class), "\n")
-
-  # Convert df_train to a pandas DataFrame
+fit_resample <- function(model, df_train, target_column) {
+  # Convert df_train to pandas DataFrame
   df_train_py <- reticulate::r_to_py(df_train)
-
-  # Extract X and y
-  X_train <- df_train_py$drop(target_column, axis=1)$values
-  y_train <- df_train_py[[target_column]]$values
-
-  # Calling Python function for resampling
-  list_resample <- select_method$fit_resample(X_train, y_train)
-
-  X_train_smotetomek<- list_resample[[1]]
-  y_train_smotetomek <- list_resample[[2]]
-
-  return(list(X_train_smotetomek, y_train_smotetomek))
+  
+  # Separate features and target
+  X <- df_train_py$drop(target_column, axis=1)
+  y <- df_train_py[[target_column]]
+  
+  # Perform resampling
+  result <- model$fit_resample(X, y)
+  
+  # Convert back to R objects
+  X_resampled <- reticulate::py_to_r(result[[1]])
+  y_resampled <- reticulate::py_to_r(result[[2]])
+  
+  return(list(X_resampled, y_resampled))
 }

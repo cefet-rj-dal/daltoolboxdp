@@ -1,15 +1,46 @@
 #'@title Random Forest Classifier
 #'@description Classifies using the Random Forest Classifier algorithm.
 #' It wraps the sklearn library.
-#'@param attribute attribute target to model building.
-#'@param slevels Possible values for the target classification.
-#'@param k A vector of integers indicating the number of neighbors to be considered.
-#'@return A rf object.
+#'@param attribute attribute target to model building
+#'@param slevels Possible values for the target classification
+#'@param n_estimators number of trees in the forest
+#'@param criterion function to measure the quality of a split
+#'@param max_depth maximum depth of the tree
+#'@param min_samples_split minimum samples required to split an internal node
+#'@param min_samples_leaf minimum samples required to be at a leaf node
+#'@param min_weight_fraction_leaf minimum weighted fraction of the sum total of weights
+#'@param max_features number of features to consider for best split
+#'@param max_leaf_nodes grow trees with max_leaf_nodes in best-first fashion
+#'@param min_impurity_decrease minimum impurity decrease required for split
+#'@param bootstrap whether bootstrap samples are used when building trees
+#'@param oob_score whether to use out-of-bag samples
+#'@param n_jobs number of jobs to run in parallel
+#'@param random_state random number generator seed
+#'@param verbose controls verbosity of the output
+#'@param warm_start reuse solution of previous call
+#'@param class_weight weights associated with classes
+#'@param ccp_alpha complexity parameter for cost-complexity pruning
+#'@param max_samples number of samples to draw to train each base estimator
+#'@param monotonic_cst monotonicity constraints for each feature
+#'@return A Random Forest classifier object
 #'@examples
-
-
-
-#' @export
+#'data(iris)
+#'slevels <- levels(iris$Species)
+#'model <- cla_rf("Species", slevels)
+#'
+#'# preparing dataset for random sampling
+#'sr <- sample_random()
+#'sr <- train_test(sr, iris)
+#'train <- sr$train
+#'test <- sr$test
+#'
+#'model <- fit(model, train)
+#'
+#'prediction <- predict(model, test)
+#'predictand <- adjust_class_label(test[,"Species"])
+#'test_eval <- evaluate(model, predictand, prediction)
+#'test_eval$metrics
+#'@export
 cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_depth=NULL, min_samples_split=2,
                    min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt', max_leaf_nodes=NULL,
                    min_impurity_decrease=0.0, bootstrap=TRUE, oob_score=FALSE, n_jobs=NULL, random_state=NULL,

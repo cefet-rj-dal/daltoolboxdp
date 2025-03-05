@@ -1,22 +1,24 @@
-#'@title Support Vector Classifier
-#'@description Classifies using the SVC algorithm.
+#'@title Support Vector Machine Classifier
+#'@description Classifies using the Support Vector Machine (SVM) algorithm.
 #' It wraps the sklearn library.
-#'@param attribute attribute target to model building.
-#'@param slevels Possible values for the target classification.
-#'@param C Regularization parameter.
-#'@param kernel Specifies the kernel type to be used in the algorithm.
-#'@param degree Degree of the polynomial kernel function ('poly').
-#'@param gamma Kernel coefficient for 'rbf', 'poly' and 'sigmoid'.
-#'@param coef0 Independent term in kernel function.
-#'@param probability Whether to enable probability estimates.
-#'@param tol Tolerance for stopping criterion.
-#'@param cache_size Size of the kernel cache (in MB).
-#'@param class_weight Set the parameter class_weight.
-#'@param verbose Enable verbose output.
-#'@param max_iter Limit on iterations.
-#'@param decision_function_shape One-vs-rest ('ovr') or one-vs-one ('ovo').
-#'@param random_state Seed for random number generation.
-#'@return A svc object.
+#'@param attribute attribute target to model building
+#'@param slevels Possible values for the target classification
+#'@param C regularization parameter
+#'@param kernel kernel type ('linear', 'poly', 'rbf', 'sigmoid')
+#'@param degree degree of polynomial kernel function
+#'@param gamma kernel coefficient
+#'@param coef0 independent term in kernel function
+#'@param probability enable probability estimates
+#'@param shrinking use shrinking heuristic
+#'@param tol tolerance for stopping criterion
+#'@param cache_size kernel cache size in MB
+#'@param class_weight class weights
+#'@param verbose enable verbose output
+#'@param max_iter maximum iterations
+#'@param decision_function_shape decision function shape ('ovo', 'ovr')
+#'@param break_ties break tie decision
+#'@param random_state random number seed
+#'@return A SVM classifier object
 #'@examples
 #'data(iris)
 #'slevels <- levels(iris$Species)
@@ -42,12 +44,14 @@ cla_svc <- function(attribute, slevels,
                     gamma = "scale",
                     coef0 = 0.0,
                     probability = FALSE,
+                    shrinking = TRUE,
                     tol = 0.001,
                     cache_size = 200,
                     class_weight = NULL,
                     verbose = FALSE,
                     max_iter = -1,
                     decision_function_shape = "ovr",
+                    break_ties = FALSE,
                     random_state = NULL) {
   obj <- list(
     attribute = attribute,
@@ -58,12 +62,14 @@ cla_svc <- function(attribute, slevels,
     gamma = gamma,
     coef0 = as.numeric(coef0),
     probability = probability,
+    shrinking = shrinking,
     tol = as.numeric(tol),
     cache_size = as.numeric(cache_size),
     class_weight = class_weight,
     verbose = verbose,
     max_iter = as.integer(max_iter),
     decision_function_shape = decision_function_shape,
+    break_ties = break_ties,
     random_state = if(!is.null(random_state)) as.integer(random_state) else NULL
   )
 
@@ -88,12 +94,14 @@ fit.cla_svc <- function(obj, data, ...) {
       obj$gamma,
       obj$coef0,
       obj$probability,
+      obj$shrinking,
       obj$tol,
       obj$cache_size,
       obj$class_weight,
       obj$verbose,
       obj$max_iter,
       obj$decision_function_shape,
+      obj$break_ties,
       obj$random_state
     )
   }

@@ -1,35 +1,37 @@
-#'@title Inbalanced Data Handling with Tomek Links and RandomForest
-#'@description This module applies Tomek Links under-sampling followed by a RandomForest classification.
+#'@title Imbalanced Data Handling with Tomek Links
+#'@description This module provides wrapper functions for Tomek Links under-sampling method.
 #'@import reticulate
 
-
-#' Create model for under-sampling
+#' Create Tomek Links under-sampling model
+#'@param sampling_strategy The sampling strategy to use. Default is 'auto'
 #'@return A Python TomekLinks object
 #'@export
-create_tomek_model <- function() {
-  if (!exists("inbalanced_create_model")) {
-    reticulate::source_python("daltoolbox/inst/python/sklearn/imbalanced/tomek_links.py")
-  }
-  tomek <- inbalanced_create_model()
+create_tomek_model <- function(sampling_strategy='auto') {
+  reticulate::source_python("inst/python/sklearn/imbalanced/tomek_links.py")
+  tomek <- create_tomek_model(sampling_strategy=sampling_strategy)
   return(tomek)
 }
 
-
-#' Fit and resample the dataset using under-sampling
-#'@param select_method The under-sampling technique (Python object)
+#' Fit and resample dataset using Tomek Links
+#'@param model The TomekLinks model
 #'@param df_train Data frame to resample
-#'@param target_column The target column name as string
-#'@return Tuple of resampled X and y
+#'@param target_column Target column name
+#'@return List containing resampled features and target
 #'@export
-fit_resample <- function(select_method, df_train, target_column) {
-  cat("Column types:", sapply(df_train, class), "\n")
-  X_train <- df_train[, !(names(df_train) %in% target_column), drop = FALSE]
-  y_train <- df_train[[target_column]]
-
-  # Calling Python function for resampling
-  list_resample <- select_method$fit_resample(X_train, y_train)
-  X_train_smote <- list_resample[[1]]
-  y_train_smote <- list_resample[[2]]
-
-  return(list(X_train_smote, y_train_smote))
+fit_resample <- function(model, df_train, target_column) {
+  # Convert df_train to pandas DataFrame
+  df_train_py <- reticulate::r_to_py(df_train)
+  
+  # Separate features and target
+  X <- df_train_py$drop(target_column, axis=1)
+  y <- df_train_py[[target_column]]
+  
+  # Perform resampling
+  result <- model$fit_resample(X, y)
+  
+  # Convert back to R objects
+  X_resampled <- reticulate::py_to_r(result[[1]])
+  y_resampled <- reticulate::py_to_r(result[[2]])
+  
+  return(list(X_resampled, y_resampled))
 }
