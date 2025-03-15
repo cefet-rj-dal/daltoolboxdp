@@ -1,6 +1,6 @@
-#' Sequential Feature Selection
+#' Stepwise Selection
 #' 
-#' Applies sequential feature selection using KNeighborsClassifier
+#' Selects features stepwise with KNN
 #' @import reticulate
 
 #' Create a sequential feature selector model

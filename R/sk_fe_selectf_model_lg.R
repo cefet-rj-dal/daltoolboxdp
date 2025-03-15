@@ -1,6 +1,6 @@
-#' Logistic Regression Feature Selection
+#' Selection by Regression
 #' 
-#' Feature selection using logistic regression as estimator
+#' Select features with regression
 #' @import reticulate
 
 #' Create logistic regression feature selector

@@ -1,6 +1,6 @@
-#' Random Forest Feature Selection
+#' Selection by Trees
 #' 
-#' Feature selection using random forest classifier as estimator
+#' Select features with trees
 #' @import reticulate
 
 #' Create random forest feature selector

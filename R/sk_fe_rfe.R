@@ -1,6 +1,6 @@
-#' Recursive Feature Elimination
+#' RFE Model
 #' 
-#' Feature selection using recursive elimination with logistic regression
+#' Recursive feature selection with logistic regression
 #' @import reticulate
 
 #' Create RFE model

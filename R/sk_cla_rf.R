@@ -1,6 +1,6 @@
-#' Random Forest Classification
+#' Tree Ensemble Classifier
 #' 
-#' Classification using random forest algorithm from scikit-learn
+#' Classification using multiple decision trees
 #' @import reticulate
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target

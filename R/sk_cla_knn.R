@@ -1,6 +1,6 @@
-#' K-Nearest Neighbors Classification
+#' Nearest Neighbors Classifier
 #' 
-#' Classification using KNN algorithm
+#' Distance-based classification method
 #' @import reticulate
 #'@param attribute Target attribute name for model building
 #'@param slevels Possible values for the target classification

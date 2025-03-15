@@ -1,6 +1,6 @@
-#' Support Vector Machine Classification
+#' SVM Classifier
 #' 
-#' Classification using SVM algorithm from scikit-learn
+#' Classification using support vectors
 #' @import reticulate
 #'@title Support Vector Machine Classification
 #'@description Implements classification using Support Vector Machine (SVM) algorithm.

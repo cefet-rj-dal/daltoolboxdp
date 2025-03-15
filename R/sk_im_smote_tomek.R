@@ -1,6 +1,6 @@
-#' SMOTE-Tomek Hybrid Sampling
+#' Combined Sampling
 #' 
-#' Wrapper functions for SMOTE-Tomek hybrid sampling method
+#' Generate and clean synthetic samples
 #' @import reticulate
 
 #' Create SMOTE-Tomek sampling model

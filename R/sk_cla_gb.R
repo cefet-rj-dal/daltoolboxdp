@@ -1,6 +1,6 @@
-#' Gradient Boosting Classification
+#' Gradient Boosting Classifier
 #' 
-#' Classification using gradient boosting algorithm
+#' Implements boosting for classification tasks
 #' @import reticulate
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.

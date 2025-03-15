@@ -1,6 +1,6 @@
-#' SMOTE Over-sampling
+#' Synthetic Sampling
 #' 
-#' Wrapper functions for SMOTE over-sampling method
+#' Generate synthetic minority samples
 #' @import reticulate
 
 #' Create SMOTE over-sampling model

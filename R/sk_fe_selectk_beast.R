@@ -1,6 +1,6 @@
-#' K-Best Feature Selection
+#' Best Features Selection
 #' 
-#' Feature selection using SelectKBest method
+#' Select top features based on scores
 #' @import reticulate
 
 #' Create k-best feature selector

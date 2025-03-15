@@ -1,6 +1,6 @@
-#' Multi-Layer Perceptron Classification
+#' Neural Network Classifier
 #' 
-#' Neural network classification using MLP
+#' Multi-layer perceptron for classification
 #' @import reticulate
 #'@title Multi-Layer Perceptron Classifier
 #'@description Classifies using the MLP Classifier algorithm.
