@@ -101,7 +101,7 @@ cla_gb <- function(attribute, slevels,
 fit.cla_gb <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("cla_gb_create")) {
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_gb.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_gb.py")
   }
 
   # Check if the model is already initialized, otherwise create it
@@ -129,6 +129,10 @@ fit.cla_gb <- function(obj, data, ...) {
       obj$ccp_alpha
     )
   }
+
+  // ...existing code...
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_gb.py")
+  // ...existing code...
 
   # Adjust the data frame if needed
   data <- adjust_data.frame(data)

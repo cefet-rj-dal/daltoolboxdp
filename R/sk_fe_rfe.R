@@ -9,7 +9,7 @@
 #' @return A Python RFE object
 #' @export
 create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
-  reticulate::source_python("inst/python/sklearn/feature_select/rfe.py")
+  reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/rfe.py")
   model <- fs_create(n_features_to_select=n_features_to_select, 
                     lg_max_iter=max_iter)
   return(model)

@@ -8,7 +8,7 @@
 #' @return Python object
 #' @export
 create_tomek_model <- function(sampling_strategy='auto') {
-  reticulate::source_python("inst/python/sklearn/imbalanced/tomek_links.py")
+  reticulate::source_python("daltoolboxdp/inst/python/sklearn/imbalanced/tomek_links.py")
   tomek <- create_tomek_model(sampling_strategy=sampling_strategy)
   return(tomek)
 }

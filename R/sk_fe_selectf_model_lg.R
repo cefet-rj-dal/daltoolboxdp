@@ -9,7 +9,7 @@
 #' @return Python object
 #' @export
 create_lg_select_model <- function(C=0.1, threshold="mean") {
-  reticulate::source_python("inst/python/sklearn/feature_select/selectf_model_lg.py")
+  reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/selectf_model_lg.py")
   model <- create_lg_select_model(C=C, threshold=threshold)
   return(model)
 }

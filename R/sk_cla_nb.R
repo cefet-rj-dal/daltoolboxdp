@@ -44,7 +44,7 @@ cla_nb <- function(attribute, slevels,
 fit.cla_nb <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("nb_create")) {
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_nb.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_nb.py")
   }
 
   # Check if the model is already initialized, otherwise create it
@@ -68,7 +68,7 @@ fit.cla_nb <- function(obj, data, ...) {
 #'@export
 predict.cla_nb <- function(obj, data, ...) {
   if (!exists("nb_predict"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_nb.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_nb.py")
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]

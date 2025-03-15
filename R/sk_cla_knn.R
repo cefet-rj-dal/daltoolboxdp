@@ -43,7 +43,7 @@ cla_knn <- function(attribute, slevels, n_neighbors=1, weights='uniform', algori
 fit.cla_knn <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("cla_knn_create"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_knn.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_knn.py")
 
   # Check if the model is already initialized, otherwise create it
   if (is.null(obj$model)) {
@@ -69,7 +69,7 @@ fit.cla_knn <- function(obj, data, ...) {
 #'@export
 predict.cla_knn  <- function(obj, data, ...) {
   if (!exists("cla_knn_predict"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_knn.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_knn.py")
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]

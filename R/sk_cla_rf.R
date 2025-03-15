@@ -64,7 +64,7 @@ cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_d
 fit.cla_rf <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("cla_rf_create"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_rf.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_rf.py")
 
   if (is.null(obj$model)) {
     obj$model <- cla_rf_create(
@@ -103,7 +103,7 @@ fit.cla_rf <- function(obj, data, ...) {
 #'@export
 predict.cla_rf  <- function(obj, data, ...) {
   if (!exists("cla_rf_predict"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_rf.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_rf.py")
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]

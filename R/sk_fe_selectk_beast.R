@@ -8,7 +8,7 @@
 #' @return A Python SelectKBest object
 #' @export
 create_selectk_model <- function(k=10) {
-  reticulate::source_python("inst/python/sklearn/feature_select/selectk_beast.py")
+  reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/selectk_beast.py")
   model <- fs_create(k=k)
   return(model)
 }
