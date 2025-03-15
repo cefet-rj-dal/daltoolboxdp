@@ -1,29 +1,29 @@
 #'@import reticulate
-#'@title Random Forest Classifier
-#'@description Classifies using the Random Forest Classifier algorithm.
-#' It wraps the sklearn library.
-#'@param attribute attribute target to model building
-#'@param slevels Possible values for the target classification
-#'@param n_estimators number of trees in the forest
-#'@param criterion function to measure the quality of a split
-#'@param max_depth maximum depth of the tree
-#'@param min_samples_split minimum samples required to split an internal node
-#'@param min_samples_leaf minimum samples required to be at a leaf node
-#'@param min_weight_fraction_leaf minimum weighted fraction of the sum total of weights
-#'@param max_features number of features to consider for best split
-#'@param max_leaf_nodes grow trees with max_leaf_nodes in best-first fashion
-#'@param min_impurity_decrease minimum impurity decrease required for split
-#'@param bootstrap whether bootstrap samples are used when building trees
-#'@param oob_score whether to use out-of-bag samples
-#'@param n_jobs number of jobs to run in parallel
-#'@param random_state random number generator seed
-#'@param verbose controls verbosity of the output
-#'@param warm_start reuse solution of previous call
-#'@param class_weight weights associated with classes
-#'@param ccp_alpha complexity parameter for cost-complexity pruning
-#'@param max_samples number of samples to draw to train each base estimator
-#'@param monotonic_cst monotonicity constraints for each feature
-#'@return A Random Forest classifier object
+#'@title Random Forest Classification
+#'@description Implements classification using Random Forest algorithm.
+#' This function wraps the RandomForestClassifier from Python's scikit-learn library.
+#'@param attribute Target attribute name for model building
+#'@param slevels List of possible values for classification target
+#'@param n_estimators Number of trees in random forest
+#'@param criterion Function name for measuring split quality
+#'@param max_depth Maximum tree depth value
+#'@param min_samples_split Minimum samples needed for internal node split
+#'@param min_samples_leaf Minimum samples needed at leaf node
+#'@param min_weight_fraction_leaf Minimum weighted fraction value
+#'@param max_features Number of features to consider for best split
+#'@param max_leaf_nodes Maximum number of leaf nodes
+#'@param min_impurity_decrease Minimum impurity decrease needed for split
+#'@param bootstrap Whether to use bootstrap samples
+#'@param oob_score Whether to use out-of-bag samples
+#'@param n_jobs Number of parallel jobs
+#'@param random_state Seed for random number generation
+#'@param verbose Whether to enable verbose output
+#'@param warm_start Whether to reuse previous solution
+#'@param class_weight Weights associated with classes
+#'@param ccp_alpha Complexity parameter value for pruning
+#'@param max_samples Number of samples for training estimators
+#'@param monotonic_cst Monotonicity constraints for features
+#'@return A Random Forest classifier object configured for scikit-learn
 #'@examples
 #'data(iris)
 #'slevels <- levels(iris$Species)

@@ -27,4 +27,6 @@ Imports:
   doBy,  
   glmnet,
   smotefamily,
-  reticulate
+  reticulate,
+  stats,
+  utils

@@ -1,42 +1,42 @@
-
-#'@title Support Vector Machine Classifier
-#'@description Classifies using the Support Vector Machine (SVM) algorithm.
-#' It wraps the sklearn library.
-#'@param attribute attribute target to model building
-#'@param slevels Possible values for the target classification
-#'@param C regularization parameter
-#'@param kernel kernel type ('linear', 'poly', 'rbf', 'sigmoid')
-#'@param degree degree of polynomial kernel function
-#'@param gamma kernel coefficient
-#'@param coef0 independent term in kernel function
-#'@param probability enable probability estimates
-#'@param shrinking use shrinking heuristic
-#'@param tol tolerance for stopping criterion
-#'@param cache_size kernel cache size in MB
-#'@param class_weight class weights
-#'@param verbose enable verbose output
-#'@param max_iter maximum iterations
-#'@param decision_function_shape decision function shape ('ovo', 'ovr')
-#'@param break_ties break tie decision
-#'@param random_state random number seed
-#'@return A SVM classifier object
+#'@title Support Vector Machine Classification
+#'@description Implements classification using Support Vector Machine (SVM) algorithm.
+#' This function wraps the SVC classifier from Python's scikit-learn library.
+#'@param attribute Target attribute name for model building
+#'@param slevels List of possible values for classification target
+#'@param C Regularization strength parameter
+#'@param kernel Kernel function type ('linear', 'poly', 'rbf', 'sigmoid')
+#'@param degree Polynomial degree when using 'poly' kernel
+#'@param gamma Kernel coefficient value
+#'@param coef0 Independent term value in kernel function
+#'@param probability Whether to enable probability estimates
+#'@param shrinking Whether to use shrinking heuristic
+#'@param tol Tolerance value for stopping criterion
+#'@param cache_size Kernel cache size value in MB
+#'@param class_weight Weights associated with classes
+#'@param verbose Whether to enable verbose output
+#'@param max_iter Maximum number of iterations
+#'@param decision_function_shape Shape of decision function ('ovo', 'ovr')
+#'@param break_ties Whether to break tie decisions
+#'@param random_state Seed for random number generation
+#'@return An SVM classifier object configured for scikit-learn
 #'@examples
-#'data(iris)
-#'slevels <- levels(iris$Species)
-#'model <- cla_svc("Species", slevels, C=1.0, kernel="rbf")
-#'
-#'# preparing dataset for random sampling
-#'sr <- sample_random()
-#'sr <- train_test(sr, iris)
-#'train <- sr$train
-#'test <- sr$test
-#'
-#'model <- fit(model, train)
-#'
-#'prediction <- predict(model, test)
-#'predictand <- adjust_class_label(test[,"Species"])
-#'test_eval <- evaluate(model, predictand, prediction)
-#'test_eval$metrics
+#' # Load example dataset
+#' data(iris)
+#' slevels <- levels(iris$Species)
+#' model <- cla_svc("Species", slevels, C=1.0, kernel="rbf")
+#' 
+#' # Initialize random sampling
+#' sr <- sample_random()
+#' sr <- train_test(sr, iris)
+#' train <- sr$train
+#' test <- sr$test
+#' 
+#' # Train and evaluate model
+#' model <- fit(model, train)
+#' prediction <- predict(model, test)
+#' predictand <- adjust_class_label(test[,"Species"])
+#' test_eval <- evaluate(model, predictand, prediction)
+#' test_eval$metrics
 #'@export
 cla_svc <- function(attribute, slevels,
                     C = 1.0,

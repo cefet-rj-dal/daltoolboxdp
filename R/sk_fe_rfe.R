@@ -1,10 +1,8 @@
-#'@title Feature Selection Using RFE
-#'@description Recursive Feature Elimination with LogisticRegression.
 #'@import reticulate
-
-#' Create RFE model
+#'@title Recursive Feature Selection
+#'@description Performs recursive feature elimination using logistic regression as estimator.
 #'@param n_features_to_select Number/proportion of features to select
-#'@param max_iter Maximum iterations for LogisticRegression
+#'@param max_iter Maximum iterations for logistic regression
 #'@return A Python RFE object
 #'@export
 create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
@@ -14,11 +12,10 @@ create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
   return(model)
 }
 
-#' Fit and transform the dataset
-#'@param model The RFE model
-#'@param df_train Data frame to transform
-#'@param target_column Target column name
-#'@return Transformed features
+#'@param model The RFE model object
+#'@param df_train Input data frame
+#'@param target_column Name of target column
+#'@return Transformed feature matrix
 #'@export
 fit_transform <- function(model, df_train, target_column) {
   df_train_py <- reticulate::r_to_py(df_train)

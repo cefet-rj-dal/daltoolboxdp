@@ -1,36 +1,36 @@
 #'@import reticulate
 #'@title Gradient Boosting Classifier
-#'@description Classifies using the Gradient Boosting Classifier algorithm.
-#' It wraps the sklearn library.
-#'@param attribute attribute target to model building
+#'@description Implements a classifier using the Gradient Boosting algorithm.
+#' This function wraps the GradientBoostingClassifier from Python's scikit-learn library.
+#'@param attribute Target attribute name for model building
 #'@param slevels Possible values for the target classification
-#'@param loss loss function to be optimized ('log_loss', 'exponential')
-#'@param learning_rate learning rate shrinks the contribution of each tree
-#'@param n_estimators number of boosting stages to perform
-#'@param subsample fraction of samples to be used for fitting the individual base learners
-#'@param criterion function to measure the quality of a split
-#'@param min_samples_split minimum samples required to split an internal node
-#'@param min_samples_leaf minimum samples required to be at a leaf node
-#'@param min_weight_fraction_leaf minimum weighted fraction of the sum total of weights
-#'@param max_depth maximum depth of the individual regression estimators
-#'@param min_impurity_decrease minimum impurity decrease required for split
-#'@param init estimator object to initialize the model
-#'@param random_state random number generator seed
-#'@param max_features number of features to consider for best split
-#'@param verbose controls verbosity of the output
-#'@param max_leaf_nodes maximum number of leaf nodes
-#'@param warm_start reuse solution of previous call
-#'@param validation_fraction proportion of training data to set aside for validation
-#'@param n_iter_no_change used to decide if early stopping will be used
-#'@param tol tolerance for the early stopping
-#'@param ccp_alpha complexity parameter for cost-complexity pruning
+#'@param loss Loss function to be optimized ('log_loss', 'exponential')
+#'@param learning_rate Learning rate that shrinks the contribution of each tree
+#'@param n_estimators Number of boosting stages to perform
+#'@param subsample Fraction of samples to be used for fitting the individual base learners
+#'@param criterion Function to measure the quality of a split
+#'@param min_samples_split Minimum number of samples required to split an internal node
+#'@param min_samples_leaf Minimum number of samples required to be at a leaf node
+#'@param min_weight_fraction_leaf Minimum weighted fraction of the sum total of weights
+#'@param max_depth Maximum depth of the individual regression estimators
+#'@param min_impurity_decrease Minimum impurity decrease required for split
+#'@param init Estimator object to initialize the model
+#'@param random_state Random number generator seed
+#'@param max_features Number of features to consider for best split
+#'@param verbose Controls verbosity of the output
+#'@param max_leaf_nodes Maximum number of leaf nodes
+#'@param warm_start Whether to reuse solution of previous call
+#'@param validation_fraction Proportion of training data to set aside for validation
+#'@param n_iter_no_change Used to decide if early stopping will be used
+#'@param tol Tolerance for early stopping
+#'@param ccp_alpha Complexity parameter for cost-complexity pruning
 #'@return A Gradient Boosting classifier object
 #'@examples
 #'data(iris)
 #'slevels <- levels(iris$Species)
 #'model <- cla_gb("Species", slevels)
 #'
-#'# preparing dataset for random sampling
+#'# Preparing dataset for random sampling
 #'sr <- sample_random()
 #'sr <- train_test(sr, iris)
 #'train <- sr$train

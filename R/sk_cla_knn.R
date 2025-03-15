@@ -1,22 +1,22 @@
 #'@import reticulate
 #'@title K-Nearest Neighbors Classifier
-#'@description Classifies using the K-Nearest Neighbors (KNN) algorithm.
-#' It wraps the sklearn library.
-#'@param attribute attribute target to model building
+#'@description Implements classification using the K-Nearest Neighbors (KNN) algorithm.
+#' This function wraps the KNeighborsClassifier from Python's scikit-learn library.
+#'@param attribute Target attribute name for model building
 #'@param slevels Possible values for the target classification
-#'@param n_neighbors number of neighbors to use for classification
-#'@param weights weight function used in prediction ('uniform', 'distance')
-#'@param algorithm algorithm used to compute nearest neighbors ('auto', 'ball_tree', 'kd_tree', 'brute')
-#'@param leaf_size leaf size passed to the tree algorithms
-#'@param p power parameter for Minkowski metric
-#'@param metric distance metric to use ('minkowski', 'euclidean', 'manhattan', etc.)
+#'@param n_neighbors Number of neighbors to use for classification
+#'@param weights Weight function used in prediction ('uniform', 'distance')
+#'@param algorithm Algorithm used to compute nearest neighbors ('auto', 'ball_tree', 'kd_tree', 'brute')
+#'@param leaf_size Leaf size passed to the tree algorithms
+#'@param p Power parameter for Minkowski metric
+#'@param metric Distance metric to use ('minkowski', 'euclidean', 'manhattan', etc.)
 #'@return A KNN classifier object
 #'@examples
 #'data(iris)
 #'slevels <- levels(iris$Species)
-#'model <- cla_knn("Species", slevels, k=3)
+#'model <- cla_knn("Species", slevels, n_neighbors=3)
 #'
-#'# preparing dataset for random sampling
+#'# Preparing dataset for random sampling
 #'sr <- sample_random()
 #'sr <- train_test(sr, iris)
 #'train <- sr$train
@@ -28,7 +28,6 @@
 #'predictand <- adjust_class_label(test[,"Species"])
 #'test_eval <- evaluate(model, predictand, prediction)
 #'test_eval$metrics
-#'@export
 cla_knn <- function(attribute, slevels, n_neighbors=1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski') {
   obj <- list(attribute = attribute, slevels = slevels, n_neighbors = n_neighbors, weights = weights,
               algorithm = algorithm, leaf_size = leaf_size, p = p, metric = metric)
