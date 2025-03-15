@@ -3,7 +3,7 @@
 #' Recursive feature selection with logistic regression
 #' @import reticulate
 
-#' Create RFE model
+#' RFE model
 #' @param n_features_to_select Number/proportion of features to select
 #' @param max_iter Maximum iterations for logistic regression
 #' @return A Python RFE object
