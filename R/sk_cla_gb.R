@@ -130,10 +130,6 @@ fit.cla_gb <- function(obj, data, ...) {
     )
   }
 
-  // ...existing code...
-    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_gb.py")
-  // ...existing code...
-
   # Adjust the data frame if needed
   data <- adjust_data.frame(data)
 
@@ -147,7 +143,7 @@ fit.cla_gb <- function(obj, data, ...) {
 #'@export
 predict.cla_gb  <- function(obj, data, ...) {
   if (!exists("cla_gb_predict"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_gb.py")
+    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_gb.py")
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
