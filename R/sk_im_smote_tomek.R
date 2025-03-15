@@ -8,7 +8,7 @@
 #' @return A Python SMOTETomek object
 #' @export
 create_smotetomek_model <- function(sampling_strategy='auto', random_state=42) {
-  reticulate::source_python("daltoolboxdp/inst/python/sklearn/imbalanced/smote_tomek.py")
+  reticulate::source_python("inst/python/sklearn/imbalanced/smote_tomek.py")
   smotetomek <- create_smotetomek_model(sampling_strategy=sampling_strategy, random_state=random_state)
   return(smotetomek)
 }

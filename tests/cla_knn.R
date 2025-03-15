@@ -5,8 +5,7 @@
 
 # Import required libraries
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/cla_knn.R")
+load_library("daltoolboxdp")
 
 #--------------------
 # Evaluation Function

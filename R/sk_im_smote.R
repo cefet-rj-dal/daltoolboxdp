@@ -9,7 +9,7 @@
 #' @return Python object
 #' @export
 create_smote_model <- function(sampling_strategy='auto', random_state=42) {
-  reticulate::source_python("daltoolboxdp/inst/python/sklearn/imbalanced/smote.py")
+  reticulate::source_python("inst/python/sklearn/imbalanced/smote.py")
   smote <- create_smote_model(sampling_strategy=sampling_strategy, random_state=random_state)
   return(smote)
 }

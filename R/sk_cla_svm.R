@@ -87,7 +87,7 @@ cla_svc <- function(attribute, slevels,
 fit.cla_svc <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("svc_create")) {
-    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_svc.py")
+    reticulate::source_python("inst/python/sklearn/cla_svc.py")
   }
 
   # Check if the model is already initialized, otherwise create it
@@ -124,7 +124,7 @@ fit.cla_svc <- function(obj, data, ...) {
 #'@export
 predict.cla_svc  <- function(obj, data, ...) {
   if (!exists("svc_predict"))
-    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_svc.py")
+    reticulate::source_python("inst/python/sklearn/cla_svc.py")
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]

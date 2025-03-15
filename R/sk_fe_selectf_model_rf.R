@@ -8,7 +8,7 @@
 #' @return Python object
 #' @export
 create_rf_select_model <- function(n_estimators=100, threshold="mean") {
-  reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/selectf_model_rf.py")
+  reticulate::source_python("inst/python/sklearn/feature_select/selectf_model_rf.py")
   model <- create_rf_select_model(n_estimators=n_estimators, threshold=threshold)
   return(model)
 }

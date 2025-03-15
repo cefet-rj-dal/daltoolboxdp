@@ -8,8 +8,8 @@ library(reticulate)
 
 # Load necessary R libraries
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/feature_select/rfe.R")
+load_library("daltoolboxdp")
+
 
 #--------------------
 # Data Preprocessing

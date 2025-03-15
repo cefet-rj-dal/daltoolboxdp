@@ -5,8 +5,7 @@
 
 # Load required libraries and source the appropriate files
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/cla_mlp.R")  # Assuming there's an R wrapper for MLPClassifier
+load_library("daltoolboxdp")
 
 #--------------------
 # Evaluation Function

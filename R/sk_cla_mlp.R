@@ -67,7 +67,7 @@ cla_mlp <- function(attribute, slevels,
 fit.cla_mlp <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("mlp_create")) {
-    reticulate::source_python("daltoolboxdp/inst/python/sklearn/cla_mlp.py")
+    reticulate::source_python("inst/python/sklearn/cla_mlp.py")
   }
 
   # Check if the model is already initialized, otherwise create it

@@ -12,7 +12,7 @@
 create_sequential_fs_model <- function(n_neighbors=3, 
                                      direction="forward", 
                                      n_features_to_select=2) {
-  reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/sequential_fe_select.py")
+  reticulate::source_python("inst/python/sklearn/feature_select/sequential_fe_select.py")
   model <- fs_create(n_neighbors=n_neighbors, 
                     direction=direction, 
                     n_features_to_select=n_features_to_select)
@@ -28,7 +28,7 @@ create_sequential_fs_model <- function(n_neighbors=3,
 fit_transform <- function(model, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   if (!exists("fit_transform")) {
-    reticulate::source_python("daltoolboxdp/inst/python/sklearn/feature_select/sequential_fe_select.py")
+    reticulate::source_python("inst/python/sklearn/feature_select/sequential_fe_select.py")
   }
 
   # Convert df_train to a pandas DataFrame
