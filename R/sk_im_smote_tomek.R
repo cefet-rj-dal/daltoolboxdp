@@ -3,7 +3,6 @@
 #' Generate and clean synthetic samples
 #' @import reticulate
 
-#' Create SMOTE-Tomek sampling model
 #' @param sampling_strategy The sampling strategy to use. Default is 'auto'
 #' @param random_state Random state for reproducibility
 #' @return A Python SMOTETomek object

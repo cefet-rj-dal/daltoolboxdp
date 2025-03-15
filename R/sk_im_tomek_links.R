@@ -5,10 +5,9 @@
 
 #' Tomek Links Under-sampling
 #' 
-#' Wrapper functions for Tomek Links under-sampling method
-#' @import reticulate
+#' Wrapper functions for Tomek Links method
 
-#' Create under-sampling model using Tomek Links method
+#' Create model using Tomek Links method
 #' @param sampling_strategy The sampling strategy to use. Default is 'auto'
 #' @return A Python TomekLinks object
 #' @export
