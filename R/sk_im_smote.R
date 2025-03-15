@@ -1,12 +1,12 @@
-#' Synthetic Sampling
+#' Synthetic Data
 #' 
-#' Generate synthetic minority samples
+#' Minority class augmentation
 #' @import reticulate
 
-#' Create SMOTE over-sampling model
-#' @param sampling_strategy The sampling strategy to use. Default is 'auto'
-#' @param random_state Random state for reproducibility
-#' @return A Python SMote object
+#' @description Generates synthetic samples
+#' @param sampling_strategy Strategy parameter. Default is 'auto'
+#' @param random_state Seed value
+#' @return Python object
 #' @export
 create_smote_model <- function(sampling_strategy='auto', random_state=42) {
   reticulate::source_python("inst/python/sklearn/imbalanced/smote.py")

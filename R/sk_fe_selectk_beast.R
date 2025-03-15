@@ -26,3 +26,13 @@ fit_transform <- function(model, df_train, target_column) {
   result <- model$fit_transform(X, y)
   return(reticulate::py_to_r(result))
 }
+
+#' Top Variables
+#' 
+#' Score-based selection
+#' @import reticulate
+
+#' @description Select by scores
+#' @param k Count to select
+#' @return Python object
+#' @export

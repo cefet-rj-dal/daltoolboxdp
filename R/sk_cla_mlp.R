@@ -1,40 +1,39 @@
-#' Neural Network Classifier
+#' Neural Network
 #' 
-#' Multi-layer perceptron for classification
+#' Deep learning classification
 #' @import reticulate
-#'@title Multi-Layer Perceptron Classifier
-#'@description Classifies using the MLP Classifier algorithm.
-#' It wraps the sklearn library.
-#'@param attribute attribute target to model building.
-#'@param slevels Possible values for the target classification.
-#'@param hidden_layer_sizes The ith element represents the number of neurons in the ith hidden layer.
-#'@param activation Activation function for the hidden layer ('identity', 'logistic', 'tanh', 'relu').
-#'@param solver The solver for weight optimization ('lbfgs', 'sgd', 'adam').
-#'@param alpha L2 penalty (regularization term) parameter.
-#'@param batch_size Size of minibatches for stochastic optimizers.
-#'@param learning_rate Schedule for weight updates ('constant', 'invscaling', 'adaptive').
-#'@param max_iter Maximum number of iterations.
-#'@param tol Tolerance for optimization termination.
-#'@param random_state Seed for random number generation.
-#'@return A mlp object.
-#'@examples
-#'data(iris)
-#'slevels <- levels(iris$Species)
-#'model <- cla_mlp("Species", slevels, hidden_layer_sizes = c(100), max_iter = 300)
+#' @title Multi-Layer Perceptron Classifier
+#' @description Neural network classifier
+#' @param attribute Target variable
+#' @param slevels Possible values for the target classification.
+#' @param hidden_layer_sizes The ith element represents the number of neurons in the ith hidden layer.
+#' @param activation Activation function for the hidden layer ('identity', 'logistic', 'tanh', 'relu').
+#' @param solver The solver for weight optimization ('lbfgs', 'sgd', 'adam').
+#' @param alpha L2 penalty (regularization term) parameter.
+#' @param batch_size Size of minibatches for stochastic optimizers.
+#' @param learning_rate Schedule for weight updates ('constant', 'invscaling', 'adaptive').
+#' @param max_iter Maximum number of iterations.
+#' @param tol Tolerance for optimization termination.
+#' @param random_state Seed for random number generation.
+#' @return A mlp object.
+#' @examples
+#' data(iris)
+#' slevels <- levels(iris$Species)
+#' model <- cla_mlp("Species", slevels, hidden_layer_sizes = c(100), max_iter = 300)
 #'
-#'# preparing dataset for random sampling
-#'sr <- sample_random()
-#'sr <- train_test(sr, iris)
-#'train <- sr$train
-#'test <- sr$test
+#' # preparing dataset for random sampling
+#' sr <- sample_random()
+#' sr <- train_test(sr, iris)
+#' train <- sr$train
+#' test <- sr$test
 #'
-#'model <- fit(model, train)
+#' model <- fit(model, train)
 #'
-#'prediction <- predict(model, test)
-#'predictand <- adjust_class_label(test[,"Species"])
-#'test_eval <- evaluate(model, predictand, prediction)
-#'test_eval$metrics
-#'@export
+#' prediction <- predict(model, test)
+#' predictand <- adjust_class_label(test[,"Species"])
+#' test_eval <- evaluate(model, predictand, prediction)
+#' test_eval$metrics
+#' @export
 cla_mlp <- function(attribute, slevels,
                     hidden_layer_sizes = c(100),
                     activation = "relu",
@@ -63,8 +62,8 @@ cla_mlp <- function(attribute, slevels,
   return(obj)
 }
 
-#'@import reticulate
-#'@export
+#' @import reticulate
+#' @export
 fit.cla_mlp <- function(obj, data, ...) {
   # Source the Python file only if the function does not already exist
   if (!exists("mlp_create")) {
@@ -95,8 +94,8 @@ fit.cla_mlp <- function(obj, data, ...) {
   return(obj)
 }
 
-#'@import reticulate
-#'@export
+#' @import reticulate
+#' @export
 predict.cla_mlp <- function(obj, data, ...) {
   if (!exists("mlp_predict"))
     reticulate::source_python("daltoolbox/inst/python/sklearn/cla_mlp.py")

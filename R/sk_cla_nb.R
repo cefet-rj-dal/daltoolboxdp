@@ -1,6 +1,6 @@
-#' Naive Bayes Classifier
+#' Bayes Classifier
 #' 
-#' Probabilistic classifier using Gaussian distributions
+#' @description Probabilistic classification
 #' @import reticulate
 #'@param attribute attribute target to model building
 #'@param slevels Possible values for the target classification

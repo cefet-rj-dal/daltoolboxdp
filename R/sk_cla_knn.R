@@ -1,17 +1,18 @@
-#' Nearest Neighbors Classifier
+#' Nearest Neighbors
 #' 
-#' Distance-based classification method
+#' Distance-based classifier
 #' @import reticulate
-#'@param attribute Target attribute name for model building
-#'@param slevels Possible values for the target classification
-#'@param n_neighbors Number of neighbors to use for classification
-#'@param weights Weight function used in prediction ('uniform', 'distance')
-#'@param algorithm Algorithm used to compute nearest neighbors ('auto', 'ball_tree', 'kd_tree', 'brute')
-#'@param leaf_size Leaf size passed to the tree algorithms
-#'@param p Power parameter for Minkowski metric
-#'@param metric Distance metric to use ('minkowski', 'euclidean', 'manhattan', etc.)
-#'@return A KNN classifier object
-#'@examples
+#' @description Classifies by neighbor proximity
+#' @param attribute Target variable
+#' @param slevels Possible values for the target classification
+#' @param n_neighbors Number of neighbors to use for classification
+#' @param weights Weight function used in prediction ('uniform', 'distance')
+#' @param algorithm Algorithm used to compute nearest neighbors ('auto', 'ball_tree', 'kd_tree', 'brute')
+#' @param leaf_size Leaf size passed to the tree algorithms
+#' @param p Power parameter for Minkowski metric
+#' @param metric Distance metric to use ('minkowski', 'euclidean', 'manhattan', etc.)
+#' @return A KNN classifier object
+#' @examples
 #'data(iris)
 #'slevels <- levels(iris$Species)
 #'model <- cla_knn("Species", slevels, n_neighbors=3)

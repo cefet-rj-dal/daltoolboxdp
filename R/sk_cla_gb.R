@@ -1,6 +1,6 @@
-#' Gradient Boosting Classifier
+#' Tree Boosting 
 #' 
-#' Implements boosting for classification tasks
+#' @description Ensemble learning by boosting trees
 #' @import reticulate
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.

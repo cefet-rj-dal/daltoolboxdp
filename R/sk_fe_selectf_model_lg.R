@@ -1,12 +1,12 @@
-#' Selection by Regression
+#' Coefficient Selection
 #' 
-#' Select features with regression
+#' @description Variable selection by coefficients
 #' @import reticulate
 
-#' Create logistic regression feature selector
-#' @param C Inverse regularization strength
-#' @param threshold Feature selection threshold
-#' @return A Python SelectFromModel object
+#' @description Selection through coefficients
+#' @param C Regularization parameter
+#' @param threshold Selection cutoff
+#' @return Python object
 #' @export
 create_lg_select_model <- function(C=0.1, threshold="mean") {
   reticulate::source_python("inst/python/sklearn/feature_select/selectf_model_lg.py")

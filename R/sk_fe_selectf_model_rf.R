@@ -1,12 +1,11 @@
-#' Selection by Trees
+#' Tree Selection
 #' 
-#' Select features with trees
+#' @description Variable selection by trees
 #' @import reticulate
 
-#' Create random forest feature selector
-#' @param n_estimators Number of trees (default: 100)
-#' @param threshold Threshold for feature selection
-#' @return A Python SelectFromModel object
+#' @param n_estimators Tree count (default: 100)
+#' @param threshold Selection cutoff
+#' @return Python object
 #' @export
 create_rf_select_model <- function(n_estimators=100, threshold="mean") {
   reticulate::source_python("inst/python/sklearn/feature_select/selectf_model_rf.py")

@@ -1,15 +1,11 @@
-#' Clean Samples
+#' Data Cleaning
 #' 
-#' Remove samples from majority class
+#' Majority class sample removal
 #' @import reticulate
 
-#' Tomek Links Under-sampling
-#' 
-#' Wrapper functions for Tomek Links method
-
-#' Create model using Tomek Links method
-#' @param sampling_strategy The sampling strategy to use. Default is 'auto'
-#' @return A Python TomekLinks object
+#' @description Class balancing method
+#' @param sampling_strategy Strategy parameter. Default is 'auto'
+#' @return Python object
 #' @export
 create_tomek_model <- function(sampling_strategy='auto') {
   reticulate::source_python("inst/python/sklearn/imbalanced/tomek_links.py")

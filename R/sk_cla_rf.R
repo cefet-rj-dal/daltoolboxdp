@@ -1,6 +1,6 @@
-#' Tree Ensemble Classifier
+#' Tree Ensemble
 #' 
-#' Classification using multiple decision trees
+#' @description Classification with multiple trees
 #' @import reticulate
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
