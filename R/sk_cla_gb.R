@@ -1,3 +1,4 @@
+#'@import reticulate
 #'@title Gradient Boosting Classifier
 #'@description Classifies using the Gradient Boosting Classifier algorithm.
 #' It wraps the sklearn library.

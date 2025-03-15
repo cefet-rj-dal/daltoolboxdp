@@ -1,3 +1,4 @@
+#'@import reticulate
 #'@title Random Forest Classifier
 #'@description Classifies using the Random Forest Classifier algorithm.
 #' It wraps the sklearn library.

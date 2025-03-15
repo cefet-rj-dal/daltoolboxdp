@@ -1,3 +1,4 @@
+
 #'@title Support Vector Machine Classifier
 #'@description Classifies using the Support Vector Machine (SVM) algorithm.
 #' It wraps the sklearn library.

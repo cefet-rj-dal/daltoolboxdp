@@ -1,3 +1,4 @@
+#'@import reticulate
 #'@title K-Nearest Neighbors Classifier
 #'@description Classifies using the K-Nearest Neighbors (KNN) algorithm.
 #' It wraps the sklearn library.

@@ -1,3 +1,4 @@
+#'@import reticulate
 #'@title Gaussian Naive Bayes Classifier
 #'@description Classifies using the Gaussian Naive Bayes algorithm.
 #' It wraps the sklearn library.
