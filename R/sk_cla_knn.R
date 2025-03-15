@@ -1,7 +1,7 @@
-#'@import reticulate
-#'@title K-Nearest Neighbors Classifier
-#'@description Implements classification using the K-Nearest Neighbors (KNN) algorithm.
-#' This function wraps the KNeighborsClassifier from Python's scikit-learn library.
+#' K-Nearest Neighbors Classification
+#' 
+#' Classification using KNN algorithm
+#' @import reticulate
 #'@param attribute Target attribute name for model building
 #'@param slevels Possible values for the target classification
 #'@param n_neighbors Number of neighbors to use for classification

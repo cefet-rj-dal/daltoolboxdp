@@ -1,10 +1,13 @@
-#'@import reticulate
-#'@title Recursive Feature Selection
-#'@description Performs recursive feature elimination using logistic regression as estimator.
-#'@param n_features_to_select Number/proportion of features to select
-#'@param max_iter Maximum iterations for logistic regression
-#'@return A Python RFE object
-#'@export
+#' Recursive Feature Elimination
+#' 
+#' Feature selection using recursive elimination with logistic regression
+#' @import reticulate
+
+#' Create RFE model
+#' @param n_features_to_select Number/proportion of features to select
+#' @param max_iter Maximum iterations for logistic regression
+#' @return A Python RFE object
+#' @export
 create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
   reticulate::source_python("inst/python/sklearn/feature_select/rfe.py")
   model <- fs_create(n_features_to_select=n_features_to_select, 

@@ -1,11 +1,12 @@
-#'@title Feature Selection Using SelectKBest
-#'@description This module applies feature selection using SelectKBest.
-#'@import reticulate
+#' K-Best Feature Selection
+#' 
+#' Feature selection using SelectKBest method
+#' @import reticulate
 
-#' Create SelectKBest model
-#'@param k Number of top features to select
-#'@return A Python SelectKBest object
-#'@export
+#' Create k-best feature selector
+#' @param k Number of top features to select
+#' @return A Python SelectKBest object
+#' @export
 create_selectk_model <- function(k=10) {
   reticulate::source_python("inst/python/sklearn/feature_select/selectk_beast.py")
   model <- fs_create(k=k)
@@ -13,11 +14,11 @@ create_selectk_model <- function(k=10) {
 }
 
 #' Fit and transform the dataset
-#'@param model The SelectKBest model
-#'@param df_train Data frame to transform
-#'@param target_column Target column name
-#'@return Transformed features
-#'@export
+#' @param model The SelectKBest model
+#' @param df_train Data frame to transform
+#' @param target_column Target column name
+#' @return Transformed features
+#' @export
 fit_transform <- function(model, df_train, target_column) {
   df_train_py <- reticulate::r_to_py(df_train)
   X <- df_train_py$drop(target_column, axis=1)

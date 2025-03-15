@@ -1,12 +1,13 @@
-#'@title Imbalanced Data Handling with SMOTE
-#'@description This module provides wrapper functions for SMOTE over-sampling method.
-#'@import reticulate
+#' SMOTE Over-sampling
+#' 
+#' Wrapper functions for SMOTE over-sampling method
+#' @import reticulate
 
 #' Create SMOTE over-sampling model
-#'@param sampling_strategy The sampling strategy to use. Default is 'auto'
-#'@param random_state Random state for reproducibility
-#'@return A Python SMOTE object
-#'@export
+#' @param sampling_strategy The sampling strategy to use. Default is 'auto'
+#' @param random_state Random state for reproducibility
+#' @return A Python SMote object
+#' @export
 create_smote_model <- function(sampling_strategy='auto', random_state=42) {
   reticulate::source_python("inst/python/sklearn/imbalanced/smote.py")
   smote <- create_smote_model(sampling_strategy=sampling_strategy, random_state=random_state)
@@ -14,11 +15,11 @@ create_smote_model <- function(sampling_strategy='auto', random_state=42) {
 }
 
 #' Fit and resample dataset using SMOTE
-#'@param model The SMOTE model
-#'@param df_train Data frame to resample
-#'@param target_column Target column name
-#'@return List containing resampled features and target
-#'@export
+#' @param model The SMOTE model
+#' @param df_train Data frame to resample
+#' @param target_column Target column name
+#' @return List containing resampled features and target
+#' @export
 fit_resample <- function(model, df_train, target_column) {
   # Convert df_train to pandas DataFrame
   df_train_py <- reticulate::r_to_py(df_train)

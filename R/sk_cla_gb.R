@@ -1,4 +1,7 @@
-#'@import reticulate
+#' Gradient Boosting Classification
+#' 
+#' Classification using gradient boosting algorithm
+#' @import reticulate
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.
 #' This function wraps the GradientBoostingClassifier from Python's scikit-learn library.

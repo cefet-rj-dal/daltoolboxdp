@@ -1,7 +1,7 @@
-#'@import reticulate
-#'@title Random Forest Classification
-#'@description Implements classification using Random Forest algorithm.
-#' This function wraps the RandomForestClassifier from Python's scikit-learn library.
+#' Random Forest Classification
+#' 
+#' Classification using random forest algorithm from scikit-learn
+#' @import reticulate
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param n_estimators Number of trees in random forest

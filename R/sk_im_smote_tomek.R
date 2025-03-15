@@ -1,12 +1,13 @@
-#'@title Imbalanced Data Handling with SMOTETomek
-#'@description This module provides wrapper functions for SMOTETomek hybrid sampling method.
-#'@import reticulate
+#' SMOTE-Tomek Hybrid Sampling
+#' 
+#' Wrapper functions for SMOTE-Tomek hybrid sampling method
+#' @import reticulate
 
-#' Create SMOTETomek model
-#'@param sampling_strategy The sampling strategy to use. Default is 'auto'
-#'@param random_state Random state for reproducibility
-#'@return A Python SMOTETomek object
-#'@export
+#' Create SMOTE-Tomek sampling model
+#' @param sampling_strategy The sampling strategy to use. Default is 'auto'
+#' @param random_state Random state for reproducibility
+#' @return A Python SMOTETomek object
+#' @export
 create_smotetomek_model <- function(sampling_strategy='auto', random_state=42) {
   reticulate::source_python("inst/python/sklearn/imbalanced/smote_tomek.py")
   smotetomek <- create_smotetomek_model(sampling_strategy=sampling_strategy, random_state=random_state)
@@ -14,11 +15,11 @@ create_smotetomek_model <- function(sampling_strategy='auto', random_state=42) {
 }
 
 #' Fit and resample dataset using SMOTETomek
-#'@param model The SMOTETomek model
-#'@param df_train Data frame to resample
-#'@param target_column Target column name
-#'@return List containing resampled features and target
-#'@export
+#' @param model The SMOTETomek model
+#' @param df_train Data frame to resample
+#' @param target_column Target column name
+#' @return List containing resampled features and target
+#' @export
 fit_resample <- function(model, df_train, target_column) {
   # Convert df_train to pandas DataFrame
   df_train_py <- reticulate::r_to_py(df_train)

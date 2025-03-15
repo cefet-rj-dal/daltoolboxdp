@@ -1,11 +1,12 @@
-#'@title Imbalanced Data Handling with Tomek Links
-#'@description This module provides wrapper functions for Tomek Links under-sampling method.
-#'@import reticulate
+#' Tomek Links Under-sampling
+#' 
+#' Wrapper functions for Tomek Links under-sampling method
+#' @import reticulate
 
-#' Create Tomek Links under-sampling model
-#'@param sampling_strategy The sampling strategy to use. Default is 'auto'
-#'@return A Python TomekLinks object
-#'@export
+#' Create under-sampling model using Tomek Links method
+#' @param sampling_strategy The sampling strategy to use. Default is 'auto'
+#' @return A Python TomekLinks object
+#' @export
 create_tomek_model <- function(sampling_strategy='auto') {
   reticulate::source_python("inst/python/sklearn/imbalanced/tomek_links.py")
   tomek <- create_tomek_model(sampling_strategy=sampling_strategy)
@@ -13,11 +14,11 @@ create_tomek_model <- function(sampling_strategy='auto') {
 }
 
 #' Fit and resample dataset using Tomek Links
-#'@param model The TomekLinks model
-#'@param df_train Data frame to resample
-#'@param target_column Target column name
-#'@return List containing resampled features and target
-#'@export
+#' @param model The TomekLinks model
+#' @param df_train Data frame to resample
+#' @param target_column Target column name
+#' @return List containing resampled features and target
+#' @export
 fit_resample <- function(model, df_train, target_column) {
   # Convert df_train to pandas DataFrame
   df_train_py <- reticulate::r_to_py(df_train)

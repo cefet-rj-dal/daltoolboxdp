@@ -1,3 +1,7 @@
+#' Support Vector Machine Classification
+#' 
+#' Classification using SVM algorithm from scikit-learn
+#' @import reticulate
 #'@title Support Vector Machine Classification
 #'@description Implements classification using Support Vector Machine (SVM) algorithm.
 #' This function wraps the SVC classifier from Python's scikit-learn library.

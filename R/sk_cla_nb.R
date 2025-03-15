@@ -1,7 +1,7 @@
-#'@import reticulate
-#'@title Gaussian Naive Bayes Classifier
-#'@description Classifies using the Gaussian Naive Bayes algorithm.
-#' It wraps the sklearn library.
+#' Gaussian Naive Bayes Classification
+#' 
+#' Classification using Gaussian Naive Bayes algorithm
+#' @import reticulate
 #'@param attribute attribute target to model building
 #'@param slevels Possible values for the target classification
 #'@param priors Prior probabilities of the classes

@@ -1,13 +1,14 @@
-#'@title Feature Selection Using SequentialFeatureSelector
-#'@description This module applies sequential feature selection using KNeighborsClassifier.
-#'@import reticulate
+#' Sequential Feature Selection
+#' 
+#' Applies sequential feature selection using KNeighborsClassifier
+#' @import reticulate
 
-#' Create a SequentialFeatureSelector model
-#'@param n_neighbors Number of neighbors for KNN (default: 3)
-#'@param direction Direction of selection ("forward" or "backward")
-#'@param n_features_to_select Number of features to select
-#'@return A Python SequentialFeatureSelector object
-#'@export
+#' Create a sequential feature selector model
+#' @param n_neighbors Number of neighbors for KNN (default: 3)
+#' @param direction Direction of selection ("forward" or "backward")
+#' @param n_features_to_select Number of features to select
+#' @return A Python SequentialFeatureSelector object
+#' @export
 create_sequential_fs_model <- function(n_neighbors=3, 
                                      direction="forward", 
                                      n_features_to_select=2) {

@@ -1,4 +1,7 @@
-#'@import reticulate
+#' Multi-Layer Perceptron Classification
+#' 
+#' Neural network classification using MLP
+#' @import reticulate
 #'@title Multi-Layer Perceptron Classifier
 #'@description Classifies using the MLP Classifier algorithm.
 #' It wraps the sklearn library.
