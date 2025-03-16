@@ -4,10 +4,8 @@
 #####################################################################
 
 # Import dependencies
-library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/feature_select/selectf_model_rf.R")
+load_library("daltoolboxdp")
 
 #--------------------
 # Data Preprocessing

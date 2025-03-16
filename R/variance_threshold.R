@@ -4,7 +4,7 @@
 
 #' Create a VarianceThreshold model
 #'@param threshold The variance threshold below which features will be removed
-#'@return A Python VarianceThreshold object
+#'@return A Python object
 #'@export
 create_variance_threshold_model <- function(threshold=0.2) {
   reticulate::source_python("inst/python/sklearn/feature_select/variance_threshold.py")
@@ -13,7 +13,7 @@ create_variance_threshold_model <- function(threshold=0.2) {
 }
 
 #' Fit and transform the dataset using VarianceThreshold
-#'@param model The VarianceThreshold model
+#'@param model The model
 #'@param df_train Data frame to transform
 #'@param target_column Target column name
 #'@return Transformed features

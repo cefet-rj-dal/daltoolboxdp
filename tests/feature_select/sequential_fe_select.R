@@ -4,10 +4,8 @@
 #####################################################################
 
 # Import dependencies
-library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/feature_select/sequential_fe_select.R")
+load_library("daltoolboxdp")
 
 #--------------------
 # Data Preprocessing
@@ -55,3 +53,4 @@ cat("Shape after Sequential Feature Selector:", dim(X_train_selected), "\n")  # 
 
 cat("Selected features:\n")
 print(head(X_train_selected, 5))
+

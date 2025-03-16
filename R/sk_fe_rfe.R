@@ -1,12 +1,9 @@
-#' RFE Model
-#' 
 #' Recursive feature selection with logistic regression
 #' @import reticulate
 
-#' RFE model
 #' @param n_features_to_select Number/proportion of features to select
 #' @param max_iter Maximum iterations for logistic regression
-#' @return A Python RFE object
+#' @return A Pytho object
 #' @export
 create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
   reticulate::source_python("inst/python/sklearn/feature_select/rfe.py")
@@ -15,7 +12,7 @@ create_rfe_model <- function(n_features_to_select=0.5, max_iter=1000) {
   return(model)
 }
 
-#'@param model The RFE model object
+#'@param model The model object
 #'@param df_train Input data frame
 #'@param target_column Name of target column
 #'@return Transformed feature matrix

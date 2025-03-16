@@ -3,7 +3,6 @@
 #' Select top features based on scores
 #' @import reticulate
 
-#' Create k-best feature selector
 #' @param k Number of top features to select
 #' @return A Python SelectKBest object
 #' @export

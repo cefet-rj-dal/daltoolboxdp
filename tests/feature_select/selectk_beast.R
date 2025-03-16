@@ -1,8 +1,6 @@
 # Load necessary R libraries
-library(reticulate)
 source("https://raw.githubusercontent.com/cefet-rj-dal/daltoolbox/main/jupyter.R")
-load_library("daltoolbox")
-source("daltoolbox/R/sklearn/feature_select/selectk_beast.R")
+load_library("daltoolboxdp")
 # Load dataset
 iris <- datasets::iris
 head(iris)
@@ -31,3 +29,4 @@ cat("Shape after KBeast:", dim(X_train_selected), "\n")  # Should be (150, 2)
 
 cat("Selected features:\n")
 print(head(X_train_selected, 5))
+
