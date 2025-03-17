@@ -1,0 +1,30 @@
+## SelectKBest Feature Selection
+
+```{r}
+# DALToolbox Data Preprocessing
+# version 1.0.777
+
+#loading DAL
+library(daltoolbox) 
+library(daltoolboxdp)
+```
+
+### Example
+General function for exploring SelectKBest feature selection
+
+```{r}
+iris <- datasets::iris
+```
+
+### SelectKBest
+
+```{r}
+# Initialize and apply SelectKBest
+select_model <- create_fs_model(k=2)
+X_selected <- fit_transform_fs(select_model, iris, "Species")
+
+# Display results
+cat("Original shape:", dim(iris), "\n")
+cat("Shape after SelectKBest:", dim(X_selected), "\n")
+print(head(X_selected))
+```

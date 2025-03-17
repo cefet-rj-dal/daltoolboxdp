@@ -23,6 +23,7 @@ ts_knn <- function(preprocess = NA, n_neighbors = 5) {
   return(obj)
 }
 
+#'@method do_fit ts_knn
 #'@export
 do_fit.ts_knn <- function(obj, x, y) {
   if (!exists("knn_create"))
@@ -39,6 +40,7 @@ do_fit.ts_knn <- function(obj, x, y) {
   return(obj)
 }
 
+#'@method do_predict ts_knn
 #'@export
 do_predict.ts_knn <- function(obj, x) {
   if (!exists("knn_predict"))

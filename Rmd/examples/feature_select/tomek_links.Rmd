@@ -1,0 +1,44 @@
+## Tomek Links
+
+```{r}
+# DALToolbox Data Preprocessing
+# version 1.0.777
+
+#loading DAL
+library(daltoolbox) 
+library(daltoolboxdp)
+```
+
+### Example
+General function for exploring Tomek Links undersampling
+
+```{r}
+iris <- datasets::iris
+```
+
+### Tomek Links
+
+```{r}
+slevels <- levels(iris$Species)
+
+set.seed(1)
+sr <- sample_random()
+sr <- train_test(sr, iris)
+iris_train <- sr$train
+iris_test <- sr$test
+
+iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
+iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
+
+# Apply Tomek Links
+select_model <- create_tomek_model()
+list_tomek_model <- fit_resample(select_model, iris_train_label, "species_encoded")
+
+X_train_tomek <- list_tomek_model[[1]]
+y_train_tomek <- list_tomek_model[[2]]
+
+merged_df <- data.frame(X_train_tomek, species_encoded = y_train_tomek)
+
+cat("Class distribution after Tomek Links:\n")
+print(table(merged_df$species_encoded))
+```

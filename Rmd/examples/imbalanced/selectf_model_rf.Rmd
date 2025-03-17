@@ -1,0 +1,33 @@
+## Random Forest Feature Selection
+
+```{r}
+# DALToolbox Data Preprocessing
+# version 1.0.777
+
+#loading DAL
+library(daltoolbox) 
+library(daltoolboxdp)
+```
+
+### Example
+General function for exploring RF-based feature selection
+
+```{r}
+iris <- datasets::iris
+```
+
+### Random Forest Selection
+
+```{r}
+# Initialize RF model
+rf_model <- create_fit_rf_model(iris, "Species", n_estimators=100, random_state=0)
+select_model <- create_fs_model(rf_model, threshold="mean", prefit=TRUE)
+
+# Apply feature selection
+X_selected <- fit_transform_fs(select_model, iris, "Species")
+
+# Display results
+cat("Original shape:", dim(iris), "\n")
+cat("Shape after RF Selection:", dim(X_selected), "\n")
+print(head(X_selected))
+```
