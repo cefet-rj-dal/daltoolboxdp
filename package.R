@@ -71,3 +71,13 @@ if (FALSE) {
   document()
   load_all()
 }
+
+if (FALSE) {
+  # Check Python dependencies
+  library(devtools)
+  library(reticulate)
+  # Ensure sklearn is installed
+  reticulate::py_install("scikit-learn")
+  # Reload the package
+  load_all()
+}

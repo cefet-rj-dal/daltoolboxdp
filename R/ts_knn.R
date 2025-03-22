@@ -26,8 +26,13 @@ ts_knn <- function(preprocess = NA, n_neighbors = 5) {
 #'@method do_fit ts_knn
 #'@export
 do_fit.ts_knn <- function(obj, x, y) {
-  if (!exists("knn_create"))
-    reticulate::source_python(system.file("python", "inst/python/sklearn/ts_knn.py", package = "daltoolbox"))
+  if (!exists("knn_create")) {
+    python_path <- system.file("python/sklearn/ts_knn.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
 
   if (is.null(obj$model))
     obj$model <- knn_create(obj$n_neighbors)
@@ -43,8 +48,13 @@ do_fit.ts_knn <- function(obj, x, y) {
 #'@method do_predict ts_knn
 #'@export
 do_predict.ts_knn <- function(obj, x) {
-  if (!exists("knn_predict"))
-    reticulate::source_python(system.file("python", "inst/python/sklearn/ts_knn.py", package = "daltoolbox"))
+  if (!exists("knn_predict")) {
+    python_path <- system.file("python/sklearn/ts_knn.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
 
   X_values <- as.data.frame(x)
   X_values$t0 <- 0
