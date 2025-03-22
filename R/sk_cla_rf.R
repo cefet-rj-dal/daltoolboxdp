@@ -24,23 +24,6 @@
 #'@param max_samples Number of samples for training estimators
 #'@param monotonic_cst Monotonicity constraints for features
 #'@return A Random Forest classifier object configured for scikit-learn
-#'@examples
-#'data(iris)
-#'slevels <- levels(iris$Species)
-#'model <- cla_rf("Species", slevels)
-#'
-#'# preparing dataset for random sampling
-#'sr <- sample_random()
-#'sr <- train_test(sr, iris)
-#'train <- sr$train
-#'test <- sr$test
-#'
-#'model <- fit(model, train)
-#'
-#'prediction <- predict(model, test)
-#'predictand <- adjust_class_label(test[,"Species"])
-#'test_eval <- evaluate(model, predictand, prediction)
-#'test_eval$metrics
 #'@export
 cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_depth=NULL, min_samples_split=2,
                    min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt', max_leaf_nodes=NULL,
@@ -54,7 +37,7 @@ cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_d
               bootstrap = bootstrap, oob_score = oob_score, n_jobs = n_jobs, random_state = random_state,
               verbose = verbose, warm_start = warm_start, class_weight = class_weight, ccp_alpha = ccp_alpha,
               max_samples = max_samples, monotonic_cst = monotonic_cst)
-
+  
   class(obj) <- c("cla_rf", class(obj))
   return(obj)
 }
@@ -62,10 +45,14 @@ cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_d
 #' @import reticulate
 #' @export
 fit.cla_rf <- function(obj, data, ...) {
-  # Source the Python file only if the function does not already exist
-  if (!exists("cla_rf_create"))
-    reticulate::source_python("inst/python/sklearn/cla_rf.py")
-
+  if (!exists("cla_rf_create")) {
+    python_path <- system.file("python/sklearn/cla_rf.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
+  
   if (is.null(obj$model)) {
     obj$model <- cla_rf_create(
       as.integer(obj$n_estimators),
@@ -89,12 +76,12 @@ fit.cla_rf <- function(obj, data, ...) {
       obj$monotonic_cst
     )
   }
-
+  
   # Adjust the data frame
   data <- adjust_data.frame(data)
-
+  
   obj$model <- cla_rf_fit(obj$model, data, obj$attribute)
-
+  
   return(obj)
 }
 
@@ -102,14 +89,19 @@ fit.cla_rf <- function(obj, data, ...) {
 #'@import reticulate
 #'@export
 predict.cla_rf  <- function(obj, data, ...) {
-  if (!exists("cla_rf_predict"))
-    reticulate::source_python("inst/python/sklearn/cla_rf.py")
-
+  if (!exists("cla_rf_predict")) {
+    python_path <- system.file("python/sklearn/cla_rf.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
+  
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
-
+  
   prediction <- cla_rf_predict(obj$model, data)
   prediction <- adjust_class_label(prediction)
-
+  
   return(prediction)
 }

@@ -1,40 +1,21 @@
-#' Bayes Classifier
+#' Naive Bayes Classifier
 #' 
-#' @description Probabilistic classification
-#' @import reticulate
-#'@param attribute attribute target to model building
-#'@param slevels Possible values for the target classification
-#'@param priors Prior probabilities of the classes
-#'@param var_smoothing portion of the largest variance added for stability
-#'@return A Naive Bayes classifier object
-#'@examples
-#'data(iris)
-#'slevels <- levels(iris$Species)
-#'model <- cla_nb("Species", slevels)
-#'
-#'# preparing dataset for random sampling
-#'sr <- sample_random()
-#'sr <- train_test(sr, iris)
-#'train <- sr$train
-#'test <- sr$test
-#'
-#'model <- fit(model, train)
-#'
-#'prediction <- predict(model, test)
-#'predictand <- adjust_class_label(test[,"Species"])
-#'test_eval <- evaluate(model, predictand, prediction)
-#'test_eval$metrics
-#'@export
-cla_nb <- function(attribute, slevels,
-                   priors = NULL,
-                   var_smoothing = 1e-9) {
+#' @description Implements a classifier using the Gaussian Naive Bayes algorithm.
+#' This function wraps the GaussianNB from Python's scikit-learn library.
+#' @param attribute Target attribute name for model building (required)
+#' @param slevels Possible values for the target classification (required)
+#' @param var_smoothing Portion of the largest variance of all features that is added to variances
+#' @param priors Prior probabilities of the classes. If specified must be a list of length n_classes
+#' @return A Naive Bayes classifier object
+#' @export
+cla_nb <- function(attribute, slevels, var_smoothing=1e-9, priors=NULL) {
   obj <- list(
     attribute = attribute,
     slevels = slevels,
-    priors = priors,
-    var_smoothing = as.numeric(var_smoothing)
+    var_smoothing = as.numeric(var_smoothing),
+    priors = priors
   )
-
+  
   class(obj) <- c("cla_nb", class(obj))
   return(obj)
 }
@@ -42,39 +23,43 @@ cla_nb <- function(attribute, slevels,
 #'@import reticulate
 #'@export
 fit.cla_nb <- function(obj, data, ...) {
-  # Source the Python file only if the function does not already exist
   if (!exists("nb_create")) {
-    reticulate::source_python("inst/python/sklearn/cla_nb.py")
+    python_path <- system.file("python/sklearn/cla_nb.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
   }
-
-  # Check if the model is already initialized, otherwise create it
+  
   if (is.null(obj$model)) {
     obj$model <- nb_create(
-      obj$priors,
-      obj$var_smoothing
+      var_smoothing = obj$var_smoothing,
+      priors = obj$priors
     )
   }
-
-  # Adjust the data frame if needed
+  
   data <- adjust_data.frame(data)
-
-  # Fit the model using the Naive Bayes function and the attributes from obj
   obj$model <- nb_fit(obj$model, data, obj$attribute)
-
+  
   return(obj)
 }
 
 #'@import reticulate
 #'@export
 predict.cla_nb <- function(obj, data, ...) {
-  if (!exists("nb_predict"))
-    reticulate::source_python("inst/python/sklearn/cla_nb.py")
-
+  if (!exists("nb_predict")) {
+    python_path <- system.file("python/sklearn/cla_nb.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
+  
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
-
+  
   prediction <- nb_predict(obj$model, data)
   prediction <- adjust_class_label(prediction)
-
+  
   return(prediction)
 }

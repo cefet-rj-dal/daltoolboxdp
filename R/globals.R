@@ -4,7 +4,7 @@ utils::globalVariables(c(
   "cla_gb_create", "cla_gb_fit", "cla_gb_predict",
   "cla_knn_create", "cla_knn_fit", "cla_knn_predict",
   "cla_rf_create", "cla_rf_fit", "cla_rf_predict",
-  "fs", "fs_create", 
+  "fs", "fs_create",
   "knn_create", "knn_fit", "knn_ts_predict",
   "mlp_create", "mlp_fit", "mlp_predict",
   "nb_create", "nb_fit", "nb_predict",

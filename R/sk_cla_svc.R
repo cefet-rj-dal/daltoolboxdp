@@ -23,52 +23,34 @@
 #'@param break_ties Whether to break tie decisions
 #'@param random_state Seed for random number generation
 #'@return An SVM classifier object configured for scikit-learn
-#'@examples
-#' # Load example dataset
-#' data(iris)
-#' slevels <- levels(iris$Species)
-#' model <- cla_svc("Species", slevels, C=1.0, kernel="rbf")
-#' 
-#' # Initialize random sampling
-#' sr <- sample_random()
-#' sr <- train_test(sr, iris)
-#' train <- sr$train
-#' test <- sr$test
-#' 
-#' # Train and evaluate model
-#' model <- fit(model, train)
-#' prediction <- predict(model, test)
-#' predictand <- adjust_class_label(test[,"Species"])
-#' test_eval <- evaluate(model, predictand, prediction)
-#' test_eval$metrics
 #'@export
 cla_svc <- function(attribute, slevels,
-                    C = 1.0,
-                    kernel = "rbf",
+                    kernel = 'rbf',
                     degree = 3,
-                    gamma = "scale",
+                    gamma = 'scale',
                     coef0 = 0.0,
-                    probability = FALSE,
-                    shrinking = TRUE,
                     tol = 0.001,
+                    C = 1.0,
+                    shrinking = TRUE,
+                    probability = FALSE,
                     cache_size = 200,
                     class_weight = NULL,
                     verbose = FALSE,
                     max_iter = -1,
-                    decision_function_shape = "ovr",
+                    decision_function_shape = 'ovr',
                     break_ties = FALSE,
                     random_state = NULL) {
   obj <- list(
     attribute = attribute,
     slevels = slevels,
-    C = as.numeric(C),
     kernel = kernel,
     degree = as.integer(degree),
     gamma = gamma,
     coef0 = as.numeric(coef0),
-    probability = probability,
-    shrinking = shrinking,
     tol = as.numeric(tol),
+    C = as.numeric(C),
+    shrinking = shrinking,
+    probability = probability,
     cache_size = as.numeric(cache_size),
     class_weight = class_weight,
     verbose = verbose,
@@ -77,7 +59,7 @@ cla_svc <- function(attribute, slevels,
     break_ties = break_ties,
     random_state = if(!is.null(random_state)) as.integer(random_state) else NULL
   )
-
+  
   class(obj) <- c("cla_svc", class(obj))
   return(obj)
 }
@@ -85,22 +67,22 @@ cla_svc <- function(attribute, slevels,
 #'@import reticulate
 #'@export
 fit.cla_svc <- function(obj, data, ...) {
-  # Source the Python file only if the function does not already exist
-  if (!exists("svc_create")) {
-    reticulate::source_python("inst/python/sklearn/cla_svc.py")
-  }
-
-  # Check if the model is already initialized, otherwise create it
+  python_path <- system.file("python/sklearn/cla_svc.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+  reticulate::source_python(python_path)
+  
   if (is.null(obj$model)) {
     obj$model <- svc_create(
-      obj$C,
       obj$kernel,
       obj$degree,
       obj$gamma,
       obj$coef0,
-      obj$probability,
-      obj$shrinking,
       obj$tol,
+      obj$C,
+      obj$shrinking,
+      obj$probability,
       obj$cache_size,
       obj$class_weight,
       obj$verbose,
@@ -110,27 +92,29 @@ fit.cla_svc <- function(obj, data, ...) {
       obj$random_state
     )
   }
-
-  # Adjust the data frame if needed
+  
   data <- adjust_data.frame(data)
-
-  # Fit the model using the SVC function and the attributes from obj
   obj$model <- svc_fit(obj$model, data, obj$attribute, obj$slevels)
-
+  
   return(obj)
 }
 
 #'@import reticulate
 #'@export
-predict.cla_svc  <- function(obj, data, ...) {
-  if (!exists("svc_predict"))
-    reticulate::source_python("inst/python/sklearn/cla_svc.py")
-
+predict.cla_svc <- function(obj, data, ...) {
+  if (!exists("svc_predict")) {
+    python_path <- system.file("python/sklearn/cla_svc.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
+  
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
-
+  
   prediction <- svc_predict(obj$model, data)
   prediction <- adjust_class_label(prediction)
-
+  
   return(prediction)
 }

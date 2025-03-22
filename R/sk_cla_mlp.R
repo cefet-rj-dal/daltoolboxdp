@@ -16,23 +16,6 @@
 #' @param tol Tolerance for optimization termination.
 #' @param random_state Seed for random number generation.
 #' @return A mlp object.
-#' @examples
-#' data(iris)
-#' slevels <- levels(iris$Species)
-#' model <- cla_mlp("Species", slevels, hidden_layer_sizes = c(100), max_iter = 300)
-#'
-#' # preparing dataset for random sampling
-#' sr <- sample_random()
-#' sr <- train_test(sr, iris)
-#' train <- sr$train
-#' test <- sr$test
-#'
-#' model <- fit(model, train)
-#'
-#' prediction <- predict(model, test)
-#' predictand <- adjust_class_label(test[,"Species"])
-#' test_eval <- evaluate(model, predictand, prediction)
-#' test_eval$metrics
 #' @export
 cla_mlp <- function(attribute, slevels,
                     hidden_layer_sizes = c(100),
@@ -57,7 +40,7 @@ cla_mlp <- function(attribute, slevels,
     tol = as.numeric(tol),
     random_state = if(!is.null(random_state)) as.integer(random_state) else NULL
   )
-
+  
   class(obj) <- c("cla_mlp", class(obj))
   return(obj)
 }
@@ -65,12 +48,14 @@ cla_mlp <- function(attribute, slevels,
 #' @import reticulate
 #' @export
 fit.cla_mlp <- function(obj, data, ...) {
-  # Source the Python file only if the function does not already exist
   if (!exists("mlp_create")) {
-    reticulate::source_python("inst/python/sklearn/cla_mlp.py")
+    python_path <- system.file("python/sklearn/cla_mlp.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
   }
-
-  # Check if the model is already initialized, otherwise create it
+  
   if (is.null(obj$model)) {
     obj$model <- mlp_create(
       obj$hidden_layer_sizes,
@@ -84,27 +69,29 @@ fit.cla_mlp <- function(obj, data, ...) {
       obj$random_state
     )
   }
-
-  # Adjust the data frame if needed
+  
   data <- adjust_data.frame(data)
-
-  # Fit the model using the MLP Classifier function and the attributes from obj
   obj$model <- mlp_fit(obj$model, data, obj$attribute)
-
+  
   return(obj)
 }
 
 #' @import reticulate
 #' @export
 predict.cla_mlp <- function(obj, data, ...) {
-  if (!exists("mlp_predict"))
-    reticulate::source_python("daltoolbox/inst/python/sklearn/cla_mlp.py")
-
+  if (!exists("mlp_predict")) {
+    python_path <- system.file("python/sklearn/cla_mlp.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
+  
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
-
+  
   prediction <- mlp_predict(obj$model, data)
   prediction <- adjust_class_label(prediction)
-
+  
   return(prediction)
 }

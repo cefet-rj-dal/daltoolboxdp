@@ -14,6 +14,8 @@ if (FALSE) {
 
 if (FALSE) {
   library(devtools)
+  usethis::use_package("utils", type = "Imports")
+
   check()
   load_all()
 }
@@ -67,7 +69,6 @@ if (FALSE) {
   # Fix NAMESPACE and documentation issues
   library(devtools)
   # Add roxygen2 tags to declare global variables
-  usethis::use_package("utils", type = "Imports")
   document()
   load_all()
 }

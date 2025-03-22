@@ -28,23 +28,6 @@
 #'@param tol Tolerance for early stopping
 #'@param ccp_alpha Complexity parameter for cost-complexity pruning
 #'@return A Gradient Boosting classifier object
-#'@examples
-#'data(iris)
-#'slevels <- levels(iris$Species)
-#'model <- cla_gb("Species", slevels)
-#'
-#'# Preparing dataset for random sampling
-#'sr <- sample_random()
-#'sr <- train_test(sr, iris)
-#'train <- sr$train
-#'test <- sr$test
-#'
-#'model <- fit(model, train)
-#'
-#'prediction <- predict(model, test)
-#'predictand <- adjust_class_label(test[,"Species"])
-#'test_eval <- evaluate(model, predictand, prediction)
-#'test_eval$metrics
 #'@export
 cla_gb <- function(attribute, slevels,
                    loss = 'log_loss',
@@ -99,11 +82,11 @@ cla_gb <- function(attribute, slevels,
 #'@import reticulate
 #'@export
 fit.cla_gb <- function(obj, data, ...) {
-  # Source the Python file only if the function does not already exist
-  if (!exists("cla_gb_create")) {
-    reticulate::source_python("inst/python/sklearn/cla_gb.py")
+  python_path <- system.file("python/sklearn/cla_gb.py", package = "daltoolboxdp")
+  if (!file.exists(python_path)) {
+    stop("Python source file not found. Please check package installation.")
   }
-
+  reticulate::source_python(python_path)
   # Check if the model is already initialized, otherwise create it
   if (is.null(obj$model)) {
     obj$model <- cla_gb_create(
@@ -142,8 +125,13 @@ fit.cla_gb <- function(obj, data, ...) {
 #'@import reticulate
 #'@export
 predict.cla_gb  <- function(obj, data, ...) {
-  if (!exists("cla_gb_predict"))
-    reticulate::source_python("inst/python/sklearn/cla_gb.py")
+  if (!exists("cla_gb_predict")) {
+    python_path <- system.file("python/sklearn/cla_gb.py", package = "daltoolboxdp")
+    if (!file.exists(python_path)) {
+      stop("Python source file not found. Please check package installation.")
+    }
+    reticulate::source_python(python_path)
+  }
 
   data <- adjust_data.frame(data)
   data <- data[, !names(data) %in% obj$attribute]
