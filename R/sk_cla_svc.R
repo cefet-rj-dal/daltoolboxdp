@@ -65,6 +65,11 @@ cla_svc <- function(attribute, slevels,
 }
 
 #'@import reticulate
+#'@method fit cla_svc
+#'@param obj A Support Vector Machine classifier object
+#'@param data Input data frame containing features and target variable
+#'@param ... Additional arguments passed to the function
+#'@return A fitted SVM classifier object
 #'@export
 fit.cla_svc <- function(obj, data, ...) {
   python_path <- system.file("python/sklearn/cla_svc.py", package = "daltoolboxdp")

@@ -24,6 +24,11 @@ cla_knn <- function(attribute, slevels, n_neighbors=1, weights='uniform', algori
 
 
 #'@import reticulate
+#'@method fit cla_knn
+#'@param obj A KNN classifier object
+#'@param data Input data frame containing features and target variable
+#'@param ... Additional arguments passed to the function
+#'@return A fitted KNN classifier object
 #'@export
 fit.cla_knn <- function(obj, data, ...) {
   if (!exists("cla_knn_create")) {

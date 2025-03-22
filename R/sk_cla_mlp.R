@@ -47,6 +47,12 @@ cla_mlp <- function(attribute, slevels,
 
 #' @import reticulate
 #' @export
+#'@method fit cla_mlp
+#'@param obj A Neural Network classifier object
+#'@param data Input data frame containing features and target variable
+#'@param ... Additional arguments passed to the function
+#'@return A fitted Neural Network classifier object
+#'@export
 fit.cla_mlp <- function(obj, data, ...) {
   if (!exists("mlp_create")) {
     python_path <- system.file("python/sklearn/cla_mlp.py", package = "daltoolboxdp")

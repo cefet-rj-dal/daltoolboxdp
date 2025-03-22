@@ -80,6 +80,11 @@ cla_gb <- function(attribute, slevels,
 }
 
 #'@import reticulate
+#'@method fit cla_gb
+#'@param obj A Gradient Boosting classifier object
+#'@param data Input data frame containing features and target variable
+#'@param ... Additional arguments passed to the function
+#'@return A fitted Gradient Boosting classifier object
 #'@export
 fit.cla_gb <- function(obj, data, ...) {
   python_path <- system.file("python/sklearn/cla_gb.py", package = "daltoolboxdp")

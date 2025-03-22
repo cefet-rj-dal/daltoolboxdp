@@ -21,6 +21,11 @@ cla_nb <- function(attribute, slevels, var_smoothing=1e-9, priors=NULL) {
 }
 
 #'@import reticulate
+#'@method fit cla_nb
+#'@param obj A Naive Bayes classifier object
+#'@param data Input data frame containing features and target variable
+#'@param ... Additional arguments passed to the function
+#'@return A fitted Naive Bayes classifier object
 #'@export
 fit.cla_nb <- function(obj, data, ...) {
   if (!exists("nb_create")) {

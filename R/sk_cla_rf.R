@@ -43,6 +43,11 @@ cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_d
 }
 
 #' @import reticulate
+#' @method fit cla_rf
+#' @param obj A Random Forest classifier object
+#' @param data Input data frame containing features and target variable
+#' @param ... Additional arguments passed to the function
+#' @return A fitted Random Forest classifier object
 #' @export
 fit.cla_rf <- function(obj, data, ...) {
   if (!exists("cla_rf_create")) {
