@@ -2,6 +2,7 @@
 #' 
 #' Distance-based classifier
 #' @import reticulate
+#' @import daltoolbox
 #' @description Classifies by neighbor proximity
 #' @param attribute Target variable
 #' @param slevels Possible values for the target classification

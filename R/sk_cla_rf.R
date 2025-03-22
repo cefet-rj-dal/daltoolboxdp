@@ -2,6 +2,7 @@
 #' 
 #' @description Classification with multiple trees
 #' @import reticulate
+#' @import daltoolbox
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param n_estimators Number of trees in random forest
@@ -43,6 +44,7 @@ cla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_d
 }
 
 #' @import reticulate
+#' @import daltoolbox
 #' @method fit cla_rf
 #' @param obj A Random Forest classifier object
 #' @param data Input data frame containing features and target variable

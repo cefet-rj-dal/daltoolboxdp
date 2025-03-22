@@ -2,6 +2,7 @@
 #' 
 #' @description Ensemble learning by boosting trees
 #' @import reticulate
+#' @import daltoolbox
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.
 #' This function wraps the GradientBoostingClassifier from Python's scikit-learn library.

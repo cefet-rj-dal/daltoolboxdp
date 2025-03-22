@@ -2,6 +2,7 @@
 #' 
 #' Deep learning classification
 #' @import reticulate
+#' @import daltoolbox
 #' @title Multi-Layer Perceptron Classifier
 #' @description Neural network classifier
 #' @param attribute Target variable

@@ -2,6 +2,7 @@
 #' 
 #' Classification using support vectors
 #' @import reticulate
+#' @import daltoolbox
 #'@title Support Vector Machine Classification
 #'@description Implements classification using Support Vector Machine (SVM) algorithm.
 #' This function wraps the SVC classifier from Python's scikit-learn library.

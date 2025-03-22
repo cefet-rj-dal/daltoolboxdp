@@ -82,3 +82,11 @@ if (FALSE) {
   # Reload the package
   load_all()
 }
+
+if (FALSE) {
+  # Fix dependencies
+  library(devtools)
+  usethis::use_package("daltoolbox", type = "Imports")
+  document()
+  load_all()
+}

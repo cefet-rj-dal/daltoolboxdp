@@ -8,6 +8,8 @@
 #' @param priors Prior probabilities of the classes. If specified must be a list of length n_classes
 #' @return A Naive Bayes classifier object
 #' @export
+#' @import reticulate
+#' @import daltoolbox
 cla_nb <- function(attribute, slevels, var_smoothing=1e-9, priors=NULL) {
   obj <- list(
     attribute = attribute,
