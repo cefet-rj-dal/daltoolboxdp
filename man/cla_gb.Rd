@@ -87,5 +87,6 @@ This function wraps the GradientBoostingClassifier from Python's scikit-learn li
 Tree Boosting
 }
 \examples{
-library(daltoolboxdp)
+#See an example of using `cla_gb` at this
+#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_gb.md
 }

@@ -27,7 +27,8 @@
 #'@return A Gradient Boosting classifier object
 #'@return `cla_gb` object
 #'@examples
-#'library(daltoolboxdp)
+#'#See an example of using `cla_gb` at this
+#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_gb.md
 #'@import daltoolbox
 #'@export
 cla_gb <- function(attribute, slevels,
