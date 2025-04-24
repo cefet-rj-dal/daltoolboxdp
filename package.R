@@ -14,6 +14,8 @@ if (FALSE) {
 
 if (FALSE) {
   library(devtools)
+  usethis::use_package("utils", type = "Imports")
+
   check()
   load_all()
 }
@@ -63,4 +65,30 @@ if (FALSE) { #build package for cran
 
   #upload package
   #https://cran.r-project.org/submit.html
+}
+
+if (FALSE) {
+  # Fix NAMESPACE and documentation issues
+  library(devtools)
+  # Add roxygen2 tags to declare global variables
+  document()
+  load_all()
+}
+
+if (FALSE) {
+  # Check Python dependencies
+  library(devtools)
+  library(reticulate)
+  # Ensure sklearn is installed
+  reticulate::py_install("scikit-learn")
+  # Reload the package
+  load_all()
+}
+
+if (FALSE) {
+  # Fix dependencies
+  library(devtools)
+  usethis::use_package("daltoolbox", type = "Imports")
+  document()
+  load_all()
 }

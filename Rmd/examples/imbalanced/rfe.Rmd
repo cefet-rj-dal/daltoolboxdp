@@ -1,0 +1,30 @@
+## Recursive Feature Elimination
+
+```{r}
+# DALToolbox Data Preprocessing
+# version 1.0.777
+
+#loading DAL
+library(daltoolbox) 
+library(daltoolboxdp)
+```
+
+### Example
+General function for exploring RFE feature selection
+
+```{r}
+iris <- datasets::iris
+```
+
+### RFE
+
+```{r}
+# Create and apply RFE model
+rfe_model <- create_rfe_model(n_features_to_select = 0.5, lg_max_iter = 1000)
+X_selected <- fit_transform_rfe(rfe_model, iris, "Species")
+
+# Display results
+cat("Original shape:", dim(iris), "\n")
+cat("Shape after RFE:", dim(X_selected), "\n")
+print(head(X_selected))
+```

@@ -43,7 +43,9 @@ Imports:
   doBy,  
   glmnet,
   smotefamily,
-  reticulate
+  reticulate,
+  stats,
+  utils
 Config/reticulate:
   list(
     packages = list(
@@ -55,3 +57,4 @@ Config/reticulate:
       list(package = "scikit-learn")
     )
   )
+
