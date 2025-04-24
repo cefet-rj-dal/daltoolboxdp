@@ -39,6 +39,8 @@ if (FALSE) {
 
 if (FALSE) {
   #update documentation
+  devtools::document()
+  devtools::check()
   pkgdown::build_site()
 }
 if (FALSE) {
@@ -56,10 +58,10 @@ if (FALSE) { #build package for cran
   #run in RStudio
   library(devtools)
   pkgbuild::build(manual = TRUE)
-
+  
   #run in terminal
-  #R CMD check daltoolboxdp_1.0.777.tar.gz
-  #R CMD check daltoolboxdp_1.0.777.tar.gz --as-cran
+  #R CMD check daltoolboxdp_1.0.787.tar.gz
+  #R CMD check daltoolboxdp_1.0.787.tar.gz --as-cran
 
   #upload package
   #https://cran.r-project.org/submit.html
