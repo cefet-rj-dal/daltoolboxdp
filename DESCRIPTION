@@ -21,7 +21,7 @@ Description:
   More information on Experiment Lines is available in 
   Ogasawara et al. (2009) <doi:10.1007/978-3-642-02279-1_20>.
 License: MIT + file LICENSE
-URL: https://github.com/cefet-rj-dal/daltoolboxdp
+URL: https://cefet-rj-dal.github.io/daltoolboxdp/, https://github.com/cefet-rj-dal/daltoolboxdp
 BugReports: https://github.com/cefet-rj-dal/daltoolboxdp/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

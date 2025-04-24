@@ -1,44 +1,79 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' align='centre' height='150' width='139'/> DAL Toolbox Data Preprocessing
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' alt='Logo do pacote daltoolboxdp' align='centre' height='150' width='139'/> daltoolboxdp
 
 <!-- badges: start -->
 
-![GitHub Repo
-stars](https://img.shields.io/github/stars/cefet-rj-dal/daltoolboxdp?logo=Github)
-![GitHub Repo stars](https://cranlogs.r-pkg.org/badges/daltoolboxdp)
+![GitHub
+Stars](https://img.shields.io/github/stars/cefet-rj-dal/daltoolboxdp?logo=Github)
+![CRAN Downloads](https://cranlogs.r-pkg.org/badges/daltoolboxdp)
 <!-- badges: end -->
 
-The goal of DAL Toolbox Data Preprocessing is to provide an extended set
-of data preprocessing activities.
+**daltoolboxdp** provides Python-based extensions to enhance data
+analytics workflows, particularly for tasks involving data preprocessing
+and predictive modeling. It includes tools for:
+
+- Data sampling and transformation  
+- Feature selection  
+- Balancing strategies (e.g., SMOTE)  
+- Model construction and tuning
+
+These capabilities leverage Python libraries via the `reticulate`
+interface, enabling seamless integration with the broader Python machine
+learning ecosystem. The package supports instance selection and hybrid
+workflows that combine R and Python functionalities for flexible and
+reproducible analytical pipelines.
+
+The architecture is inspired by the **Experiment Lines** approach, which
+promotes modularity, extensibility, and interoperability across tools.  
+More information on Experiment Lines is available in [Ogasawara et
+al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
+
+------------------------------------------------------------------------
 
 ## Installation
 
-The latest version of DAL Toolbox Data Preprocessing at CRAN is
-available at: <https://CRAN.R-project.org/package=daltoolboxdp>
-
-You can install the stable version of DAL Toolbox from CRAN with:
+You can install the latest stable version from CRAN:
 
 ``` r
 install.packages("daltoolboxdp")
 ```
 
-You can install the development version of DAL Toolbox Data Preprocesing
-from GitHub <https://github.com/cefet-rj-dal/daltoolboxdp> with:
+To install the development version from GitHub:
 
 ``` r
+# install.packages("devtools")
 library(devtools)
-devtools::install_github("cefet-rj-dal/daltoolboxdp", force=TRUE, dependencies=FALSE, upgrade="never")
+devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies = FALSE, upgrade = "never")
 ```
+
+------------------------------------------------------------------------
 
 ## Examples
 
-The examples are organized according to general (data preprocessing).
+Example scripts are available at:
 
-Examples:
-<https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples>
+- [daltoolboxdp/examples](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples)
 
-## Bugs and new features request
+``` r
+library(daltoolboxdp)
+#> Registered S3 method overwritten by 'quantmod':
+#>   method            from
+#>   as.zoo.data.frame zoo
+#> Registered S3 methods overwritten by 'forecast':
+#>   method  from 
+#>   head.ts stats
+#>   tail.ts stats
 
-<https://github.com/cefet-rj-dal/daltoolboxdp/issues>
+# Example usage (replace with actual function when available)
+# e.g., data <- my_sampler_function(data, method = "undersample")
+```
+
+------------------------------------------------------------------------
+
+## Bug reports and feature requests
+
+Please report issues or suggest new features via:
+
+- [GitHub Issues](https://github.com/cefet-rj-dal/daltoolboxdp/issues)
