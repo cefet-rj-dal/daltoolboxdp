@@ -1,8 +1,4 @@
 #' Tree Boosting 
-#' 
-#' @description Ensemble learning by boosting trees
-#' @import reticulate
-#' @import daltoolbox
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.
 #' This function wraps the GradientBoostingClassifier from Python's scikit-learn library.
@@ -29,6 +25,10 @@
 #'@param tol Tolerance for early stopping
 #'@param ccp_alpha Complexity parameter for cost-complexity pruning
 #'@return A Gradient Boosting classifier object
+#'@return `cla_gb` object
+#'@examples
+#'library(daltoolboxdp)
+#'@import daltoolbox
 #'@export
 cla_gb <- function(attribute, slevels,
                    loss = 'log_loss',
@@ -51,9 +51,9 @@ cla_gb <- function(attribute, slevels,
                    n_iter_no_change = NULL,
                    tol = 0.0001,
                    ccp_alpha = 0.0) {
-  obj <- list(
-    attribute = attribute,
-    slevels = slevels,
+  obj <- classification(attribute, slevels)
+  cobj <- class(obj)
+  objex <- list(
     loss = loss,
     learning_rate = as.numeric(learning_rate),
     n_estimators = as.integer(n_estimators),
@@ -75,18 +75,14 @@ cla_gb <- function(attribute, slevels,
     tol = as.numeric(tol),
     ccp_alpha = as.numeric(ccp_alpha)
   )
-
-  class(obj) <- c("cla_gb", class(obj))
+  obj <- c(obj, objex)
+  class(obj) <- c("cla_gb", cobj)
   return(obj)
 }
 
+#'@import daltoolbox
 #'@import reticulate
-#'@method fit cla_gb
-#'@param obj A Gradient Boosting classifier object
-#'@param data Input data frame containing features and target variable
-#'@param ... Additional arguments passed to the function
-#'@return A fitted Gradient Boosting classifier object
-#'@export
+#'@exportS3Method fit cla_gb
 fit.cla_gb <- function(obj, data, ...) {
   python_path <- system.file("python/sklearn/cla_gb.py", package = "daltoolboxdp")
   if (!file.exists(python_path)) {
@@ -128,6 +124,7 @@ fit.cla_gb <- function(obj, data, ...) {
   return(obj)
 }
 
+#'@import daltoolbox
 #'@import reticulate
 #'@export
 predict.cla_gb  <- function(obj, data, ...) {

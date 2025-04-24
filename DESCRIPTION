@@ -42,10 +42,8 @@ Imports:
   FSelector,
   doBy,  
   glmnet,
-  smotefamily,
   reticulate,
-  stats,
-  utils
+  stats
 Config/reticulate:
   list(
     packages = list(

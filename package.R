@@ -14,8 +14,6 @@ if (FALSE) {
 
 if (FALSE) {
   library(devtools)
-  usethis::use_package("utils", type = "Imports")
-
   check()
   load_all()
 }
