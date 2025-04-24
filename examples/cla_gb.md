@@ -8,31 +8,6 @@
 #loading DAL
 library(daltoolbox) 
 library(daltoolboxdp)
-
-evaluate <- function(obj, data, prediction, ...) {
-  result <- list(data = data, prediction = prediction)
-  adjust_predictions <- function(predictions) {
-    predictions_i <- matrix(rep.int(0, nrow(predictions) *
-                                      ncol(predictions)), nrow = nrow(predictions), ncol = ncol(predictions))
-    y <- apply(predictions, 1, nnet::which.is.max)
-    for (i in unique(y)) {
-      predictions_i[y == i, i] <- 1
-    }
-    return(predictions_i)
-  }
-  predictions <- adjust_predictions(result$prediction)
-  result$conf_mat <- MLmetrics::ConfusionMatrix(data, predictions)
-  result$accuracy <- MLmetrics::Accuracy(y_pred = predictions, y_true = data)
-  result$f1 <- MLmetrics::F1_Score(y_pred = predictions, y_true = data, positive = 1)
-  result$sensitivity <- MLmetrics::Sensitivity(y_pred = predictions, y_true = data, positive = 1)
-  result$specificity <- MLmetrics::Specificity(y_pred = predictions, y_true = data, positive = 1)
-  result$precision <- MLmetrics::Precision(y_pred = predictions, y_true = data, positive = 1)
-  result$recall <- MLmetrics::Recall(y_pred = predictions, y_true = data, positive = 1)
-  result$metrics <- data.frame(accuracy = result$accuracy, f1 = result$f1,
-                               sensitivity = result$sensitivity, specificity = result$specificity,
-                               precision = result$precision, recall = result$recall)
-  return(result)
-}
 ```
 
 ### Example
@@ -81,8 +56,8 @@ print(train_eval$metrics)
 ```
 
 ```
-##   accuracy f1 sensitivity specificity precision recall
-## 1        1  1           1           1         1      1
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1        1 39 81  0  0         1      1           1           1  1
 ```
 
 ``` r
@@ -96,6 +71,6 @@ print(test_eval$metrics)
 ```
 
 ```
-##    accuracy        f1 sensitivity specificity precision    recall
-## 1 0.9555556 0.9333333   0.9333333   0.9666667 0.9333333 0.9333333
+##    accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
