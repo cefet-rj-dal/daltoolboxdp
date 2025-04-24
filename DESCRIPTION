@@ -2,20 +2,11 @@ Package: daltoolboxdp
 Title: Python-Based Extensions for Data Analytics Workflows
 Version: 1.0.787
 Authors@R: 
-  c(
-    person(
-      given = "Eduardo",
-      family = "Ogasawara",
-      role = c("aut", "ths", "cre"),
-      email = "eogasawara@ieee.org",
-      comment = c(ORCID = "0000-0002-0466-0626")
-    ),
-    person(
-      given = "CEFET/RJ",
-      role = "cph",
-      comment = c(organization = "Federal Center for Technological Education of Rio de Janeiro")
-    )
-  )
+  c(    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), 
+               email = "eogasawara@ieee.org", comment = c(ORCID = "0000-0002-0466-0626")),
+        person(given = "Diego", family = "Salles", role = c("aut", "ths"), email = "diego.salles@eic.cefet-rj.br"),
+        person(given = "Federal Center for Technological Education of Rio de Janeiro (CEFET/RJ)", role = "cph", comment = c(organization = "CEFET/RJ"))
+   )
 Description: 
   Provides Python-based extensions to enhance data analytics workflows, 
   particularly for tasks involving data preprocessing and predictive modeling. 
@@ -42,6 +33,7 @@ Imports:
   FSelector,
   doBy,  
   glmnet,
+  smotefamily,
   reticulate,
   stats
 Config/reticulate:

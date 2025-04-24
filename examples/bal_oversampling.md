@@ -1,32 +1,12 @@
 ## Feature Selection
 
 
-```r
+``` r
 # DALToolbox Data Preprocessing
 # version 1.0.777
 
 #loading DAL
 library(daltoolbox) 
-```
-
-```
-## Registered S3 method overwritten by 'quantmod':
-##   method            from
-##   as.zoo.data.frame zoo
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-```r
 library(daltoolboxdp)
 ```
 
@@ -34,7 +14,7 @@ library(daltoolboxdp)
 General function for exploring feature selection methods
 
 
-```r
+``` r
 iris <- datasets::iris
 data(iris)
 mod_iris <- iris[c(1:50,51:71,101:111),]
@@ -50,7 +30,7 @@ table(mod_iris$Species)
 ### oversampling
 
 
-```r
+``` r
 bal <- bal_oversampling('Species')
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)

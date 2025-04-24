@@ -1,7 +1,7 @@
 ## Feature Selection
 
 
-```r
+``` r
 # DALToolbox Data Preprocessing
 # version 1.0.777
 
@@ -14,14 +14,14 @@ library(daltoolboxdp)
 General function for exploring feature selection methods
 
 
-```r
+``` r
 iris <- datasets::iris
 ```
 
 ### FSS
 
 
-```r
+``` r
 myfeature <- fit(fs_fss("Species"), iris)
 print(myfeature$features)
 ```
@@ -30,7 +30,7 @@ print(myfeature$features)
 ## [1] "Sepal.Length" "Petal.Length" "Petal.Width"
 ```
 
-```r
+``` r
 data <- transform(myfeature, iris)
 print(head(data))
 ```

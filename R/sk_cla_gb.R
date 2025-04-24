@@ -127,7 +127,7 @@ fit.cla_gb <- function(obj, data, ...) {
 #'@import daltoolbox
 #'@import reticulate
 #'@export
-predict.cla_gb  <- function(obj, data, ...) {
+predict.cla_gb  <- function(object, x, ...) {
   if (!exists("cla_gb_predict")) {
     python_path <- system.file("python/sklearn/cla_gb.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
@@ -136,10 +136,10 @@ predict.cla_gb  <- function(obj, data, ...) {
     reticulate::source_python(python_path)
   }
 
-  data <- adjust_data.frame(data)
-  data <- data[, !names(data) %in% obj$attribute]
+  x <- adjust_data.frame(x)
+  x <- x[, !names(x) %in% object$attribute]
 
-  prediction <- cla_gb_predict(obj$model, data)
+  prediction <- cla_gb_predict(object$model, x)
   prediction <- adjust_class_label(prediction)
 
   return(prediction)

@@ -1,7 +1,7 @@
 ## Feature Selection
 
 
-```r
+``` r
 # DALToolbox Data Preprocessing
 # version 1.0.777
 
@@ -14,7 +14,7 @@ library(daltoolboxdp)
 General function for exploring feature selection methods
 
 
-```r
+``` r
 iris <- datasets::iris
 data(iris)
 mod_iris <- iris[c(1:50,51:71,101:111),]
@@ -30,7 +30,7 @@ table(mod_iris$Species)
 ### subsampling
 
 
-```r
+``` r
 bal <- bal_subsampling('Species')
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)
