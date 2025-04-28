@@ -6,7 +6,7 @@ Authors@R:
                email = "eogasawara@ieee.org", comment = c(ORCID = "0000-0002-0466-0626")),
         person(given = "Diego", family = "Salles", role = c("aut", "ths"), email = "diego.salles@eic.cefet-rj.br"),
         person(given = "Federal Center for Technological Education of Rio de Janeiro (CEFET/RJ)", role = "cph", comment = c(organization = "CEFET/RJ"))
-   )
+  )
 Description: 
   Provides Python-based extensions to enhance data analytics workflows, 
   particularly for tasks involving data preprocessing and predictive modeling. 

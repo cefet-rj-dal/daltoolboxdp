@@ -13,6 +13,12 @@ if (FALSE) {
 }
 
 if (FALSE) {
+  #compactando os datasets
+  devtools::build(args = "--resave-data")
+}
+
+
+if (FALSE) {
   library(devtools)
   check()
   load_all()
