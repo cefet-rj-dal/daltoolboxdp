@@ -36,15 +36,35 @@ fit.cla_nb <- function(obj, data, ...) {
   }
   reticulate::source_python(python_path)
   
+  if (any(is.na(data))) {
+    warning("Missing values detected in the data. These will be handled as part of the process.")
+  }
+  
   if (is.null(obj$model)) {
     obj$model <- nb_create(
-      var_smoothing = obj$var_smoothing,
-      priors = obj$priors
+      priors = obj$priors,
+      var_smoothing = obj$var_smoothing
     )
+    
+    if (is.null(obj$model)) {
+      stop("Failed to create Naive Bayes model.")
+    }
   }
   
   data <- adjust_data.frame(data)
+  
+  if (!obj$attribute %in% names(data)) {
+    stop(paste("Attribute", obj$attribute, "not found in the data."))
+  }
+  
+  message("Fitting model with data dimensions: ", nrow(data), " x ", ncol(data))
+  message("Target attribute: ", obj$attribute)
+  
   obj$model <- nb_fit(obj$model, data, obj$attribute)
+  
+  if (is.null(obj$model)) {
+    stop("Failed to fit Naive Bayes model.")
+  }
   
   return(obj)
 }
@@ -61,10 +81,25 @@ predict.cla_nb <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
   
+  if (any(is.na(x))) {
+    warning("Missing values detected in the prediction data. These will be handled as part of the process.")
+  }
+  
   x <- adjust_data.frame(x)
-  x <- x[, !names(x) %in% object$attribute]
+  
+  if (object$attribute %in% names(x)) {
+    x <- x[, !names(x) %in% object$attribute]
+  }
+  
+  message("Predicting with data dimensions: ", nrow(x), " x ", ncol(x))
   
   prediction <- nb_predict(object$model, x)
+  
+  if (is.null(prediction) || length(prediction) == 0) {
+    warning("Prediction returned NULL or empty. Returning NA values.")
+    prediction <- rep(NA, nrow(x))
+  }
+  
   prediction <- adjust_class_label(prediction)
   
   return(prediction)
