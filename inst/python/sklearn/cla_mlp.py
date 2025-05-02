@@ -6,6 +6,13 @@ def mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam', alph
                nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, 
                beta_1=0.9, beta_2=0.999, epsilon=1e-8, n_iter_no_change=10, max_fun=15000):
     
+
+    if activation is None:
+        activation = 'relu'  
+    
+    if solver is None:
+        solver = 'adam'
+    
     model = MLPClassifier(
         hidden_layer_sizes=hidden_layer_sizes,
         activation=activation,
