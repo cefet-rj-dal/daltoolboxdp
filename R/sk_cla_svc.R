@@ -71,7 +71,7 @@ cla_svc <- function(attribute, slevels,
 
 #'@import daltoolbox
 #'@import reticulate
-#'@exportS3Method fit cla_gb
+#'@exportS3Method fit cla_svc
 fit.cla_svc <- function(obj, data, ...) {
   python_path <- system.file("python/sklearn/cla_svc.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
@@ -108,7 +108,7 @@ fit.cla_svc <- function(obj, data, ...) {
 #'@import daltoolbox
 #'@import reticulate
 #'@export
-predict.cla_svc <- function(obj, data, ...) {
+predict.cla_svc <- function(object, x, ...) {
   if (!exists("svc_predict")) {
     python_path <- system.file("python/sklearn/cla_svc.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
@@ -117,10 +117,10 @@ predict.cla_svc <- function(obj, data, ...) {
     reticulate::source_python(python_path)
   }
   
-  data <- adjust_data.frame(data)
-  data <- data[, !names(data) %in% obj$attribute]
+  x <- adjust_data.frame(x)
+  x <- x[, !names(x) %in% object$attribute]
   
-  prediction <- svc_predict(obj$model, data)
+  prediction <- svc_predict(object$model, x)
   prediction <- adjust_class_label(prediction)
   
   return(prediction)
