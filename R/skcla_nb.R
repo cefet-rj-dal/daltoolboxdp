@@ -57,8 +57,8 @@ fit.skcla_nb <- function(obj, data, ...) {
     stop(paste("Attribute", obj$attribute, "not found in the data."))
   }
   
-  message("Fitting model with data dimensions: ", nrow(data), " x ", ncol(data))
-  message("Target attribute: ", obj$attribute)
+  #message("Fitting model with data dimensions: ", nrow(data), " x ", ncol(data))
+  #message("Target attribute: ", obj$attribute)
   
   obj$model <- skcla_nb_fit(obj$model, data, obj$attribute)
   
@@ -91,7 +91,7 @@ predict.skcla_nb <- function(object, x, ...) {
     x <- x[, !names(x) %in% object$attribute]
   }
   
-  message("Predicting with data dimensions: ", nrow(x), " x ", ncol(x))
+  #message("Predicting with data dimensions: ", nrow(x), " x ", ncol(x))
   
   prediction <- skcla_nb_predict(object$model, x)
   
