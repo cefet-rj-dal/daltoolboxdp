@@ -1,34 +1,57 @@
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
 
-def cla_knn_create(n_neighbors=1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski'):
-    model = KNeighborsRegressor(
+def knn_create(n_neighbors=5, weights='uniform', algorithm='auto', leaf_size=30, 
+               p=2, metric='minkowski', metric_params=None, n_jobs=None):
+    model = KNeighborsClassifier(
         n_neighbors=n_neighbors,
         weights=weights,
         algorithm=algorithm,
         leaf_size=leaf_size,
         p=p,
-        metric=metric
+        metric=metric,
+        metric_params=metric_params,
+        n_jobs=n_jobs
     )
     return model
 
-def cla_knn_train(model, df_train, target_column):
-    print("Tipos das colunas:", df_train.dtypes)
-    print("Shape dos dados:", df_train.values.shape)
-    X_train = df_train.drop(target_column, axis=1).values
-
-    y_train = df_train[target_column].values
-    model.fit(X_train, y_train)
-    return model
-
-def cla_knn_predict(model, df_test):
+def knn_fit(model, df_train, target_column):
     try:
-        predictions = model.predict(df_test.values)
+        X_train = df_train.drop(target_column, axis=1).values
+        y_train = df_train[target_column].values
+        
+        print(f"X_train shape: {X_train.shape}")
+        print(f"y_train shape: {y_train.shape}")
+        
+        if np.isnan(X_train).any() or np.isnan(y_train).any():
+            print("Warning: NaN values detected in training data")
+            X_train = np.nan_to_num(X_train)
+            y_train = np.nan_to_num(y_train)
+        
+        model.fit(X_train, y_train)
+        return model
+    except Exception as e:
+        print(f"Error in knn_fit: {str(e)}")
+        return model
+
+def knn_predict(model, df_test):
+    try:
+        if hasattr(df_test, 'values'):
+            X_test = df_test.values
+        else:
+            X_test = np.array(df_test)
+        
+        print(f"X_test shape: {X_test.shape}")
+        
+        if np.isnan(X_test).any():
+            print("Warning: NaN values detected in test data")
+            X_test = np.nan_to_num(X_test)
+        
+        predictions = model.predict(X_test)
         return predictions
     except TypeError as e:
-        print(f"Erro encontrado: {e}")
+        print(f"TypeError in knn_predict: {e}")
+        return np.array([])
     except Exception as e:
-        print(f"Outro erro ocorreu: {e}")
-
-  
-def cla_knn_fit(model, df_train, target_column, n_epochs=None, lr=None):
-    return cla_knn_train(model, df_train, target_column)
+        print(f"Error in knn_predict: {e}")
+        return np.array([])
