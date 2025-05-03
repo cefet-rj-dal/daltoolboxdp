@@ -7,26 +7,6 @@
 
 #loading DAL
 library(daltoolbox) 
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following objects are masked from 'package:daltoolboxdp':
-## 
-##     cla_knn, cla_mlp, cla_nb, cla_rf
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-``` r
 library(daltoolboxdp)
 ```
 

@@ -1,13 +1,13 @@
 # Declare global functions used in package
 utils::globalVariables(c(
-  "adjust_class_label", "adjust_data.frame", 
-  "cla_gb_create", "cla_gb_fit", "cla_gb_predict",
-  "cla_knn_create", "cla_knn_fit", "cla_knn_predict",
-  "cla_rf_create", "cla_rf_fit", "cla_rf_predict",
-  "fs", "fs_create",
-  "knn_create", "knn_fit", "knn_predict",
-  "mlp_create", "mlp_fit", "mlp_predict",
-  "nb_create", "nb_fit", "nb_predict",
-  "svc_create", "svc_fit", "svc_predict",
-  "ts_regsw", "sample_random"
+  "skcla_gb_create", "skcla_gb_fit", "skcla_gb_predict",
+  "skcla_knn_create", "skcla_knn_fit", "skcla_knn_predict",
+  "skcla_rf_create", "skcla_rf_fit", "skcla_rf_predict",
+  "skcla_knn_create", "skcla_knn_fit", "skcla_knn_predict",
+  "skcla_mlp_create", "skcla_mlp_fit", "skcla_mlp_predict",
+  "skcla_nb_create", "skcla_nb_fit", "skcla_nb_predict",
+  "skcla_svc_create", "skcla_svc_fit", "skcla_svc_predict"
 ))
+
+#"adjust_class_label", "adjust_data.frame", 
+#"ts_regsw", "sample_random"

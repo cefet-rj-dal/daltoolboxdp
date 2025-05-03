@@ -27,7 +27,7 @@ ts_knn <- function(preprocess = NA, n_neighbors = 5) {
 #'@export
 do_fit.ts_knn <- function(obj, x, y) {
   if (!exists("knn_create")) {
-    python_path <- system.file("python/sklearn/ts_knn.py", package = "daltoolboxdp")
+    python_path <- system.file("python/ts_knn.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
       stop("Python source file not found. Please check package installation.")
     }
@@ -49,7 +49,7 @@ do_fit.ts_knn <- function(obj, x, y) {
 #'@export
 do_predict.ts_knn <- function(obj, x) {
   if (!exists("knn_predict")) {
-    python_path <- system.file("python/sklearn/ts_knn.py", package = "daltoolboxdp")
+    python_path <- system.file("python/ts_knn.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
       stop("Python source file not found. Please check package installation.")
     }

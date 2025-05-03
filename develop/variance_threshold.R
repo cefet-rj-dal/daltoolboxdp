@@ -6,7 +6,7 @@
 #'@return A Python object
 #'@export
 create_variance_threshold_model <- function(threshold=0.2) {
-  reticulate::source_python("inst/python/sklearn/feature_select/variance_threshold.py")
+  reticulate::source_python("inst/python/feature_select/variance_threshold.py")
   model <- fs_create(threshold=threshold)
   return(model)
 }
@@ -19,7 +19,7 @@ create_variance_threshold_model <- function(threshold=0.2) {
 fit_transform <- function(model, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   if (!exists("fit_transform")) {
-    reticulate::source_python("inst/python/sklearn/feature_select/variance_threshold.py")
+    reticulate::source_python("inst/python/feature_select/variance_threshold.py")
   }
 
   # Convert df_train to a pandas DataFrame
