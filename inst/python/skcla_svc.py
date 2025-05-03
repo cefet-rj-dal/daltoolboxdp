@@ -30,7 +30,7 @@ def skcla_svc_train(model, df_train, target_column):
     df_train = pd.DataFrame(df_train)
 
     #print("Column types:")
-    print(df_train.dtypes)
+    #print(df_train.dtypes)
     #print("Data shape:", df_train.shape)
 
     X_train = df_train.drop(columns=[target_column])

@@ -36,8 +36,8 @@ def skcla_nb_predict(model, df_test):
     try:
         df_test = pd.DataFrame(df_test)
 
-        print(f"X_test shape: {df_test.shape}")
-        print(f"X_test data type: {df_test.dtypes}")
+        #print(f"X_test shape: {df_test.shape}")
+        #print(f"X_test data type: {df_test.dtypes}")
 
         if df_test.isnull().values.any():
             #print("Warning: NaN values detected in test data")
