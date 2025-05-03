@@ -23,8 +23,8 @@ def skcla_knn_fit(model, df_train, target_column):
         X_train = df_train.drop(columns=[target_column])
         y_train = df_train[target_column].values
 
-        print(f"X_train shape: {X_train.shape}")
-        print(f"y_train shape: {y_train.shape}")
+        #print(f"X_train shape: {X_train.shape}")
+        #print(f"y_train shape: {y_train.shape}")
 
         if np.isnan(X_train).values.any() or np.isnan(y_train).any():
             #print("Warning: NaN values detected in training data")
@@ -40,10 +40,17 @@ def skcla_knn_fit(model, df_train, target_column):
 def skcla_knn_predict(model, df_test):
     try:
         df_test = pd.DataFrame(df_test)
-        print(f"X_test shape: {df_test.shape}")
+        #print(f"X_test shape: {df_test.shape}")
 
         if df_test.isnull().values.any():
             #print("Warning: NaN values detected in test data")
             df_test = df_test.fillna(0)
 
-        predictions = model.predict(df
+        predictions = model.predict(df_test)
+        return predictions.tolist()
+    except TypeError as e:
+        print(f"TypeError in skcla_knn_predict: {e}")
+        return []
+    except Exception as e:
+        print(f"Error in skcla_knn_predict: {e}")
+        return []

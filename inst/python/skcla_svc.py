@@ -30,7 +30,7 @@ def skcla_svc_train(model, df_train, target_column):
     df_train = pd.DataFrame(df_train)
 
     #print("Column types:")
-    #print(df_train.dtypes)
+    print(df_train.dtypes)
     #print("Data shape:", df_train.shape)
 
     X_train = df_train.drop(columns=[target_column])
@@ -47,8 +47,11 @@ def skcla_svc_predict(model, df_test):
         predictions = model.predict(df_test)
         return predictions.tolist()
     except TypeError as e:
-        print(f"Error encountered: {e}")
+        print(f"Error occurred: {e}")
         return []
     except Exception as e:
-        print(f"Another error occurred: {e}")
-        return
+        print(f"Error occurred: {e}")
+        return []
+
+def skcla_svc_fit(model, df_train, target_column, slevels=None):
+    return skcla_svc_train(model, df_train, target_column)

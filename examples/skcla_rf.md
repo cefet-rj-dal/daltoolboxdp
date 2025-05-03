@@ -3,7 +3,7 @@
 
 ``` r
 # DALToolbox Data Preprocessing
-# version 1.0.777
+# version 1.1.717
 
 #loading DAL
 library(daltoolbox) 

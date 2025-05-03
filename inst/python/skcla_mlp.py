@@ -54,6 +54,6 @@ def skcla_mlp_predict(model, df_test):
         predictions = model.predict(df_test)
         return predictions.tolist()
     except TypeError as e:
-        print(f"Error encountered: {e}")
+        print(f"Error occurred: {e}")
     except Exception as e:
-        print(f"Another error occurred: {e}")
+        print(f"Error occurred: {e}")

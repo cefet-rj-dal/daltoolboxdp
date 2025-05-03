@@ -3,7 +3,7 @@
 
 ``` r
 # DALToolbox Data Preprocessing
-# version 1.0.777
+# version 1.1.717
 
 #loading DAL
 library(daltoolbox) 
@@ -43,17 +43,6 @@ model <- fit(model, iris_train_label)
 
 ```
 ## Target attribute: species_encoded
-```
-
-```
-## X_train shape: (120, 4)
-## y_train shape: (120,)
-## X_train data type: Sepal.Length    float64
-## Sepal.Width     float64
-## Petal.Length    float64
-## Petal.Width     float64
-## dtype: object
-## y_train data type: int32
 ```
 
 ``` r

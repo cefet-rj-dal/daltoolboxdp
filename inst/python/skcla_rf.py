@@ -47,9 +47,9 @@ def skcla_rf_predict(model, df_test):
         predictions = model.predict(df_test)  # mantém colunas nomeadas
         return predictions.tolist()  # para compatibilidade com R
     except TypeError as e:
-        print(f"Error encountered: {e}")
+        print(f"Error occurred: {e}")
     except Exception as e:
-        print(f"Another error occurred: {e}")
+        print(f"Error occurred: {e}")
 
 def skcla_rf_fit(model, df_train, target_column):
     return skcla_rf_train(model, df_train, target_column)

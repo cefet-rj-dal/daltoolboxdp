@@ -50,9 +50,9 @@ def skcla_gb_predict(model, df_test):
         predictions = model.predict(df_test)
         return predictions.tolist()
     except TypeError as e:
-        print(f"Error encountered: {e}")
+        print(f"Error occurred: {e}")
     except Exception as e:
-        print(f"Another error occurred: {e}")
+        print(f"Error occurred: {e}")
 
 def skcla_gb_fit(model, df_train, target_column, n_epochs=None, lr=None):
     return skcla_gb_train(model, df_train, target_column)

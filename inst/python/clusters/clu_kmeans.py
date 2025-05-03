@@ -27,7 +27,7 @@ def clu_kmeans_predict(model, df_test):
         predictions = model.predict(df_test.values)
         return predictions
     except TypeError as e:
-        print(f"Erro encontrado: {e}")
+        print(f"Error occurred: {e}")
     except Exception as e:
         print(f"Outro erro ocorreu: {e}")
 

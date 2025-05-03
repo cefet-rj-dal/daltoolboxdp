@@ -15,10 +15,10 @@ def skcla_nb_fit(model, df_train, target_column):
         X_train = df_train.drop(columns=[target_column])
         y_train = df_train[target_column].values
 
-        print(f"X_train shape: {X_train.shape}")
-        print(f"y_train shape: {y_train.shape}")
-        print(f"X_train data type: {X_train.dtypes}")
-        print(f"y_train data type: {y_train.dtype}")
+        #print(f"X_train shape: {X_train.shape}")
+        #print(f"y_train shape: {y_train.shape}")
+        #print(f"X_train data type: {X_train.dtypes}")
+        #print(f"y_train data type: {y_train.dtype}")
 
         # Check and replace NaNs
         if X_train.isnull().values.any() or pd.isnull(y_train).any():
