@@ -1,0 +1,102 @@
+## K-Nearest Neighbors Classifier
+
+
+
+``` r
+# DALToolbox Data Preprocessing
+# version 1.0.777
+
+#loading DAL
+library(daltoolbox) 
+library(daltoolboxdp)
+```
+
+### Example
+General function for exploring KNN classifier
+
+
+``` r
+iris <- datasets::iris
+```
+
+### KNN
+
+
+``` r
+slevels <- levels(iris$Species)
+
+set.seed(1)
+sr <- sample_random()
+sr <- train_test(sr, iris)
+iris_train <- sr$train
+iris_test <- sr$test
+
+iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
+iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
+
+model <- cla_knn("species_encoded", slevels, n_neighbors=1)
+```
+
+```
+## Error in cla_knn("species_encoded", slevels, n_neighbors = 1): unused argument (n_neighbors = 1)
+```
+
+``` r
+model <- fit(model, iris_train_label)
+```
+
+```
+## Error: object 'model' not found
+```
+
+``` r
+train_prediction <- predict(model, iris_train_label)
+```
+
+```
+## Error: object 'model' not found
+```
+
+``` r
+iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
+train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+
+```
+## Error: object 'model' not found
+```
+
+``` r
+print(train_eval$metrics)
+```
+
+```
+## Error: object 'train_eval' not found
+```
+
+``` r
+iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
+iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
+test_prediction <- predict(model, iris_test_label)
+```
+
+```
+## Error: object 'model' not found
+```
+
+``` r
+iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
+test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+```
+
+```
+## Error: object 'model' not found
+```
+
+``` r
+print(test_eval$metrics)
+```
+
+```
+## Error: object 'test_eval' not found
+```
