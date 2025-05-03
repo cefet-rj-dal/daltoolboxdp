@@ -1,8 +1,9 @@
 from sklearn.svm import SVC
 
 
-def svc_create(C=1.0, kernel='rbf', degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=0.001, 
-               cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', 
+def svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001, 
+               C=1.0, shrinking=True, probability=False, cache_size=200, 
+               class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', 
                break_ties=False, random_state=None):
     
     model = SVC(
@@ -42,5 +43,5 @@ def svc_predict(model, df_test):
     except Exception as e:
         print(f"Another error occurred: {e}")
 
-def svc_fit(model, df_train, target_column, n_epochs=None, lr=None):
+def svc_fit(model, df_train, target_column, slevels=None):
     return svc_train(model, df_train, target_column)
