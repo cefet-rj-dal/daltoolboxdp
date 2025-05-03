@@ -1,5 +1,5 @@
 from sklearn.svm import SVC
-
+import pandas as pd
 
 def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001, 
                C=1.0, shrinking=True, probability=False, cache_size=200, 
@@ -27,21 +27,28 @@ def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001
     return model
 
 def skcla_svc_train(model, df_train, target_column):
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.values.shape)
-    X_train = df_train.drop(target_column, axis=1).values
+    df_train = pd.DataFrame(df_train)
+
+    print("Column types:")
+    print(df_train.dtypes)
+    print("Data shape:", df_train.shape)
+
+    X_train = df_train.drop(columns=[target_column])
     y_train = df_train[target_column].values
+
     model.fit(X_train, y_train)
     return model
 
 def skcla_svc_predict(model, df_test):
     try:
-        predictions = model.predict(df_test.values)
-        return predictions
+        df_test = pd.DataFrame(df_test)
+        print("Prediction input shape:", df_test.shape)
+
+        predictions = model.predict(df_test)
+        return predictions.tolist()
     except TypeError as e:
         print(f"Error encountered: {e}")
+        return []
     except Exception as e:
         print(f"Another error occurred: {e}")
-
-def skcla_svc_fit(model, df_train, target_column, slevels=None):
-    return skcla_svc_train(model, df_train, target_column)
+        return

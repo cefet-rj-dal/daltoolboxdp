@@ -39,8 +39,7 @@ model <- fit(model, iris_train_label)
 ```
 
 ```
-## X_train shape: (120, 4)
-## y_train shape: (120,)
+## '(' was never closed (skcla_knn.py, line 49)
 ```
 
 ``` r
@@ -48,18 +47,24 @@ train_prediction <- predict(model, iris_train_label)
 ```
 
 ```
-## X_test shape: (120, 4)
+## '(' was never closed (skcla_knn.py, line 49)
 ```
 
 ``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+
+```
+## Error: object 'train_prediction' not found
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##   accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1        1 39 81  0  0         1      1           1           1  1
+## Error: object 'train_eval' not found
 ```
 
 ``` r
@@ -69,16 +74,22 @@ test_prediction <- predict(model, iris_test_label)
 ```
 
 ```
-## X_test shape: (30, 4)
+## '(' was never closed (skcla_knn.py, line 49)
 ```
 
 ``` r
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+```
+
+```
+## Error: object 'test_prediction' not found
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9333333 11 19  0  0         1      1           1           1  1
+## Error: object 'test_eval' not found
 ```

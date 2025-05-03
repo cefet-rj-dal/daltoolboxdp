@@ -11,7 +11,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring Naive Bayes classifier
+#General function for exploring Naive Bayes classifier
 
 
 ``` r
@@ -48,7 +48,11 @@ model <- fit(model, iris_train_label)
 ```
 ## X_train shape: (120, 4)
 ## y_train shape: (120,)
-## X_train data type: float64
+## X_train data type: Sepal.Length    float64
+## Sepal.Width     float64
+## Petal.Length    float64
+## Petal.Width     float64
+## dtype: object
 ## y_train data type: int32
 ```
 
@@ -62,7 +66,11 @@ train_prediction <- predict(model, iris_train_label)
 
 ```
 ## X_test shape: (120, 4)
-## X_test data type: float64
+## X_test data type: Sepal.Length    float64
+## Sepal.Width     float64
+## Petal.Length    float64
+## Petal.Width     float64
+## dtype: object
 ```
 
 ``` r
@@ -88,7 +96,11 @@ test_prediction <- predict(model, iris_test_label)
 
 ```
 ## X_test shape: (30, 4)
-## X_test data type: float64
+## X_test data type: Sepal.Length    float64
+## Sepal.Width     float64
+## Petal.Length    float64
+## Petal.Width     float64
+## dtype: object
 ```
 
 ``` r

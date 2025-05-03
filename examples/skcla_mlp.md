@@ -11,7 +11,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring MLP classifier
+#General function for exploring MLP classifier
 
 
 ``` r
@@ -33,7 +33,7 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-model <- skcla_mlp("species_encoded", slevels)
+model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 
@@ -58,6 +58,6 @@ print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 11 19  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1        1 11 19  0  0         1      1           1           1  1
 ```

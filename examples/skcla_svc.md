@@ -11,7 +11,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring SVM classifier
+#General function for exploring SVM classifier
 
 
 ``` r
@@ -38,39 +38,66 @@ model <- fit(model, iris_train_label)
 ```
 
 ```
-## Column types: Sepal.Length       float64
-## Sepal.Width        float64
-## Petal.Length       float64
-## Petal.Width        float64
-## species_encoded      int32
-## dtype: object
-## Data shape: (120, 5)
+## Error in skcla_svc_fit(obj$model, data, obj$attribute, obj$slevels): could not find function "skcla_svc_fit"
 ```
 
 ``` r
 train_prediction <- predict(model, iris_train_label)
+```
 
+```
+## Prediction input shape: (120, 4)
+## Another error occurred: 'NoneType' object has no attribute 'predict'
+```
+
+``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Warning in FUN(if (length(d.call) < 2L) newX[, 1] else array(newX[, 1L], : no non-missing arguments to max; returning -Inf
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9833333 39 81  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity  f1
+## 1        0  0  0  0  0       NaN    NaN         NaN         NaN NaN
 ```
 
 ``` r
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
+```
 
+```
+## Prediction input shape: (30, 4)
+## Another error occurred: 'NoneType' object has no attribute 'predict'
+```
+
+``` r
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9333333 11 19  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity  f1
+## 1        0  0  0  0  0       NaN    NaN         NaN         NaN NaN
 ```

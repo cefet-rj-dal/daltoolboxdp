@@ -1,5 +1,4 @@
-## K-Nearest Neighbors Classifier
-
+## Random Forest Classifier
 
 ###{r}
 # DALToolbox Data Preprocessing
@@ -11,13 +10,13 @@ library(daltoolboxdp)
 ###
 
 ### Example
-#General function for exploring KNN classifier
+#General function for exploring Random Forest classifier
 
 ###{r}
 iris <- datasets::iris
 ###
 
-### KNN
+### Random Forest
 
 ###{r}
 slevels <- levels(iris$Species)

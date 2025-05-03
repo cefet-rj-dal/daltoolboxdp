@@ -10,7 +10,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring Random Forest classifier
+#General function for exploring Random Forest classifier
 
 ```{r}
 iris <- datasets::iris

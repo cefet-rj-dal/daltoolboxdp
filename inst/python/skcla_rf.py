@@ -1,4 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
 
 def skcla_rf_create(n_estimators=100, criterion='gini', max_depth=None, min_samples_split=2,
                   min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt',
@@ -29,19 +30,22 @@ def skcla_rf_create(n_estimators=100, criterion='gini', max_depth=None, min_samp
     return model
 
 def skcla_rf_train(model, df_train, target_column):
+    df_train = pd.DataFrame(df_train)  # garante consistência com R
     print("Column types:", df_train.dtypes)
-    print("Shape of data:", df_train.values.shape)
-    X_train = df_train.drop(target_column, axis=1).values  # Features
-    y_train = df_train[target_column].values  # Target variable
+    print("Shape of data:", df_train.shape)
+
+    X_train = df_train.drop(columns=[target_column])  # preserva nomes das colunas
+    y_train = df_train[target_column].values
 
     model.fit(X_train, y_train)
     return model
 
 def skcla_rf_predict(model, df_test):
     try:
-        print(df_test.values)
-        predictions = model.predict(df_test)
-        return predictions
+        df_test = pd.DataFrame(df_test)  # garante estrutura consistente
+        print(df_test)
+        predictions = model.predict(df_test)  # mantém colunas nomeadas
+        return predictions.tolist()  # para compatibilidade com R
     except TypeError as e:
         print(f"Error encountered: {e}")
     except Exception as e:

@@ -1,11 +1,11 @@
 from sklearn.neural_network import MLPClassifier
+import pandas as pd
 
 def skcla_mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size='auto',
                learning_rate='constant', learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True, 
                random_state=None, tol=1e-4, verbose=False, warm_start=False, momentum=0.9, 
                nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, 
                beta_1=0.9, beta_2=0.999, epsilon=1e-8, n_iter_no_change=10, max_fun=15000):
-    
 
     if activation is None:
         activation = 'relu'  
@@ -41,15 +41,18 @@ def skcla_mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam'
     return model
 
 def skcla_mlp_fit(model, df_train, target_column):
-    X_train = df_train.drop(target_column, axis=1).values
+    df_train = pd.DataFrame(df_train)
+    X_train = df_train.drop(columns=[target_column])
     y_train = df_train[target_column].values
+
     model.fit(X_train, y_train)
     return model
 
 def skcla_mlp_predict(model, df_test):
     try:
-        predictions = model.predict(df_test.values)
-        return predictions
+        df_test = pd.DataFrame(df_test)
+        predictions = model.predict(df_test)
+        return predictions.tolist()
     except TypeError as e:
         print(f"Error encountered: {e}")
     except Exception as e:

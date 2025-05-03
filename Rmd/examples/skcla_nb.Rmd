@@ -10,7 +10,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring Naive Bayes classifier
+#General function for exploring Naive Bayes classifier
 
 ```{r}
 iris <- datasets::iris

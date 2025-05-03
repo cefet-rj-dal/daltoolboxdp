@@ -10,7 +10,7 @@ library(daltoolboxdp)
 ```
 
 ### Example
-General function for exploring SVM classifier
+#General function for exploring SVM classifier
 
 ```{r}
 iris <- datasets::iris
