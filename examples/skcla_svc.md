@@ -46,7 +46,6 @@ train_prediction <- predict(model, iris_train_label)
 ```
 
 ```
-## Prediction input shape: (120, 4)
 ## Another error occurred: 'NoneType' object has no attribute 'predict'
 ```
 
@@ -79,7 +78,6 @@ test_prediction <- predict(model, iris_test_label)
 ```
 
 ```
-## Prediction input shape: (30, 4)
 ## Another error occurred: 'NoneType' object has no attribute 'predict'
 ```
 
