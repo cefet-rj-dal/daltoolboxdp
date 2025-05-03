@@ -9,8 +9,8 @@ def fs_create(n_features_to_select=0.5, lg_max_iter=1000):
     return sf_method
 
 def fit(select_method, df_train, target_column):
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.shape)  # Use .shape instead of values.shape
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.shape)  # Use .shape instead of values.shape
     X_train = df_train.drop(columns=[target_column]).values
     y_train = df_train[target_column].values
     select_method.fit(X_train, y_train)
@@ -28,7 +28,7 @@ def fit_transform(select_method, df_train, target_column):
     selected_features = df_train.drop(columns=[target_column]).columns[select_method.get_support()]
     X_train_selected_df = pd.DataFrame(X_train_selected, columns=selected_features)
 
-    print("Final returned object type:", type(X_train_selected_df))
+    #print("Final returned object type:", type(X_train_selected_df))
 
     return X_train_selected_df  # This is now a Pandas DataFrame
 

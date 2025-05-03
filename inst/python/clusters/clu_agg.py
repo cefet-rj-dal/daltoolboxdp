@@ -14,8 +14,8 @@ def clu_agg_create(n_clusters=2, *, metric='euclidean', memory=None, connectivit
     return model
 
 def clu_agg_train(model, df_train):
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.values.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.values.shape)
     X_train = df_train.values
     model.fit(X_train)
     return model

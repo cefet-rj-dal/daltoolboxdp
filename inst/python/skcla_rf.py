@@ -31,8 +31,8 @@ def skcla_rf_create(n_estimators=100, criterion='gini', max_depth=None, min_samp
 
 def skcla_rf_train(model, df_train, target_column):
     df_train = pd.DataFrame(df_train)  # garante consistência com R
-    print("Column types:", df_train.dtypes)
-    print("Shape of data:", df_train.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Shape of data:", df_train.shape)
 
     X_train = df_train.drop(columns=[target_column])  # preserva nomes das colunas
     y_train = df_train[target_column].values
@@ -43,7 +43,7 @@ def skcla_rf_train(model, df_train, target_column):
 def skcla_rf_predict(model, df_test):
     try:
         df_test = pd.DataFrame(df_test)  # garante estrutura consistente
-        print(df_test)
+        #print(df_test)
         predictions = model.predict(df_test)  # mantém colunas nomeadas
         return predictions.tolist()  # para compatibilidade com R
     except TypeError as e:

@@ -29,9 +29,9 @@ def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001
 def skcla_svc_train(model, df_train, target_column):
     df_train = pd.DataFrame(df_train)
 
-    print("Column types:")
-    print(df_train.dtypes)
-    print("Data shape:", df_train.shape)
+    #print("Column types:")
+    #print(df_train.dtypes)
+    #print("Data shape:", df_train.shape)
 
     X_train = df_train.drop(columns=[target_column])
     y_train = df_train[target_column].values
@@ -42,7 +42,7 @@ def skcla_svc_train(model, df_train, target_column):
 def skcla_svc_predict(model, df_test):
     try:
         df_test = pd.DataFrame(df_test)
-        print("Prediction input shape:", df_test.shape)
+        #print("Prediction input shape:", df_test.shape)
 
         predictions = model.predict(df_test)
         return predictions.tolist()

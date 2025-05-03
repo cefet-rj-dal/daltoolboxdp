@@ -10,8 +10,8 @@ def clu_birch_create(*, threshold=0.5, branching_factor=50, n_clusters=3, comput
     )
 
 def clu_birch_train(model, df_train, target_column):
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.values.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.values.shape)
     X_train = df_train.drop(target_column, axis=1).values
     y_train = df_train[target_column].values
     model.fit(X_train, y_train)
@@ -30,8 +30,8 @@ def clu_birch_fit_predict(model, df_train):
     """
     Fit the Bisecting KMeans model and predict cluster labels for the training data.
     """
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.values.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.values.shape)
     X_train = df_train.values
     predictions = model.fit_predict(X_train)
     return model, predictions

@@ -14,8 +14,8 @@ def clu_dbscan_create(eps=0.5, *, min_samples=5, metric='euclidean', metric_para
     return model
 
 def clu_dbscan_train(model, df_train, target_column):
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.values.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.values.shape)
     X_train = df_train.drop(target_column, axis=1).values
     y_train = df_train[target_column].values
     model.fit(X_train, y_train)

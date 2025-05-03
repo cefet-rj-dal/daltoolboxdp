@@ -34,8 +34,8 @@ def skcla_gb_create(loss='log_loss', learning_rate=0.1, n_estimators=100, subsam
 
 def skcla_gb_train(model, df_train, target_column):
     df_train = pd.DataFrame(df_train)
-    print("Column types:", df_train.dtypes)
-    print("Data shape:", df_train.shape)
+    #print("Column types:", df_train.dtypes)
+    #print("Data shape:", df_train.shape)
 
     X_train = df_train.drop(columns=[target_column])
     y_train = df_train[target_column].values
@@ -46,7 +46,7 @@ def skcla_gb_train(model, df_train, target_column):
 def skcla_gb_predict(model, df_test):
     try:
         df_test = pd.DataFrame(df_test)
-        print(df_test)
+        #print(df_test)
         predictions = model.predict(df_test)
         return predictions.tolist()
     except TypeError as e:

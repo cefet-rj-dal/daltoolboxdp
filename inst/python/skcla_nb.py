@@ -22,7 +22,7 @@ def skcla_nb_fit(model, df_train, target_column):
 
         # Check and replace NaNs
         if X_train.isnull().values.any() or pd.isnull(y_train).any():
-            print("Warning: NaN values detected in training data")
+            #print("Warning: NaN values detected in training data")
             X_train = X_train.fillna(0)
             y_train = np.nan_to_num(y_train)
 
@@ -40,7 +40,7 @@ def skcla_nb_predict(model, df_test):
         print(f"X_test data type: {df_test.dtypes}")
 
         if df_test.isnull().values.any():
-            print("Warning: NaN values detected in test data")
+            #print("Warning: NaN values detected in test data")
             df_test = df_test.fillna(0)
 
         predictions = model.predict(df_test)
