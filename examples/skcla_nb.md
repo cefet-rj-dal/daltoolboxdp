@@ -53,15 +53,6 @@ train_prediction <- predict(model, iris_train_label)
 ## Predicting with data dimensions: 120 x 4
 ```
 
-```
-## X_test shape: (120, 4)
-## X_test data type: Sepal.Length    float64
-## Sepal.Width     float64
-## Petal.Length    float64
-## Petal.Width     float64
-## dtype: object
-```
-
 ``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
@@ -81,15 +72,6 @@ test_prediction <- predict(model, iris_test_label)
 
 ```
 ## Predicting with data dimensions: 30 x 4
-```
-
-```
-## X_test shape: (30, 4)
-## X_test data type: Sepal.Length    float64
-## Sepal.Width     float64
-## Petal.Length    float64
-## Petal.Width     float64
-## dtype: object
 ```
 
 ``` r

@@ -35,18 +35,6 @@ iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 model <- skcla_svc("species_encoded", slevels)
 model <- fit(model, iris_train_label)
-```
-
-```
-## Sepal.Length       float64
-## Sepal.Width        float64
-## Petal.Length       float64
-## Petal.Width        float64
-## species_encoded      int32
-## dtype: object
-```
-
-``` r
 train_prediction <- predict(model, iris_train_label)
 
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
