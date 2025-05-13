@@ -11,10 +11,11 @@
 #'@return a `autoenc_stacked_e_decode` object.
 #'#See an example of using `autoenc_stacked_e_decode` at this
 #'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
+#'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export
 autoenc_stacked_e <- function(input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, k=3) {
-  obj <- dal_transform()
+  obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
   obj$batch_size <- batch_size

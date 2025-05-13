@@ -10,10 +10,11 @@
 #'@examples
 #'#See an example of using `autoenc_lstm_e` at this
 #'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_lstm_e.md
+#'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export
 autoenc_lstm_e <- function(input_size, encoding_size, batch_size = 32, num_epochs = 50, learning_rate = 0.001) {
-  obj <- dal_transform()
+  obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
   obj$batch_size <- batch_size

@@ -9,10 +9,11 @@
 #'@return a `autoenc_adv_e` object.
 #'#See an example of using `autoenc_adv_e` at this
 #'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
+#'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export
 autoenc_adv_e <- function(input_size, encoding_size, batch_size = 350, num_epochs = 1000, learning_rate = 0.001) {
-  obj <- dal_transform()
+  obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
   obj$batch_size <- batch_size
