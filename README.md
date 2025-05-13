@@ -55,7 +55,10 @@ devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies
 
 Example scripts are available at:
 
-- [daltoolboxdp/examples](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples)
+- [Examples](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples)
+- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/autoencoder)
+- [Time
+  Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/timeseries)
 
 ``` r
 library(daltoolboxdp)
