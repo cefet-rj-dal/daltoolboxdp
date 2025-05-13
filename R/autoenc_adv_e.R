@@ -26,7 +26,7 @@ autoenc_adv_e <- function(input_size, encoding_size, batch_size = 350, num_epoch
 #'@exportS3Method fit autoenc_adv_e
 fit.autoenc_adv_e <- function(obj, data, ...) {
   if (!exists("autoenc_adv_create"))
-    reticulate::source_python(system.file("python", "autoenc_adv.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_adv.py", package = "daltoolboxdp"))
 
   if (is.null(obj$model))
     obj$model <- autoenc_adv_create(obj$input_size, obj$encoding_size)
@@ -43,7 +43,7 @@ fit.autoenc_adv_e <- function(obj, data, ...) {
 #'@exportS3Method transform autoenc_adv_e
 transform.autoenc_adv_e <- function(obj, data, ...) {
   if (!exists("autoenc_adv_create"))
-    reticulate::source_python(system.file("python", "autoenc_adv.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_adv.py", package = "daltoolboxdp"))
 
   result <- NULL
 

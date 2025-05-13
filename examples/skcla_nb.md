@@ -35,25 +35,8 @@ iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 model <- skcla_nb("species_encoded", slevels)
 model <- fit(model, iris_train_label)
-```
-
-```
-## Fitting model with data dimensions: 120 x 5
-```
-
-```
-## Target attribute: species_encoded
-```
-
-``` r
 train_prediction <- predict(model, iris_train_label)
-```
 
-```
-## Predicting with data dimensions: 120 x 4
-```
-
-``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
@@ -68,13 +51,7 @@ print(train_eval$metrics)
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
-```
 
-```
-## Predicting with data dimensions: 30 x 4
-```
-
-``` r
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
 print(test_eval$metrics)

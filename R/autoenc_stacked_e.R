@@ -29,7 +29,7 @@ autoenc_stacked_e <- function(input_size, encoding_size, batch_size = 32, num_ep
 #'@exportS3Method fit autoenc_stacked_e
 fit.autoenc_stacked_e <- function(obj, data, ...) {
   if (!exists("autoenc_stacked_create"))
-    reticulate::source_python(system.file("python", "autoenc_stacked.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_stacked.py", package = "daltoolboxdp"))
 
   if (is.null(obj$model))
     obj$model <- autoenc_stacked_create(obj$input_size, obj$encoding_size, obj$k)
@@ -46,7 +46,7 @@ fit.autoenc_stacked_e <- function(obj, data, ...) {
 #'@exportS3Method transform autoenc_stacked_e
 transform.autoenc_stacked_e <- function(obj, data, ...) {
   if (!exists("autoenc_stacked_create"))
-    reticulate::source_python(system.file("python", "autoenc_stacked.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_stacked.py", package = "daltoolboxdp"))
 
   result <- NULL
   if (!is.null(obj$model)) {

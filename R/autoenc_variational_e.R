@@ -27,7 +27,7 @@ autoenc_variational_e <- function(input_size, encoding_size, batch_size = 32, nu
 #'@exportS3Method fit autoenc_variational_e
 fit.autoenc_variational_e <- function(obj, data, ...) {
   if (!exists("vae_create"))
-    reticulate::source_python(system.file("python", "autoenc_variational.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_variational.py", package = "daltoolboxdp"))
 
   if (is.null(obj$model))
     obj$model <- autoenc_variational_create(obj$input_size, obj$encoding_size)
@@ -45,7 +45,7 @@ fit.autoenc_variational_e <- function(obj, data, ...) {
 #'@exportS3Method transform autoenc_variational_e
 transform.autoenc_variational_e <- function(obj, data, ...) {
   if (!exists("autoenc_variational_create"))
-    reticulate::source_python(system.file("python", "autoenc_variational.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_variational.py", package = "daltoolboxdp"))
 
   result <- NULL
   if (!is.null(obj$model)) {

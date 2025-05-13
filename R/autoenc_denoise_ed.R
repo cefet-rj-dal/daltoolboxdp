@@ -29,7 +29,7 @@ autoenc_denoise_ed <- function(input_size, encoding_size, batch_size = 32, num_e
 #'@exportS3Method fit autoenc_denoise_ed
 fit.autoenc_denoise_ed <- function(obj, data, ...) {
   if (!exists("autoenc_denoise_create"))
-    reticulate::source_python(system.file("python", "autoenc_denoise.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_denoise.py", package = "daltoolboxdp"))
 
   if (is.null(obj$model))
     obj$model <- autoenc_denoise_create(obj$input_size, obj$encoding_size, obj$noise_factor)
@@ -47,7 +47,7 @@ fit.autoenc_denoise_ed <- function(obj, data, ...) {
 #'@exportS3Method transform autoenc_denoise_ed
 transform.autoenc_denoise_ed <- function(obj, data, ...) {
   if (!exists("autoenc_denoise_create"))
-    reticulate::source_python(system.file("python", "autoenc_denoise.py", package = "daltoolbox"))
+    reticulate::source_python(system.file("python", "autoenc_denoise.py", package = "daltoolboxdp"))
 
   result <- NULL
   if (!is.null(obj$model)) {

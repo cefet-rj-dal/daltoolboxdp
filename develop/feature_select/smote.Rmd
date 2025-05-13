@@ -6,6 +6,7 @@
 
 #loading DAL
 library(daltoolbox) 
+library(tspredit)
 library(daltoolboxdp)
 ```
 

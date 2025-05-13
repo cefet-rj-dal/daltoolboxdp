@@ -12,6 +12,8 @@ The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that 
 
 #loading DAL
 library(daltoolbox)
+library(tspredit)
+library(daltoolboxdp)
 library(ggplot2)
 ```
 

@@ -8,6 +8,7 @@
 
 #loading DAL
 library(daltoolbox)
+library(tspredit)
 ```
 
 ### Series for studying
