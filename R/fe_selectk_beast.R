@@ -1,13 +1,9 @@
-#'@title Feature Selection Using SelectKBest
-#'@description This module applies feature selection using SelectKBest with a specified score function.
-#'@param k Number of top features to select
-#'@return A Python SelectKBest object
-#'@importFrom reticulate source_python r_to_py py_to_r
-
-#' Create a SelectKBest feature selection model
-#'@param k The number of top features to select
-#'@return A Python SelectKBest object
-#'@export
+#' @title Feature Selection Using SelectKBest
+#' @description Applies feature selection using SelectKBest from scikit-learn.
+#' @param k Number of top features to select
+#' @return A Python SelectKBest object
+#' @importFrom reticulate source_python r_to_py py_to_r
+#' @export
 create_fs_model <- function(k=10) {
   python_path <- system.file("python/sklearn/feature_select/selectk_beast.py", package="daltoolboxdp")
   reticulate::source_python(python_path)

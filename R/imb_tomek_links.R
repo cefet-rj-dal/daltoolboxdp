@@ -1,12 +1,9 @@
-#'@title Imbalanced Data Handling with Tomek Links and RandomForest
-#'@description This module applies Tomek Links under-sampling.
-#'@importFrom reticulate source_python
-
-
-#' Create model for under-sampling
-#'@param random_state Seed for the undersampler (if supported)
-#'@return A Python TomekLinks object
-#'@export
+#' @title Imbalanced Data Handling with Tomek Links
+#' @description This module applies Tomek Links under-sampling followed by RandomForest.
+#' @param random_state Seed for the undersampler (if supported)
+#' @return A Python TomekLinks object
+#' @importFrom reticulate source_python
+#' @export
 create_tomek_model <- function(random_state=NULL) {
   python_path <- system.file("python/imbalanced/tomek_links.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
@@ -14,13 +11,13 @@ create_tomek_model <- function(random_state=NULL) {
   return(tomek)
 }
 
-
-#' Fit and resample the dataset using under-sampling
-#'@param select_method A TomekLinks model (Python object)
-#'@param df_train Data frame to resample
-#'@param target_column The target column name
-#'@return A list (X_resampled, y_resampled)
-#'@export
+#' @describeIn create_tomek_model Fit and resample the dataset using under-sampling
+#' @param select_method A TomekLinks model (Python object)
+#' @param df_train Data frame to resample
+#' @param target_column The target column name as string
+#' @return A list (X_resampled, y_resampled)
+#' @rdname create_tomek_model
+#' @export
 fit_resample_tomek <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   X_train <- df_train[, !(names(df_train) %in% target_column), drop = FALSE]
