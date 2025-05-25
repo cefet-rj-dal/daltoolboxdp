@@ -4,7 +4,7 @@
 #' @return A Python SMOTETomek object
 #' @importFrom reticulate source_python r_to_py
 #' @export
-create_smotetomek_model <- function(random_state=42) {
+create_imb_smotetomek_model <- function(random_state=42) {
   # source the python implementation from the installed package
   python_path <- system.file("python/imbalanced/smote_tomek.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
@@ -12,14 +12,14 @@ create_smotetomek_model <- function(random_state=42) {
   return(stomek)
 }
 
-#' @rdname create_smotetomek_model
+#' @rdname create_imb_smotetomek_model
 #' @param select_method A SMOTETomek model (Python object)
 #' @param df_train Data frame to resample
 #' @param target_column The target column name as string
 #' @return List containing resampled X_train and y_train
 #' @importFrom reticulate py_to_r
 #' @export
-fit_resample_smotetomek <- function(select_method, df_train, target_column) {
+fit_imb_resample_smotetomek <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   df_train_py <- reticulate::r_to_py(df_train)
   X_train <- df_train_py$drop(target_column, axis=1)$values

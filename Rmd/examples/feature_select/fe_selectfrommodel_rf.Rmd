@@ -1,0 +1,12 @@
+# Feature Selection: SelectFromModel (RandomForest)
+
+```{r}
+library(daltoolbox)
+library(daltoolboxdp)
+
+rf    <- create_fe_rf_model(df, "Class", n_estimators = 50)
+sf    <- create_fe_selectfrommodel_rf(rf, threshold = "mean", prefit = TRUE)
+X_sel <- fit_transform_fe_selectfrommodel_rf(sf, df, "Class")
+
+dim(X_sel)
+```

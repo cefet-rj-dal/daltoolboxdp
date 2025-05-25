@@ -1,0 +1,11 @@
+# Feature Selection: Recursive Feature Elimination
+
+```{r}
+library(daltoolbox)
+library(daltoolboxdp)
+
+model <- create_fe_rfe_model(n_features_to_select = 0.5, lg_max_iter = 1000)
+X_sel <- fit_transform_fe_rfe(model, df, "Class")
+
+dim(X_sel)
+```

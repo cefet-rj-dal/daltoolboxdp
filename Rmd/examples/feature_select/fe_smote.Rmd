@@ -1,0 +1,12 @@
+# Feature Selection with SMOTE
+
+```{r}
+library(daltoolbox)
+library(daltoolboxdp)
+
+model <- create_fe_smote_model(random_state = 42)
+res   <- fit_transform_fe_smote(model, df, "Class")
+
+X_res <- res[[1]]
+y_res <- res[[2]]
+```

@@ -4,20 +4,20 @@
 #' @return A Python Smote object
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
-create_smote_model <- function(random_state=42) {
+create_fe_smote_model <- function(random_state=42) {
   python_path <- system.file("python/sklearn/feature_select/smote.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   sf_method <- inbalanced_create_model(random_state=random_state)
   return(sf_method)
 }
 
-#' @describeIn create_smote_model Fit and transform the dataset using Smote
+#' @describeIn create_fe_smote_model Fit and transform using SMOTE
 #' @param select_method The Smote model (Python object)
 #' @param df_train Data frame to transform
 #' @param target_column The target column name as string (not used for fitting)
 #' @return A list of resampled (X_res, y_res)
 #' @export
-fit_transform_fs <- function(select_method, df_train, target_column) {
+fit_transform_fe_smote <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   python_path <- system.file("python/sklearn/feature_select/smote.py", package="daltoolboxdp")
   reticulate::source_python(python_path)

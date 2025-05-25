@@ -4,20 +4,20 @@
 #' @return A Python TomekLinks object
 #' @importFrom reticulate source_python
 #' @export
-create_tomek_model <- function(random_state=NULL) {
+create_imb_tomek_model <- function(random_state=NULL) {
   python_path <- system.file("python/imbalanced/tomek_links.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   tomek <- inbalanced_create_model(random_state=random_state)
   return(tomek)
 }
 
-#' @rdname create_tomek_model
+#' @rdname create_imb_tomek_model
 #' @param select_method A TomekLinks model (Python object)
 #' @param df_train Data frame to resample
 #' @param target_column The target column name as string
 #' @return A list (X_resampled, y_resampled)
 #' @export
-fit_resample_tomek <- function(select_method, df_train, target_column) {
+fit_imb_resample_tomek <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   X_train <- df_train[, !(names(df_train) %in% target_column), drop = FALSE]
   y_train <- df_train[[target_column]]

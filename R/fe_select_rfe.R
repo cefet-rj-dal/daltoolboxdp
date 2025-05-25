@@ -5,20 +5,20 @@
 #' @return A Python RFE object
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
-create_rfe_model <- function(n_features_to_select=0.5, lg_max_iter=1000) {
+create_fe_rfe_model <- function(n_features_to_select=0.5, lg_max_iter=1000) {
   python_path <- system.file("python/sklearn/feature_select/rfe.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   rfe_model <- fs_create(n_features_to_select=n_features_to_select, lg_max_iter=lg_max_iter)
   return(rfe_model)
 }
 
-#' @describeIn create_rfe_model Fit and transform the dataset using RFE
+#' @describeIn create_fe_rfe_model Fit and transform using RFE
 #' @param select_method The RFE model (Python object)
 #' @param df_train Data frame to transform
 #' @param target_column The target column name as string
 #' @return Transformed X_train with selected features
 #' @export
-fit_transform_rfe <- function(select_method, df_train, target_column) {
+fit_transform_fe_rfe <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   python_path <- system.file("python/sklearn/feature_select/rfe.py", package="daltoolboxdp")
   reticulate::source_python(python_path)

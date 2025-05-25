@@ -6,7 +6,7 @@
 #' @return A Python SequentialFeatureSelector object
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
-create_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_features_to_select=2) {
+create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_features_to_select=2) {
   python_path <- system.file("python/sklearn/feature_select/sequential_fe_select.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
 
@@ -14,13 +14,14 @@ create_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_fea
   return(sf_method)
 }
 
-#' @describeIn create_sequential_fs_model Fit and transform the dataset using SequentialFeatureSelector
+#' @rdname create_fe_sequential_fs_model
+#' @describeIn create_fe_sequential_fs_model Fit and transform the dataset using SequentialFeatureSelector
 #' @param select_method The SequentialFeatureSelector model (Python object)
 #' @param df_train Data frame to transform
 #' @param target_column The target column name as string
 #' @return Transformed X_train with selected features
 #' @export
-fit_transform_fs <- function(select_method, df_train, target_column) {
+fit_transform_fe_sequential_fs <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   python_path <- system.file("python/sklearn/feature_select/sequential_fe_select.py", package="daltoolboxdp")
   reticulate::source_python(python_path)

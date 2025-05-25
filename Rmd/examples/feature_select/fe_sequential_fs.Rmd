@@ -1,0 +1,15 @@
+# Feature Selection: SequentialFeatureSelector
+
+```{r}
+library(daltoolbox)
+library(daltoolboxdp)
+
+model <- create_fe_sequential_fs_model(
+  n_neighbors = 3,
+  direction    = "forward",
+  n_features_to_select = 2
+)
+X_sel <- fit_transform_fe_sequential_fs(model, df, "Class")
+
+dim(X_sel)
+```
