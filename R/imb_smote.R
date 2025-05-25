@@ -3,6 +3,7 @@
 #' @param random_state Seed for the SMOTE RNG
 #' @return A Python SMOTE object
 #' @importFrom reticulate source_python r_to_py py_to_r
+#' @rdname create_smote_model
 #' @export
 create_smote_model <- function(random_state=42) {
   python_path <- system.file("python/imbalanced/smote.py", package="daltoolboxdp")
@@ -11,12 +12,11 @@ create_smote_model <- function(random_state=42) {
   return(smote)
 }
 
-#' @describeIn create_smote_model Fit and resample the dataset using SMOTE
+#' @rdname create_smote_model
 #' @param select_method A SMOTE model (Python object)
 #' @param df_train Data frame to resample
 #' @param target_column The target column name as string
 #' @return A list (X_resampled, y_resampled)
-#' @rdname create_smote_model
 #' @export
 fit_resample_smote <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
