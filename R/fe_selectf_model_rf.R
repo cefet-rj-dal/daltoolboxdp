@@ -1,6 +1,5 @@
 #'@title Feature Selection Using SelectFromModel and RandomForest
 #'@description This module applies feature selection using SelectFromModel with a RandomForestClassifier estimator.
-#'@import reticulate
 #'@importFrom reticulate source_python r_to_py py_to_r
 #'@return A fitted Python RandomForest model
 #'@export
@@ -14,7 +13,7 @@ create_fit_rf_model <- function(df_train, target_column, n_estimators=100, rando
   return(rf_model)
 }
 
-#' Create a feature selection model using SelectFromModel
+#' @describeIn create_fit_rf_model Create a feature selection model using SelectFromModel
 #'@param model A Python Logistic Regression model
 #'@param threshold The threshold for feature selection
 #'@param prefit Boolean indicating if the model should be considered prefit
@@ -27,7 +26,7 @@ create_fs_model <- function(model, threshold="mean", prefit=TRUE) {
   return(sf_method)
 }
 
-#' Fit and transform the dataset using the feature selection model
+#' @describeIn create_fit_rf_model Fit and transform the dataset using the feature selection model
 #'@param select_method The feature selection model (Python object)
 #'@param df_train Data frame to transform
 #'@param target_column The target column name as string

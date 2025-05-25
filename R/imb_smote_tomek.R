@@ -12,11 +12,12 @@ create_smotetomek_model <- function(random_state=42) {
   return(stomek)
 }
 
-#' @describeIn create_smotetomek_model Fit and resample the dataset using SMOTETomek
+#' @rdname create_smotetomek_model
 #' @param select_method A SMOTETomek model (Python object)
 #' @param df_train Data frame to resample
 #' @param target_column The target column name as string
 #' @return List containing resampled X_train and y_train
+#' @importFrom reticulate py_to_r
 #' @export
 fit_resample_smotetomek <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
