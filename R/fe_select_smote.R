@@ -1,11 +1,9 @@
-#'@title Feature Selection Using Smote
-#'@description This module applies feature selection based on variance using Smote.
-#'@importFrom reticulate source_python r_to_py py_to_r
-
-#' Create a Smote model
-#'@param random_state
-#'@return A Python Smote object
-#'@export
+#' @title Feature Selection Using Smote
+#' @description This module applies feature selection based on variance using Smote.
+#' @param random_state Seed for the SMOTE model
+#' @return A Python Smote object
+#' @importFrom reticulate source_python r_to_py py_to_r
+#' @export
 create_smote_model <- function(random_state=42) {
   python_path <- system.file("python/sklearn/feature_select/smote.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
@@ -13,12 +11,12 @@ create_smote_model <- function(random_state=42) {
   return(sf_method)
 }
 
-#' Fit and transform the dataset using Smote
-#'@param select_method The Smote model (Python object)
-#'@param df_train Data frame to transform
-#'@param target_column The target column name as string (not used for fitting)
-#'@return Transformed X_train with features above the variance threshold
-#'@export
+#' @describeIn create_smote_model Fit and transform the dataset using Smote
+#' @param select_method The Smote model (Python object)
+#' @param df_train Data frame to transform
+#' @param target_column The target column name as string (not used for fitting)
+#' @return A list of resampled (X_res, y_res)
+#' @export
 fit_transform_fs <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   python_path <- system.file("python/sklearn/feature_select/smote.py", package="daltoolboxdp")
