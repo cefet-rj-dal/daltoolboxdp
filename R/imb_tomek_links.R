@@ -11,12 +11,11 @@ create_tomek_model <- function(random_state=NULL) {
   return(tomek)
 }
 
-#' @describeIn create_tomek_model Fit and resample the dataset using under-sampling
+#' @rdname create_tomek_model
 #' @param select_method A TomekLinks model (Python object)
 #' @param df_train Data frame to resample
 #' @param target_column The target column name as string
 #' @return A list (X_resampled, y_resampled)
-#' @rdname create_tomek_model
 #' @export
 fit_resample_tomek <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
