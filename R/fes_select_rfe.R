@@ -6,7 +6,7 @@
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
 create_fe_rfe_model <- function(n_features_to_select=0.5, lg_max_iter=1000) {
-  python_path <- system.file("python/sklearn/feature_select/rfe.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/rfe.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   rfe_model <- fs_create(n_features_to_select=n_features_to_select, lg_max_iter=lg_max_iter)
   return(rfe_model)
@@ -20,7 +20,7 @@ create_fe_rfe_model <- function(n_features_to_select=0.5, lg_max_iter=1000) {
 #' @export
 fit_transform_fe_rfe <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
-  python_path <- system.file("python/sklearn/feature_select/rfe.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/rfe.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   df_train_py <- reticulate::r_to_py(df_train)
   X_py <- fit_transform(select_method, df_train_py, target_column)

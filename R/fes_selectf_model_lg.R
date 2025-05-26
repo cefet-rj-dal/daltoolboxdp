@@ -9,7 +9,7 @@
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
 create_fe_lg_model <- function(df_train, target_column, C=0.1, penalty='l1', solver='liblinear') {
-  python_path <- system.file("python/sklearn/feature_select/selectf_model_lg.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/selectf_model_lg.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   df_py <- reticulate::r_to_py(df_train)
   X <- df_py$drop(target_column, axis=1)$values
@@ -25,7 +25,7 @@ create_fe_lg_model <- function(df_train, target_column, C=0.1, penalty='l1', sol
 #' @return A Python SelectFromModel object
 #' @export
 create_fe_selectfrommodel_lg <- function(model, threshold="mean", prefit=TRUE) {
-  python_path <- system.file("python/sklearn/feature_select/selectf_model_lg.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/selectf_model_lg.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   sf_method <- fs_create(model, threshold=threshold, prefit=prefit)
   return(sf_method)

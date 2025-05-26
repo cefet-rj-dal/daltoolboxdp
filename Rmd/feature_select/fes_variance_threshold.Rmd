@@ -1,12 +1,17 @@
 # Feature Selection: VarianceThreshold
-
 ```{r}
 library(daltoolbox)
 library(daltoolboxdp)
+```
+
+```{r}
+iris <- datasets::iris
+```
+```{r}
 
 # assume `df` is your training data frame
 model <- create_fe_variance_threshold_model(threshold = 0.1)
-X_sel <- fit_transform_fe_variance_threshold(model, df, NULL)
+X_sel <- fit_transform_fe_variance_threshold(model, iris, "Species")
 
 dim(X_sel)
 ```

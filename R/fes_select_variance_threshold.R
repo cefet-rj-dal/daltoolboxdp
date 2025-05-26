@@ -6,7 +6,7 @@
 #' @export
 create_fe_variance_threshold_model <- function(threshold=0.2) {
   python_path <- system.file(
-    "python/sklearn/feature_select/variance_threshold.py",
+    "python/feature_select/variance_threshold.py",
     package = "daltoolboxdp"
   )
   reticulate::source_python(python_path)
@@ -23,7 +23,7 @@ create_fe_variance_threshold_model <- function(threshold=0.2) {
 fit_transform_fe_variance_threshold <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
   python_path <- system.file(
-    "python/sklearn/feature_select/variance_threshold.py",
+    "python/feature_select/variance_threshold.py",
     package = "daltoolboxdp"
   )
   reticulate::source_python(python_path)

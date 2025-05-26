@@ -7,7 +7,7 @@
 #' @importFrom reticulate source_python r_to_py py_to_r
 #' @export
 create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_features_to_select=2) {
-  python_path <- system.file("python/sklearn/feature_select/sequential_fe_select.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/sequential_fe_select.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
 
   sf_method <- fs_create(n_neighbors=n_neighbors, direction=direction, n_features_to_select=n_features_to_select)
@@ -23,7 +23,7 @@ create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_
 #' @export
 fit_transform_fe_sequential_fs <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
-  python_path <- system.file("python/sklearn/feature_select/sequential_fe_select.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/sequential_fe_select.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
 
   # Convert df_train to a pandas DataFrame

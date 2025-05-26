@@ -4,7 +4,7 @@
 #'@return A fitted Python RandomForest model
 #'@export
 create_fe_rf_model <- function(df_train, target_column, n_estimators=100, random_state=0) {
-  python_path <- system.file("python/sklearn/feature_select/selectf_model_rf.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/selectf_model_rf.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   df_py <- reticulate::r_to_py(df_train)
   X <- df_py$drop(target_column, axis=1)$values
@@ -20,7 +20,7 @@ create_fe_rf_model <- function(df_train, target_column, n_estimators=100, random
 #'@return A Python SelectFromModel object
 #'@export
 create_fe_selectfrommodel_rf <- function(model, threshold="mean", prefit=TRUE) {
-  python_path <- system.file("python/sklearn/feature_select/selectf_model_rf.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/selectf_model_rf.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   sf_method <- fs_create(model, threshold=threshold, prefit=prefit)
   return(sf_method)
