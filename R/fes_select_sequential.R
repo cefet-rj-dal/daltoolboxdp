@@ -14,11 +14,12 @@ create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_
   return(sf_method)
 }
 
-#' @description Fit the provided SequentialFeatureSelector model on a training data frame and return the selected features.
-#' @param select_method The SequentialFeatureSelector model (Python object)
-#' @param df_train Data frame to transform
-#' @param target_column The target column name as string
-#' @return Transformed data frame with selected features
+#' @title Fit and Transform with Sequential Feature Selector
+#' @description Apply a pre‐configured SequentialFeatureSelector (Python) on a data frame and return only the selected features.
+#' @param select_method A SequentialFeatureSelector Python object created by `create_fe_sequential_fs_model()`.
+#' @param df_train An R data frame of training data.
+#' @param target_column Character name of the target column in `df_train`.
+#' @return A data frame containing only the features selected by the SequentialFeatureSelector.
 #' @export
 fit_transform_fe_sequential_fs <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")

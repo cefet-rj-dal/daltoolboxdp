@@ -14,11 +14,12 @@ create_fe_variance_threshold_model <- function(threshold=0.2) {
   return(vt_model)
 }
 
-#' @describeIn create_fe_variance_threshold_model
-#' @param select_method The VarianceThreshold model (Python object)
-#' @param df_train Data frame to transform
-#' @param target_column The target column name as string (unused for VarianceThreshold)
-#' @return Transformed feature matrix or data frame
+#' @title Fit and Transform with Variance Threshold
+#' @description Apply a VarianceThreshold feature selector on a data frame to remove low-variance features.
+#' @param select_method A VarianceThreshold model created by `create_fe_variance_threshold_model()`.
+#' @param df_train An R data frame of training data.
+#' @param target_column Character name of the target column in `df_train`.
+#' @return A data frame containing only the features with variance above the specified threshold.
 #' @export
 fit_transform_fe_variance_threshold <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
