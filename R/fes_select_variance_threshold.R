@@ -29,7 +29,7 @@ fit_transform_fe_variance_threshold <- function(select_method, df_train, target_
   reticulate::source_python(python_path)
 
   df_py <- reticulate::r_to_py(df_train)
-  X_py <- fit_transform(select_method, df_py)     # VarianceThreshold ignores target_column
+  X_py <- fit_transform(select_method, df_py, target_column)     # VarianceThreshold ignores target_column
   X_sel <- reticulate::py_to_r(X_py)
   return(X_sel)
 }

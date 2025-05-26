@@ -9,9 +9,10 @@ iris <- datasets::iris
 ```
 ```{r}
 
-# assume `df` is your training data frame
 model <- create_fe_variance_threshold_model(threshold = 0.1)
 X_sel <- fit_transform_fe_variance_threshold(model, iris, "Species")
 
-dim(X_sel)
+cat("Original shape:", dim(iris), "\n")
+cat("Shape after Sequential Selection:", dim(X_sel), "\n")
+print(head(X_sel))
 ```

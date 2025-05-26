@@ -39,7 +39,7 @@ create_fe_selectfrommodel_lg <- function(model, threshold="mean", prefit=TRUE) {
 #' @export
 fit_transform_fe_selectfrommodel_lg <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
-  python_path <- system.file("python/sklearn/feature_select/selectf_model_lg.py", package="daltoolboxdp")
+  python_path <- system.file("python/feature_select/selectf_model_lg.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   df_py <- reticulate::r_to_py(df_train)
   X_py <- fit_transform(select_method, df_py, target_column)
