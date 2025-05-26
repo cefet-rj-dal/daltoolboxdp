@@ -14,7 +14,6 @@ create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_
   return(sf_method)
 }
 
-#' @title Fit and transform with SequentialFeatureSelector
 #' @description Fit the provided SequentialFeatureSelector model on a training data frame and return the selected features.
 #' @param select_method The SequentialFeatureSelector model (Python object)
 #' @param df_train Data frame to transform

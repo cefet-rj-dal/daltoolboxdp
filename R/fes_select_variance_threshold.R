@@ -14,7 +14,7 @@ create_fe_variance_threshold_model <- function(threshold=0.2) {
   return(vt_model)
 }
 
-#' @rdname create_fe_variance_threshold_model
+#' @describeIn create_fe_variance_threshold_model
 #' @param select_method The VarianceThreshold model (Python object)
 #' @param df_train Data frame to transform
 #' @param target_column The target column name as string (unused for VarianceThreshold)

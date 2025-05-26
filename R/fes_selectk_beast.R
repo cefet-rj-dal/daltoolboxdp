@@ -11,7 +11,6 @@ create_fe_selectkbest_model <- function(k=10) {
   return(sf_method)
 }
 
-#' @rdname create_fe_selectkbest_model
 #' @describeIn create_fe_selectkbest_model Fit and transform the dataset using SelectKBest
 #' @param select_method The SelectKBest model (Python object)
 #' @param df_train Data frame to transform
