@@ -20,14 +20,14 @@ iris <- datasets::iris
 
 ```{r}
 # Initialize Sequential Feature Selector
-select_model <- create_sequential_fs_model(
+select_model <- create_fe_sequential_fs_model(
     n_neighbors=3, 
     direction="forward", 
     n_features_to_select=2
 )
 
 # Apply feature selection
-X_selected <- fit_transform_fs(select_model, iris, "Species")
+X_selected <- fit_transform_fe_sequential_fs(select_model, iris, "Species")
 
 # Display results
 cat("Original shape:", dim(iris), "\n")
