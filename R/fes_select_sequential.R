@@ -14,12 +14,12 @@ create_fe_sequential_fs_model <- function(n_neighbors=3, direction="forward", n_
   return(sf_method)
 }
 
-#' @rdname create_fe_sequential_fs_model
-#' @describeIn create_fe_sequential_fs_model Fit and transform the dataset using SequentialFeatureSelector
+#' @title Fit and transform with SequentialFeatureSelector
+#' @description Fit the provided SequentialFeatureSelector model on a training data frame and return the selected features.
 #' @param select_method The SequentialFeatureSelector model (Python object)
 #' @param df_train Data frame to transform
 #' @param target_column The target column name as string
-#' @return Transformed X_train with selected features
+#' @return Transformed data frame with selected features
 #' @export
 fit_transform_fe_sequential_fs <- function(select_method, df_train, target_column) {
   cat("Column types:", sapply(df_train, class), "\n")
