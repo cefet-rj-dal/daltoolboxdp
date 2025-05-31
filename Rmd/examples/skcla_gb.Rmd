@@ -1,24 +1,27 @@
-## Gradient Boosting Classifier
+```{r}
+# Gradient Boosting Classifier
+
+# installing packages
+
+install.packages("daltoolboxdp")
+```
 
 ```{r}
-# DALToolbox Data Preprocessing
-# version 1.1.717
-
-#loading DAL
-library(daltoolbox) 
+# loading DAL
+library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
-#General function for exploring Gradient Boosting classifier
 
 ```{r}
+# General function for exploring Gradient Boosting classifier
+
 iris <- datasets::iris
 ```
 
-### Gradient Boosting
-
 ```{r}
+# Gradient Boosting
+
 slevels <- levels(iris$Species)
 
 set.seed(1)

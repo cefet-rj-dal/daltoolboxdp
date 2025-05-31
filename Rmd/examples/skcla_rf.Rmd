@@ -1,24 +1,27 @@
-## Random Forest Classifier
+```{r}
+# Random Forest Classifier
+
+# installing packages
+
+install.packages("daltoolboxdp")
+```
 
 ```{r}
-# DALToolbox Data Preprocessing
-# version 1.1.717
-
-#loading DAL
-library(daltoolbox) 
+# loading DAL
+library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
-#General function for exploring Random Forest classifier
 
 ```{r}
+# General function for exploring Random Forest classifier
+
 iris <- datasets::iris
 ```
 
-### Random Forest
-
 ```{r}
+# Random Forest
+
 slevels <- levels(iris$Species)
 
 set.seed(1)

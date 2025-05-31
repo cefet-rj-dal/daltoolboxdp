@@ -1,20 +1,28 @@
-## Feature Selection
+
+``` r
+# Feature Selection
+
+# installing packages
+
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DALToolbox Data Preprocessing
-# version 1.1.717
-
-#loading DAL
-library(daltoolbox) 
+# loading DAL
+library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
-General function for exploring feature selection methods
 
 
 ``` r
+# General function for exploring feature selection methods
+
 iris <- datasets::iris
 data(iris)
 mod_iris <- iris[c(1:50,51:71,101:111),]
@@ -27,10 +35,10 @@ table(mod_iris$Species)
 ##         50         21         11
 ```
 
-### oversampling
-
 
 ``` r
+# oversampling
+
 bal <- bal_oversampling('Species')
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)

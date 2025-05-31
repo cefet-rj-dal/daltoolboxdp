@@ -33,7 +33,7 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
 ------------------------------------------------------------------------
 
-## Installation
+# Installation
 
 You can install the latest stable version from CRAN:
 
@@ -51,7 +51,7 @@ devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies
 
 ------------------------------------------------------------------------
 
-## Examples
+# Examples
 
 Example scripts are available at:
 
@@ -76,7 +76,7 @@ library(daltoolboxdp)
 
 ------------------------------------------------------------------------
 
-## Bug reports and feature requests
+# Bug reports and feature requests
 
 Please report issues or suggest new features via:
 

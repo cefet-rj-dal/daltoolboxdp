@@ -1,27 +1,41 @@
-## Denoising Autoencoder transformation (encode)
 
-Considering a dataset with $p$ numerical attributes. 
+``` r
+# Denoising Autoencoder transformation (encode)
 
-The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
+# Considering a dataset with $p$ numerical attributes. 
+
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
+
+# installing packages
+
+install.packages("tspredit")
+```
+
+```
+
+```
+
+``` r
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DAL ToolBox
-# version 1.1.737
-
-
-
-#loading DAL
+# loading DAL
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
 ```
 
-### dataset for example 
-
 
 ``` r
+# dataset for example 
+
 data(sin_data)
 
 sw_size <- 5
@@ -40,10 +54,10 @@ ts_head(ts)
 ## [6,] 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
 ```
 
-### applying data normalization
-
 
 ``` r
+# applying data normalization
+
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -61,26 +75,23 @@ ts_head(ts)
 ## [6,] 0.9757058 1.0000000 0.9932346 0.9558303 0.8901126
 ```
 
-### spliting into training and test
-
 
 ``` r
+# spliting into training and test
+
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
-### creating autoencoder
-Reduce from 5 to 3 dimensions
-
 
 ``` r
+# creating autoencoder - reduce from 5 to 3 dimensions
+
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
 
 auto <- fit(auto, train)
 ```
-
-### learning curves
 
 
 ``` r
@@ -90,13 +101,13 @@ grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-6](fig/autoenc_denoise_e/unnamed-chunk-6-1.png)
-
-### testing autoencoder
-presenting the original test set and display encoding
+![plot of chunk unnamed-chunk-7](fig/autoenc_denoise_e/unnamed-chunk-7-1.png)
 
 
 ``` r
+# testing autoencoder
+# presenting the original test set and display encoding
+
 print(head(test))
 ```
 
@@ -117,11 +128,11 @@ print(head(result))
 
 ```
 ##           [,1]       [,2]      [,3]
-## [1,] 0.9812098 -0.5837700 0.7360146
-## [2,] 0.9961438 -0.7019875 0.7566703
-## [3,] 0.9741865 -0.8138564 0.7510405
-## [4,] 0.9252202 -0.8926868 0.7242994
-## [5,] 0.8506973 -0.9371218 0.6775793
-## [6,] 0.7552513 -0.9443984 0.6137859
+## [1,] 1.0029416 -0.5693755 0.6910219
+## [2,] 1.0227610 -0.6766692 0.7103397
+## [3,] 1.0013922 -0.7843208 0.7041457
+## [4,] 0.9464551 -0.8686305 0.6756943
+## [5,] 0.8662083 -0.9172776 0.6287760
+## [6,] 0.7700437 -0.9219674 0.5678139
 ```
 

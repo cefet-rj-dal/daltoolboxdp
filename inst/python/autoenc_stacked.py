@@ -28,7 +28,7 @@ class Autoencoder_Stacked_TS(Dataset):
 
 
 class Autoencoder_Stacked(nn.Module):
-    ##NN architecture for the autoencoder
+    #NN architecture for the autoencoder
     def __init__(self, input_size, encoding_size):
         super(Autoencoder_Stacked, self).__init__()
         
@@ -36,14 +36,14 @@ class Autoencoder_Stacked(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(input_size, 64), #NN Input layer
             nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, encoding_size) ##NN Output layter
+            nn.Linear(64, encoding_size) #NN Output layter
             )
         
         #Decode NN
         self.decoder = nn.Sequential(
             nn.Linear(encoding_size, 64), #NN Input layer
             nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, input_size) ##NN Output layter
+            nn.Linear(64, input_size) #NN Output layter
             )
         
     def forward(self, x):

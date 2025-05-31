@@ -1,28 +1,34 @@
-## K-Nearest Neighbors Classifier
 
+``` r
+# K-Nearest Neighbors Classifier
+
+# installing packages
+
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DALToolbox Data Preprocessing
-# version 1.1.717
-
-#loading DAL
-library(daltoolbox) 
+# loading DAL
+library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
-#General function for exploring KNN classifier
 
 
 ``` r
+# General function for exploring KNN classifier
 iris <- datasets::iris
 ```
 
-### KNN
-
 
 ``` r
+# KNN
+
 slevels <- levels(iris$Species)
 
 set.seed(1)

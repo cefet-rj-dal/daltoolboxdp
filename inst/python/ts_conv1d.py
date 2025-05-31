@@ -63,9 +63,9 @@ def ts_conv1d_train(epochs, lr, model, train_loader, opt_func=torch.optim.SGD):
   
   optimizer = opt_func(model.parameters(), lr)
   for epoch in range(epochs):
-    ###################
+    #####
     # train the model #
-    ###################
+    #####
     model.train() # prep model for training
     for data, target in train_loader:
       # clear the gradients of all optimized variables

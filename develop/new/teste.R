@@ -1,24 +1,24 @@
-## Random Forest Classifier
+# Random Forest Classifier
 
-###{r}
-# DALToolbox Data Preprocessing
+#{r}
+
 # version 1.0.777
 
 #loading DAL
 library(daltoolbox) 
 library(daltoolboxdp)
-###
+#
 
-### Example
+# Example
 #General function for exploring Random Forest classifier
 
-###{r}
+#{r}
 iris <- datasets::iris
-###
+#
 
-### Random Forest
+# Random Forest
 
-###{r}
+#{r}
 slevels <- levels(iris$Species)
 
 set.seed(1)
@@ -45,4 +45,4 @@ test_prediction <- predict(model, iris_test_label)
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
 print(test_eval$metrics)
-###
+#

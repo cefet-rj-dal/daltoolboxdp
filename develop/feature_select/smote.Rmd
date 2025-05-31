@@ -1,7 +1,7 @@
-## SMOTE (Synthetic Minority Over-sampling Technique)
+# SMOTE (Synthetic Minority Over-sampling Technique)
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -10,14 +10,14 @@ library(tspredit)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring SMOTE oversampling
 
 ```{r}
 iris <- datasets::iris
 ```
 
-### SMOTE
+# SMOTE
 
 ```{r}
 slevels <- levels(iris$Species)
