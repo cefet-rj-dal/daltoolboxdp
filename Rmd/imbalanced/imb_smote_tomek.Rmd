@@ -1,7 +1,7 @@
-## SMOTE-Tomek Links
+# SMOTE-Tomek Links
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -9,14 +9,14 @@ library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring SMOTE-Tomek resampling
 
 ```{r}
 iris <- datasets::iris
 ```
 
-### SMOTE-Tomek
+# SMOTE-Tomek
 
 ```{r}
 slevels <- levels(iris$Species)

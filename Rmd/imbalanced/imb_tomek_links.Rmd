@@ -1,7 +1,7 @@
-## Tomek Links
+# Tomek Links
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -9,14 +9,14 @@ library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring Tomek Links undersampling
 
 ```{r}
 iris <- datasets::iris
 ```
 
-### Tomek Links
+# Tomek Links
 
 ```{r}
 slevels <- levels(iris$Species)

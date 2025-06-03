@@ -34,7 +34,7 @@ More information on Experiment Lines is available in [Ogasawara et al. (2009)](h
 
 ---
 
-## Installation
+# Installation
 
 You can install the latest stable version from CRAN:
 
@@ -52,7 +52,7 @@ devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies
 
 ---
 
-## Examples
+# Examples
 
 Example scripts are available at:
 
@@ -69,7 +69,7 @@ library(daltoolboxdp)
 
 ---
 
-## Bug reports and feature requests
+# Bug reports and feature requests
 
 Please report issues or suggest new features via:
 

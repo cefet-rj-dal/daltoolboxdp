@@ -1,27 +1,41 @@
-## Stacked Autoencode transformation (encode)
 
-Considering a dataset with $p$ numerical attributes. 
+``` r
+# Stacked Autoencode transformation (encode)
 
-The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
+# Considering a dataset with $p$ numerical attributes. 
+
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
+
+# installing packages
+
+install.packages("tspredit")
+```
+
+```
+
+```
+
+``` r
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DAL ToolBox
-# version 1.1.737
-
-
-
-#loading DAL
+# loading DAL
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
 ```
 
-### dataset for example 
-
 
 ``` r
+# dataset for example 
+
 data(sin_data)
 
 sw_size <- 5
@@ -40,10 +54,10 @@ ts_head(ts)
 ## [6,] 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
 ```
 
-### applying data normalization
-
 
 ``` r
+# applying data normalization
+
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -61,26 +75,23 @@ ts_head(ts)
 ## [6,] 0.9757058 1.0000000 0.9932346 0.9558303 0.8901126
 ```
 
-### spliting into training and test
-
 
 ``` r
+# spliting into training and test
+
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
-### creating autoencoder
-Reduce from 5 to 3 dimensions
-
 
 ``` r
+# creating autoencoder - reduce from 5 to 3 dimensions
+
 auto <- autoenc_stacked_e(5, 3)
 
 auto <- fit(auto, train)
 ```
-
-### learning curves
 
 
 ``` r
@@ -90,13 +101,13 @@ grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-6](fig/autoenc_stacked_e/unnamed-chunk-6-1.png)
-
-### testing autoencoder
-presenting the original test set and display encoding
+![plot of chunk unnamed-chunk-7](fig/autoenc_stacked_e/unnamed-chunk-7-1.png)
 
 
 ``` r
+# testing autoencoder
+# presenting the original test set and display encoding
+
 print(head(test))
 ```
 
@@ -117,11 +128,11 @@ print(head(result))
 
 ```
 ##           [,1]       [,2]      [,3]
-## [1,] -1.716567 -0.4281618 0.5108147
-## [2,] -1.764908 -0.3736014 0.6256225
-## [3,] -1.752486 -0.3150511 0.7202501
-## [4,] -1.684486 -0.2560728 0.7900341
-## [5,] -1.565138 -0.2003335 0.8306355
-## [6,] -1.401861 -0.1512988 0.8395300
+## [1,] -1.740394 -0.3362885 0.5299670
+## [2,] -1.791678 -0.3215142 0.6535988
+## [3,] -1.786602 -0.3055683 0.7582327
+## [4,] -1.725697 -0.2896205 0.8364493
+## [5,] -1.614171 -0.2743884 0.8811168
+## [6,] -1.452926 -0.2615118 0.8914466
 ```
 

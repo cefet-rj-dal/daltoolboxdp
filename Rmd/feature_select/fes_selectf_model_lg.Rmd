@@ -1,7 +1,7 @@
-## Logistic Regression Feature Selection
+# Logistic Regression Feature Selection
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -9,7 +9,7 @@ library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring LR-based feature selection
 
 ```{r}
@@ -17,7 +17,6 @@ iris <- datasets::iris
 ```
 
 ### SelectFromModel  Logistic Regression 
-
 ```{r}
 # Initialize logistic regression model
 lg_model <- create_fe_lg_model(iris, "Species", C=0.1, penalty='l1', solver='liblinear')

@@ -12,9 +12,9 @@ import pandas as pd
 torch.set_grad_enabled(True)
 
 
-##################################
+#########
 # Define Networks
-##################################
+#########
 # Encoder
 class Q_net(nn.Module):
     def __init__(self, input_size, encoding_size):
@@ -191,9 +191,9 @@ def autoenc_adv_train(aae, data, batch_size = 350, num_epochs = 1000, learning_r
         train_input = train_input.float()
         train_input = train_input.view(train_input.size(0), -1)
 
-        #######################
+        ######
         # Reconstruction phase
-        #######################
+        ######
         z_sample = aae.Q(train_input)
         X_sample = aae.P(z_sample)
         recon_loss = recon_criterion(X_sample + TINY, train_input + TINY)
@@ -206,9 +206,9 @@ def autoenc_adv_train(aae, data, batch_size = 350, num_epochs = 1000, learning_r
         aae.Q.zero_grad()
         aae.D_gauss.zero_grad()
 
-        #######################
+        ######
         # Regularization phase
-        #######################
+        ######
         # Discriminator
         aae.Q.eval()
         z_real_gauss = Variable(torch.randn(len(train_input), aae.encoding_size) * 5.)

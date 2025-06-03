@@ -1,21 +1,27 @@
-## Time Series regression - 1D Convolutional Neural Networks (Conv1D)
+
+``` r
+# Time Series regression - 1D Convolutional Neural Networks (Conv1D)
+
+# installing packages
+
+install.packages("tspredit")
+```
+
+```
+
+```
 
 
 ``` r
-# DAL ToolBox
-# version 1.1.737
-
-
-
-#loading DAL
+# loading DAL
 library(daltoolbox)
 library(tspredit)
 ```
 
-### Series for studying
-
 
 ``` r
+# Series for studying
+
 data(sin_data)
 ts <- ts_data(sin_data$y, 10)
 ts_head(ts, 3)
@@ -34,29 +40,29 @@ library(ggplot2)
 plot_ts(x=sin_data$x, y=sin_data$y) + theme(text = element_text(size=16))
 ```
 
-![plot of chunk unnamed-chunk-3](fig/ts_conv1d/unnamed-chunk-3-1.png)
-
-### data sampling
+![plot of chunk unnamed-chunk-4](fig/ts_conv1d/unnamed-chunk-4-1.png)
 
 
 ``` r
+# data sampling
+
 samp <- ts_sample(ts, test_size = 5)
 io_train <- ts_projection(samp$train)
 io_test <- ts_projection(samp$test)
 ```
 
-### Model training
-
 
 ``` r
+# Model training
+
 model <- ts_conv1d(ts_norm_gminmax(), input_size=4, epochs=10000)
 model <- fit(model, x=io_train$input, y=io_train$output)
 ```
 
-### Evaluation of adjustment
-
 
 ``` r
+# Evaluation of adjustment
+
 adjust <- predict(model, io_train$input)
 adjust <- as.vector(adjust)
 output <- as.vector(io_train$output)
@@ -68,10 +74,10 @@ ev_adjust$mse
 ## [1] 5.457399e-05
 ```
 
-### Prediction of test
-
 
 ``` r
+# Prediction of test
+
 prediction <- predict(model, x=io_test$input[1,], steps_ahead=5)
 prediction <- as.vector(prediction)
 output <- as.vector(io_test$output)
@@ -100,13 +106,13 @@ ev_test
 ## 1 0.001028778 0.1276187 0.9911144
 ```
 
-### Plot results
-
 
 ``` r
+# Plot results
+
 yvalues <- c(io_train$output, io_test$output)
 plot_ts_pred(y=yvalues, yadj=adjust, ypre=prediction) + theme(text = element_text(size=16))
 ```
 
-![plot of chunk unnamed-chunk-8](fig/ts_conv1d/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-9](fig/ts_conv1d/unnamed-chunk-9-1.png)
 

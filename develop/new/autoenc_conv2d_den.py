@@ -13,7 +13,7 @@ class Encoder(nn.Module):
     def __init__(self, encoded_space_dim,fc2_input_dim, padding=0):
         super().__init__()
         
-        ### Convolutional section
+        # Convolutional section
         self.encoder_cnn = nn.Sequential(
             # First convolutional layer
             nn.Conv2d(1, 8, 3, stride=2, padding=padding),
@@ -29,10 +29,10 @@ class Encoder(nn.Module):
             nn.ReLU(True)
         )
         
-        ### Flatten layer
+        # Flatten layer
         self.flatten = nn.Flatten(start_dim=1)
 
-        ### Linear section
+        # Linear section
         self.encoder_lin = nn.Sequential(
             # First linear layer
             nn.Linear(148 * 296, 128),
@@ -55,7 +55,7 @@ class Decoder(nn.Module):
     def __init__(self, encoded_space_dim, fc2_input_dim, padding=0):
         super().__init__()
 
-        ### Linear section
+        # Linear section
         self.decoder_lin = nn.Sequential(
             # First linear layer
             nn.Linear(encoded_space_dim, 128),
@@ -65,10 +65,10 @@ class Decoder(nn.Module):
             nn.ReLU(True)
         )
 
-        ### Unflatten
+        # Unflatten
         self.unflatten = nn.Unflatten(dim=1, unflattened_size=(32, 37, 37))
 
-        ### Convolutional section
+        # Convolutional section
         self.decoder_conv = nn.Sequential(
             # First transposed convolution
             nn.ConvTranspose2d(32, 16, 3, stride=2, output_padding=0),

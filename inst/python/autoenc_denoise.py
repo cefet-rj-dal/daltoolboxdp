@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Denoising Autoencoder (Autoencoder_Denoise AE)
-"""
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -35,14 +30,14 @@ class DNS_Autoencoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(input_size, 64), #NN Input layer
             nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, encoding_size) ##NN Output layter
+            nn.Linear(64, encoding_size) #NN Output layter
             )
         
         #Decode NN
         self.decoder = nn.Sequential(
             nn.Linear(encoding_size, 64), #NN Input layer
             nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, input_size) ##NN Output layter
+            nn.Linear(64, input_size) #NN Output layter
             )
         
     def forward(self, x):

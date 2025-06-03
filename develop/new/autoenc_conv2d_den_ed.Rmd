@@ -1,11 +1,11 @@
-## Autoencoder transformation (encode-decode)
+# Autoencoder transformation (encode-decode)
 
 Considering a dataset with $p$ numerical attributes. 
 
 The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
 
 ```{r}
-# DAL ToolBox
+
 # version 1.2.707
 
 
@@ -21,7 +21,7 @@ load_all("/home/lucas/daltoolbox_autoenc")
 # library(daltoolbox)
 ```
 
-### dataset for example 
+# dataset for example 
 
 ```{r}
 dataset_path <- '/home/lucas/datasets/images/kaggle_chest_c19_xrays/'
@@ -34,7 +34,7 @@ file_names <- map(folder_paths, function(x) paste0(x, list.files(x))) |>
 print(length(file_names))
 ```
 
-### sampling one image for each class
+# sampling one image for each class
 
 ```{r}
 class_examples <- c()
@@ -52,7 +52,7 @@ par(mfrow=(c(1,3)))
 p <- map(img, plot)
 ```
 
-### spliting into training and test
+# spliting into training and test
 
 ```{r}
 # Sample the data
@@ -78,7 +78,7 @@ dim_df <- map_df(sample_images, get_dim)
 input_size <- as.array(c(1, as.vector(unlist(dim_df[1, c('height', 'width')]))))
 ```
 
-### spliting in train and test
+# spliting in train and test
 
 ```{r}
 # Create Dataset
@@ -99,7 +99,7 @@ dim(train)
 dim(test)
 ```
 
-### creating autoencoder
+# creating autoencoder
 Reduce from 5 to 3 dimensions
 
 ```{r}
@@ -108,7 +108,7 @@ auto <- cae2den_encode_decode(input_size, encoding_size=200, batch_size=100, num
 auto <- fit(auto, train)
 ```
 
-### learning curves
+# learning curves
 
 ```{r}
 auto <- fit(auto, train)
@@ -126,7 +126,7 @@ scale_color_manual(values=c('Blue','Orange')) +
 theme_classic()
 ```
 
-### testing autoencoder
+# testing autoencoder
 presenting the original test set and display encoding
 
 ```{r}

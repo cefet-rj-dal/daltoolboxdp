@@ -1,27 +1,41 @@
-## Stacked Autoencoder transformation (encode-decode)
 
-Considering a dataset with $p$ numerical attributes. 
+``` r
+# Stacked Autoencoder transformation (encode-decode)
 
-The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
+# Considering a dataset with $p$ numerical attributes. 
+
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
+
+# installing packages
+
+install.packages("tspredit")
+```
+
+```
+
+```
+
+``` r
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DAL ToolBox
-# version 1.1.737
-
-
-
-#loading DAL
+# loading DAL
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
 ```
 
-### dataset for example 
-
 
 ``` r
+# dataset for example 
+
 data(sin_data)
 
 sw_size <- 5
@@ -40,10 +54,10 @@ ts_head(ts)
 ## [6,] 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
 ```
 
-### applying data normalization
-
 
 ``` r
+# applying data normalization
+
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -61,26 +75,23 @@ ts_head(ts)
 ## [6,] 0.9757058 1.0000000 0.9932346 0.9558303 0.8901126
 ```
 
-### spliting into training and test
-
 
 ``` r
+# spliting into training and test
+
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
-### creating autoencoder
-Reduce from 5 to 3 dimensions
-
 
 ``` r
+# creating autoencoder - reduce from 5 to 3 dimensions
+
 auto <- autoenc_stacked_ed(5, 3)
 
 auto <- fit(auto, train)
 ```
-
-### learning curves
 
 
 ``` r
@@ -90,13 +101,13 @@ grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-6](fig/autoenc_stacked_ed/unnamed-chunk-6-1.png)
-
-### testing autoencoder
-presenting the original test set and display encoding
+![plot of chunk unnamed-chunk-7](fig/autoenc_stacked_ed/unnamed-chunk-7-1.png)
 
 
 ``` r
+# testing autoencoder
+# presenting the original test set and display encoding
+
 print(head(test))
 ```
 
@@ -117,12 +128,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7249847 0.8286718 0.9116159 0.9690257 0.9969283
-## [2,] 0.8282958 0.9115727 0.9688913 0.9968908 0.9936954
-## [3,] 0.9115255 0.9692704 0.9969333 0.9942343 0.9602284
-## [4,] 0.9695016 0.9983527 0.9943612 0.9617270 0.8992888
-## [5,] 0.9991075 0.9975831 0.9624407 0.9016410 0.8133868
-## [6,] 0.9953040 0.9612706 0.8985190 0.8120465 0.7058992
+## [1,] 0.7236718 0.8289786 0.9127684 0.9709148 1.0021639
+## [2,] 0.8251199 0.9110945 0.9697074 0.9998438 0.9984280
+## [3,] 0.9086569 0.9702161 0.9991760 0.9998422 0.9629457
+## [4,] 0.9671922 0.9999873 0.9977278 0.9682318 0.8994080
+## [5,] 0.9948170 0.9940701 0.9625976 0.9013858 0.8147011
+## [6,] 0.9941450 0.9606590 0.9007437 0.8128525 0.7092507
 ```
 
 
@@ -141,11 +152,11 @@ print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 ```
 
 ```
-## [1] "t4 R2 test: 0.999967975093013 MAPE: 0.00110982183700341"
-## [1] "t3 R2 test: 0.999942404834868 MAPE: 0.00112106696406087"
-## [1] "t2 R2 test: 0.999990731771984 MAPE: 0.00176661385761884"
-## [1] "t1 R2 test: 0.999982875515861 MAPE: 0.00185098230252074"
-## [1] "t0 R2 test: 0.99998930373262 MAPE: 0.00392282483894742"
+## [1] "t4 R2 test: 0.999851476149495 MAPE: 0.00303631895176365"
+## [1] "t3 R2 test: 0.99993635349491 MAPE: 0.00120068338270915"
+## [1] "t2 R2 test: 0.999987724106485 MAPE: 0.000728129645800921"
+## [1] "t1 R2 test: 0.999942147484123 MAPE: 0.00272588891147969"
+## [1] "t0 R2 test: 0.999968085177154 MAPE: 0.00313270326976188"
 ```
 
 ``` r
@@ -153,6 +164,6 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.999974658189669 MAPE: 0.00195426196003025"
+## [1] "Means R2 test: 0.999937157282434 MAPE: 0.00216474483230306"
 ```
 

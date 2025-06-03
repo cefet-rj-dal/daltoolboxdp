@@ -1,7 +1,7 @@
-## Random Forest Feature Selection
+# Random Forest Feature Selection
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -9,14 +9,14 @@ library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring RF-based feature selection
 
 ```{r}
 iris <- datasets::iris
 ```
 
-### Random Forest Selection
+# Random Forest Selection
 
 ```{r}
 # Initialize RF model

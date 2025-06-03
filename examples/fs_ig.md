@@ -1,27 +1,35 @@
-## Feature Selection
+
+``` r
+# Feature Selection
+
+# installing packages
+
+install.packages("daltoolboxdp")
+```
+
+```
+
+```
 
 
 ``` r
-# DALToolbox Data Preprocessing
-# version 1.1.717
-
-#loading DAL
-library(daltoolbox) 
+# loading DAL
+library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
-General function for exploring feature selection methods
 
 
 ``` r
+# General function for exploring feature selection methods
+ 
 iris <- datasets::iris
 ```
 
-### IG
-
 
 ``` r
+# IG
+
 myfeature <- fit(fs_ig("Species"), iris)
 print(myfeature$features)
 ```

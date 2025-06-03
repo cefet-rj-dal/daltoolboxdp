@@ -1,4 +1,4 @@
-### functions for package development
+# functions for package development
 
 
 if (FALSE) {

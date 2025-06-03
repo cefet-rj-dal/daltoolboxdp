@@ -1,7 +1,7 @@
-## Sequential Feature Selection
+# Sequential Feature Selection
 
 ```{r}
-# DALToolbox Data Preprocessing
+
 # version 1.0.777
 
 #loading DAL
@@ -9,14 +9,14 @@ library(daltoolbox)
 library(daltoolboxdp)
 ```
 
-### Example
+# Example
 General function for exploring Sequential feature selection
 
 ```{r}
 iris <- datasets::iris
 ```
 
-### Sequential Feature Selection
+# Sequential Feature Selection
 
 ```{r}
 # Initialize Sequential Feature Selector
