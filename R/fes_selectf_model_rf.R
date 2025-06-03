@@ -1,5 +1,7 @@
 #'@title Feature Selection Using SelectFromModel and RandomForest
 #'@description This module applies feature selection using SelectFromModel with a RandomForestClassifier estimator.
+#'@param n_estimators number estimators
+#'@param random_state random_state sets the seed for the random number generator.
 #'@importFrom reticulate source_python r_to_py py_to_r
 #'@return A fitted Python RandomForest model
 #'@export

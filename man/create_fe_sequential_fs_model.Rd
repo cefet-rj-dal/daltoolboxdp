@@ -2,7 +2,6 @@
 % Please edit documentation in R/fes_select_sequential.R
 \name{create_fe_sequential_fs_model}
 \alias{create_fe_sequential_fs_model}
-\alias{fit_transform_fe_sequential_fs}
 \title{Feature Selection Using SequentialFeatureSelector}
 \usage{
 create_fe_sequential_fs_model(
@@ -10,8 +9,6 @@ create_fe_sequential_fs_model(
   direction = "forward",
   n_features_to_select = 2
 )
-
-fit_transform_fe_sequential_fs(select_method, df_train, target_column)
 }
 \arguments{
 \item{n_neighbors}{Number of neighbors for KNN}
@@ -19,17 +16,9 @@ fit_transform_fe_sequential_fs(select_method, df_train, target_column)
 \item{direction}{Direction of selection: "forward" or "backward"}
 
 \item{n_features_to_select}{Number of features to select}
-
-\item{select_method}{The SequentialFeatureSelector model (Python object)}
-
-\item{df_train}{Data frame to transform}
-
-\item{target_column}{The target column name as string}
 }
 \value{
 A Python SequentialFeatureSelector object
-
-Transformed X_train with selected features
 }
 \description{
 This module applies sequential feature selection using KNeighborsClassifier.

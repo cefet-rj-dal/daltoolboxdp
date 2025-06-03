@@ -31,8 +31,8 @@ iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 # Apply Tomek Links
-select_model <- create_tomek_model()
-list_tomek_model <- fit_resample(select_model, iris_train_label, "species_encoded")
+select_model <- create_imb_tomek_model()
+list_tomek_model <- fit_imb_resample_tomek(select_model, iris_train_label, "species_encoded")
 
 X_train_tomek <- list_tomek_model[[1]]
 y_train_tomek <- list_tomek_model[[2]]

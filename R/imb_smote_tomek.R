@@ -6,7 +6,7 @@
 #' @export
 create_imb_smotetomek_model <- function(random_state=42) {
   # source the python implementation from the installed package
-  python_path <- system.file("python/imbalanced/smote_tomek.py", package="daltoolboxdp")
+  python_path <- system.file("python/imbalanced/smote_tomek_links.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
   stomek <- inbalanced_create_model(random_state=random_state)
   return(stomek)

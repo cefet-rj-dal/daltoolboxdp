@@ -26,3 +26,8 @@ Transformed X_train with selected features
 \description{
 Applies feature selection using SelectKBest from scikit-learn.
 }
+\section{Functions}{
+\itemize{
+\item \code{fit_transform_fe_selectkbest()}: Fit and transform the dataset using SelectKBest
+
+}}

@@ -22,6 +22,10 @@ fit_transform_fe_selectfrommodel_rf(select_method, df_train, target_column)
 
 \item{target_column}{The target column name as string}
 
+\item{n_estimators}{number estimators}
+
+\item{random_state}{random_state sets the seed for the random number generator.}
+
 \item{model}{A Python Logistic Regression model}
 
 \item{threshold}{The threshold for feature selection}

@@ -4,10 +4,10 @@
 #' @return A Python TomekLinks object
 #' @importFrom reticulate source_python
 #' @export
-create_imb_tomek_model <- function(random_state=NULL) {
+create_imb_tomek_model <- function() {
   python_path <- system.file("python/imbalanced/tomek_links.py", package="daltoolboxdp")
   reticulate::source_python(python_path)
-  tomek <- inbalanced_create_model(random_state=random_state)
+  tomek <- inbalanced_create_model()
   return(tomek)
 }
 
