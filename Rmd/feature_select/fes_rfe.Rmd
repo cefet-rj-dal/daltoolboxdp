@@ -20,8 +20,8 @@ iris <- datasets::iris
 
 ```{r}
 # Create and apply RFE model
-rfe_model <- create_rfe_model(n_features_to_select = 0.5, lg_max_iter = 1000)
-X_selected <- fit_transform_rfe(rfe_model, iris, "Species")
+rfe_model <- create_fe_rfe_model(n_features_to_select = 0.5, lg_max_iter = 1000)
+X_selected <- fit_transform_fe_rfe(rfe_model, iris, "Species")
 
 # Display results
 cat("Original shape:", dim(iris), "\n")

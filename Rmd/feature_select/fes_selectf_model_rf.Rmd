@@ -20,11 +20,11 @@ iris <- datasets::iris
 
 ```{r}
 # Initialize RF model
-rf_model <- create_fit_rf_model(iris, "Species", n_estimators=100, random_state=0)
-select_model <- create_fs_model(rf_model, threshold="mean", prefit=TRUE)
+rf_model <- create_fe_rf_model(iris, "Species", n_estimators=100, random_state=0)
+select_model <- create_fe_selectfrommodel_rf(rf_model, threshold="mean", prefit=TRUE)
 
 # Apply feature selection
-X_selected <- fit_transform_fs(select_model, iris, "Species")
+X_selected <- fit_transform_fe_selectfrommodel_rf(select_model, iris, "Species")
 
 # Display results
 cat("Original shape:", dim(iris), "\n")

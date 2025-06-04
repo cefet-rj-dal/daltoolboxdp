@@ -1,4 +1,4 @@
-# SMOTE (Synthetic Minority Over-sampling Technique)
+# Tomek Links
 
 ```{r}
 
@@ -6,18 +6,17 @@
 
 #loading DAL
 library(daltoolbox) 
-library(tspredit)
 library(daltoolboxdp)
 ```
 
 # Example
-General function for exploring SMOTE oversampling
+General function for exploring Tomek Links undersampling
 
 ```{r}
 iris <- datasets::iris
 ```
 
-# SMOTE
+# Tomek Links
 
 ```{r}
 slevels <- levels(iris$Species)
@@ -31,15 +30,15 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-# Apply SMOTE
-select_model <- create_smote_model(random_state=42)
-list_smote <- fit_transform_fs(select_model, iris_train_label, "species_encoded")
+# Apply Tomek Links
+select_model <- create_imb_tomek_model()
+list_tomek_model <- fit_imb_resample_tomek(select_model, iris_train_label, "species_encoded")
 
-X_train_smote <- list_smote[[1]]
-y_train_smote <- list_smote[[2]]
+X_train_tomek <- list_tomek_model[[1]]
+y_train_tomek <- list_tomek_model[[2]]
 
-merged_df <- data.frame(X_train_smote, species_encoded = y_train_smote)
+merged_df <- data.frame(X_train_tomek, species_encoded = y_train_tomek)
 
-cat("Class distribution after SMOTE:\n")
+cat("Class distribution after Tomek Links:\n")
 print(table(merged_df$species_encoded))
 ```

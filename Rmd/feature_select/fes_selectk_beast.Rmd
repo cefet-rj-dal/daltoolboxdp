@@ -20,8 +20,8 @@ iris <- datasets::iris
 
 ```{r}
 # Initialize and apply SelectKBest
-select_model <- create_fs_model(k=2)
-X_selected <- fit_transform_fs(select_model, iris, "Species")
+select_model <- create_fe_selectkbest_model(k=2)
+X_selected <- fit_transform_fe_selectkbest(select_model, iris, "Species")
 
 # Display results
 cat("Original shape:", dim(iris), "\n")

@@ -1,7 +1,7 @@
 from imblearn.combine import SMOTETomek
 
 def inbalanced_create_model(random_state=42):
-    stomek = SMOTETomek(random_state=random_state)
+    stomek = SMOTETomek(random_state=int(random_state))
     return stomek
 
 def fit_resample(select_method, df_train, target_column):
