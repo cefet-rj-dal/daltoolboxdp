@@ -39,7 +39,7 @@ More information on Experiment Lines is available in [Ogasawara et al. (2009)](h
 You can install the latest stable version from CRAN:
 
 ```r
-#install.packages("daltoolboxdp")
+install.packages("daltoolboxdp")
 ```
 
 To install the development version from GitHub:

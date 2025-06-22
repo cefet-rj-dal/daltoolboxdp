@@ -38,7 +38,7 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 You can install the latest stable version from CRAN:
 
 ``` r
-#install.packages("daltoolboxdp")
+install.packages("daltoolboxdp")
 ```
 
 To install the development version from GitHub:

@@ -8,8 +8,8 @@
 
 # installing packages
 
-#install.packages("tspredit")
-#install.packages("daltoolboxdp")
+install.packages("tspredit")
+install.packages("daltoolboxdp")
 ```
 
 
