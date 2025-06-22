@@ -8,19 +8,8 @@
 
 # installing packages
 
-install.packages("tspredit")
-```
-
-```
-
-```
-
-``` r
-install.packages("daltoolboxdp")
-```
-
-```
-
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
@@ -28,7 +17,61 @@ install.packages("daltoolboxdp")
 # loading DAL
 
 library(daltoolbox)
+```
+
+```
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo
+```
+
+```
+## Registered S3 methods overwritten by 'forecast':
+##   method  from 
+##   head.ts stats
+##   tail.ts stats
+```
+
+```
+## 
+## Attaching package: 'daltoolbox'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     transform
+```
+
+``` r
 library(tspredit)
+```
+
+```
+## Registered S3 methods overwritten by 'tspredit':
+##   method           from      
+##   [.ts_data        daltoolbox
+##   action.ts_reg    daltoolbox
+##   evaluate.ts_reg  daltoolbox
+##   fit.ts_arima     daltoolbox
+##   fit.ts_regsw     daltoolbox
+##   predict.ts_arima daltoolbox
+##   predict.ts_reg   daltoolbox
+##   predict.ts_regsw daltoolbox
+```
+
+```
+## 
+## Attaching package: 'tspredit'
+```
+
+```
+## The following objects are masked from 'package:daltoolbox':
+## 
+##     adjust_ts_data, do_fit, do_predict, MSE.ts, R2.ts, sMAPE.ts, ts_arima, ts_data, ts_head, ts_projection, ts_reg, ts_regsw, ts_sample
+```
+
+``` r
 library(daltoolboxdp)
 library(ggplot2)
 ```
@@ -37,10 +80,10 @@ library(ggplot2)
 ``` r
 # dataset for example 
 
-data(sin_data)
+data(tsd)
 
 sw_size <- 5
-ts <- ts_data(sin_data$y, sw_size)
+ts <- ts_data(tsd$y, sw_size)
 
 ts_head(ts)
 ```
@@ -102,7 +145,7 @@ grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-22](fig/autoenc_adv_e/unnamed-chunk-22-1.png)
+![plot of chunk unnamed-chunk-7](fig/autoenc_adv_e/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -128,12 +171,12 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]        [,3]
-## [1,] 2.052103 -2.793830  0.25826353
-## [2,] 4.024621 -3.377758 -0.02018688
-## [3,] 4.647378 -5.713655  1.42787075
-## [4,] 2.593029 -2.280858 -0.03951484
-## [5,] 1.896053 -2.990823 -0.50520903
-## [6,] 2.987288 -3.215544  0.59857315
+##          [,1]      [,2]         [,3]
+## [1,] 2.154994 -2.600018  0.261032760
+## [2,] 4.241377 -3.047095 -0.109409556
+## [3,] 4.913082 -5.353873  1.467197418
+## [4,] 2.762518 -2.000884  0.003051206
+## [5,] 2.005938 -2.831389 -0.544577539
+## [6,] 3.188262 -3.111531  0.622531295
 ```
 

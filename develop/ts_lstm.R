@@ -8,18 +8,18 @@
 #'@examples
 #'#See an example of using `ts_ts_lstmconv1d` at this
 #'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_lstm.md
-#'@importFrom daltoolbox ts_regsw
+#'@importFrom tspredit ts_regsw
 #'@import reticulate
 #'@export
 ts_lstm <- function(preprocess = NA, input_size = NA, epochs = 10000L) {
-  obj <- ts_regsw(preprocess, input_size)
+  obj <- tspredit::ts_regsw(preprocess, input_size)
   obj$epochs <- epochs
   class(obj) <- append("ts_lstm", class(obj))
 
   return(obj)
 }
 
-#'@importFrom daltoolbox do_fit
+#'@importFrom tspredit do_fit
 #'@exportS3Method do_fit ts_lstm
 do_fit.ts_lstm <- function(obj, x, y) {
   if (!exists("ts_lstm_create"))
@@ -37,7 +37,7 @@ do_fit.ts_lstm <- function(obj, x, y) {
 }
 
 
-#'@importFrom daltoolbox do_predict
+#'@importFrom tspredit do_predict
 #'@exportS3Method do_predict ts_lstm
 do_predict.ts_lstm <- function(obj, x) {
   if (!exists("ts_lstm_predict"))

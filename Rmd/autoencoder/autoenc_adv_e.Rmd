@@ -7,8 +7,8 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 ```{r}
@@ -23,10 +23,10 @@ library(ggplot2)
 ```{r}
 # dataset for example 
 
-data(sin_data)
+data(tsd)
 
 sw_size <- 5
-ts <- ts_data(sin_data$y, sw_size)
+ts <- ts_data(tsd$y, sw_size)
 
 ts_head(ts)
 ```

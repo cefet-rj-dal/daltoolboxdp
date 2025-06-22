@@ -8,18 +8,18 @@
 #'@examples
 #'#See an example of using `ts_conv1d` at this
 #'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_conv1d.md
-#'@importFrom daltoolbox ts_regsw
+#'@importFrom tspredit ts_regsw
 #'@import reticulate
 #'@export
 ts_conv1d <- function(preprocess = NA, input_size = NA, epochs = 10000L) {
-  obj <- ts_regsw(preprocess, input_size)
+  obj <- tspredit::ts_regsw(preprocess, input_size)
   obj$channels <- 1
   obj$epochs <- epochs
   class(obj) <- append("ts_conv1d", class(obj))
   return(obj)
 }
 
-#'@importFrom daltoolbox do_fit
+#'@importFrom tspredit do_fit
 #'@exportS3Method do_fit ts_conv1d
 do_fit.ts_conv1d <- function(obj, x, y) {
   reticulate::source_python(system.file("python", "ts_conv1d.py", package = "daltoolboxdp"))
@@ -35,7 +35,7 @@ do_fit.ts_conv1d <- function(obj, x, y) {
   return(obj)
 }
 
-#'@importFrom daltoolbox do_predict
+#'@importFrom tspredit do_predict
 #'@exportS3Method do_predict ts_conv1d
 do_predict.ts_conv1d <- function(obj, x) {
   reticulate::source_python(system.file("python", "ts_conv1d.py", package = "daltoolboxdp"))

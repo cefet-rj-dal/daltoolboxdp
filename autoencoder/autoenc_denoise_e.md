@@ -8,19 +8,8 @@
 
 # installing packages
 
-install.packages("tspredit")
-```
-
-```
-
-```
-
-``` r
-install.packages("daltoolboxdp")
-```
-
-```
-
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
@@ -36,10 +25,10 @@ library(ggplot2)
 ``` r
 # dataset for example 
 
-data(sin_data)
+data(tsd)
 
 sw_size <- 5
-ts <- ts_data(sin_data$y, sw_size)
+ts <- ts_data(tsd$y, sw_size)
 
 ts_head(ts)
 ```
@@ -89,19 +78,44 @@ test <- as.data.frame(samp$test)
 # creating autoencoder - reduce from 5 to 3 dimensions
 
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
+```
 
+```
+## Error in autoenc_denoise_e(5, 3, num_epochs = 1500): could not find function "autoenc_denoise_e"
+```
+
+``` r
 auto <- fit(auto, train)
+```
+
+```
+## Error: object 'auto' not found
 ```
 
 
 ``` r
 fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
+```
 
+```
+## Error: object 'auto' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+```
+
+```
+## Error: object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-7](fig/autoenc_denoise_e/unnamed-chunk-7-1.png)
+```
+## Error: object 'grf' not found
+```
 
 
 ``` r
@@ -123,16 +137,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error: object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] 1.0029416 -0.5693755 0.6910219
-## [2,] 1.0227610 -0.6766692 0.7103397
-## [3,] 1.0013922 -0.7843208 0.7041457
-## [4,] 0.9464551 -0.8686305 0.6756943
-## [5,] 0.8662083 -0.9172776 0.6287760
-## [6,] 0.7700437 -0.9219674 0.5678139
+## Error: object 'result' not found
 ```
 
