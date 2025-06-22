@@ -17,61 +17,7 @@
 # loading DAL
 
 library(daltoolbox)
-```
-
-```
-## Registered S3 method overwritten by 'quantmod':
-##   method            from
-##   as.zoo.data.frame zoo
-```
-
-```
-## Registered S3 methods overwritten by 'forecast':
-##   method  from 
-##   head.ts stats
-##   tail.ts stats
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-``` r
 library(tspredit)
-```
-
-```
-## Registered S3 methods overwritten by 'tspredit':
-##   method           from      
-##   [.ts_data        daltoolbox
-##   action.ts_reg    daltoolbox
-##   evaluate.ts_reg  daltoolbox
-##   fit.ts_arima     daltoolbox
-##   fit.ts_regsw     daltoolbox
-##   predict.ts_arima daltoolbox
-##   predict.ts_reg   daltoolbox
-##   predict.ts_regsw daltoolbox
-```
-
-```
-## 
-## Attaching package: 'tspredit'
-```
-
-```
-## The following objects are masked from 'package:daltoolbox':
-## 
-##     adjust_ts_data, do_fit, do_predict, MSE.ts, R2.ts, sMAPE.ts, ts_arima, ts_data, ts_head, ts_projection, ts_reg, ts_regsw, ts_sample
-```
-
-``` r
 library(daltoolboxdp)
 library(ggplot2)
 ```
@@ -171,12 +117,12 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]         [,3]
-## [1,] 2.154994 -2.600018  0.261032760
-## [2,] 4.241377 -3.047095 -0.109409556
-## [3,] 4.913082 -5.353873  1.467197418
-## [4,] 2.762518 -2.000884  0.003051206
-## [5,] 2.005938 -2.831389 -0.544577539
-## [6,] 3.188262 -3.111531  0.622531295
+##          [,1]      [,2]       [,3]
+## [1,] 2.106615 -2.730181  0.2414720
+## [2,] 4.058522 -3.336214 -0.2032203
+## [3,] 4.630153 -5.591597  1.2954661
+## [4,] 2.646276 -2.207337 -0.1532810
+## [5,] 1.919026 -2.965093 -0.6173583
+## [6,] 2.989880 -3.104148  0.5304434
 ```
 

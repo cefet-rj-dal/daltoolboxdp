@@ -31,7 +31,7 @@ print(myfeature$features)
 ```
 
 ```
-## [1] "Petal.Width"  "Petal.Length"
+## [1] "Petal.Length" "Petal.Width"
 ```
 
 ``` r
@@ -40,12 +40,12 @@ print(head(data))
 ```
 
 ```
-##   Petal.Width Petal.Length Species
-## 1         0.2          1.4  setosa
-## 2         0.2          1.4  setosa
-## 3         0.2          1.3  setosa
-## 4         0.2          1.5  setosa
-## 5         0.2          1.4  setosa
-## 6         0.4          1.7  setosa
+##   Petal.Length Petal.Width Species
+## 1          1.4         0.2  setosa
+## 2          1.4         0.2  setosa
+## 3          1.3         0.2  setosa
+## 4          1.5         0.2  setosa
+## 5          1.4         0.2  setosa
+## 6          1.7         0.4  setosa
 ```
 

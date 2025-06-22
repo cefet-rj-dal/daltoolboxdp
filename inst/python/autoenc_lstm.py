@@ -42,11 +42,10 @@ class Decoder(nn.Module):
         self.output_layer = nn.Linear(encoding_size, input_size)
 
     def forward(self, x):
-        x=self.lstm(x)
-        x=x[0]
-        x=self.output_layer(x)
-        x=x.reshape((x.shape[0], x.shape[2], x.shape[1]))
-        return x
+        x, _ = self.lstm(x)
+        x = self.output_layer(x)
+        x = x.view(x.size(0), 1, -1)  # Corrigido para bater com o shape do target
+        return x      
 
 class Autoencoder_LSTM_TS(Dataset):
     def __init__(self, num_samples, input_size):

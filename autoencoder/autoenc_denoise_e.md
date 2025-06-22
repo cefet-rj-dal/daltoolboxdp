@@ -78,44 +78,19 @@ test <- as.data.frame(samp$test)
 # creating autoencoder - reduce from 5 to 3 dimensions
 
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
-```
 
-```
-## Error in autoenc_denoise_e(5, 3, num_epochs = 1500): could not find function "autoenc_denoise_e"
-```
-
-``` r
 auto <- fit(auto, train)
-```
-
-```
-## Error: object 'auto' not found
 ```
 
 
 ``` r
 fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
-```
 
-```
-## Error: object 'auto' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
-```
-
-```
-## Error: object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error: object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/autoenc_denoise_e/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -137,17 +112,16 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error: object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error: object 'result' not found
+##           [,1]       [,2]      [,3]
+## [1,] 0.9786387 -0.5594079 0.7341204
+## [2,] 0.9915323 -0.6838336 0.7502946
+## [3,] 0.9707655 -0.7982574 0.7396640
+## [4,] 0.9215176 -0.8827088 0.7068284
+## [5,] 0.8468506 -0.9319379 0.6538290
+## [6,] 0.7514073 -0.9428831 0.5839612
 ```
 
