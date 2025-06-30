@@ -33,23 +33,6 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
 ------------------------------------------------------------------------
 
-# Installation
-
-You can install the latest stable version from CRAN:
-
-``` r
-install.packages("daltoolboxdp")
-```
-
-To install the development version from GitHub:
-
-``` r
-library(devtools)
-devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies = FALSE, upgrade = "never")
-```
-
-------------------------------------------------------------------------
-
 # Examples
 
 Example scripts are available at:
@@ -71,6 +54,23 @@ library(daltoolboxdp)
 
 # Example usage (replace with actual function when available)
 # e.g., data <- my_sampler_function(data, method = "undersample")
+```
+
+------------------------------------------------------------------------
+
+# Installation
+
+You can install the latest stable version from CRAN:
+
+``` r
+install.packages("daltoolboxdp")
+```
+
+To install the development version from GitHub:
+
+``` r
+library(devtools)
+devtools::install_github("cefet-rj-dal/daltoolboxdp", force = TRUE, dependencies = FALSE, upgrade = "never")
 ```
 
 ------------------------------------------------------------------------
