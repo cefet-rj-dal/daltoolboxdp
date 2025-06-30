@@ -42,13 +42,6 @@ Example scripts are available at:
 - [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/autoencoder)
 - [Time Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/timeseries)
 
-```{r example}
-library(daltoolboxdp)
-
-# Example usage (replace with actual function when available)
-# e.g., data <- my_sampler_function(data, method = "undersample")
-```
-
 ---
 
 # Installation

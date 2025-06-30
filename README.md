@@ -42,20 +42,6 @@ Example scripts are available at:
 - [Time
   Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/timeseries)
 
-``` r
-library(daltoolboxdp)
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
-#> Registered S3 methods overwritten by 'forecast':
-#>   method  from 
-#>   head.ts stats
-#>   tail.ts stats
-
-# Example usage (replace with actual function when available)
-# e.g., data <- my_sampler_function(data, method = "undersample")
-```
-
 ------------------------------------------------------------------------
 
 # Installation
