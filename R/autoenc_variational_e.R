@@ -13,10 +13,20 @@
 #'
 #'@examples
 #'\dontrun{
+#'# Requirements: Python with torch installed and reticulate configured.
+#'
+#'# 1) Create sample data
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'
+#'# 2) Fit VAE encoder
 #'ae <- autoenc_variational_e(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'Z  <- daltoolbox::transform(ae, X)
+#'
+#'# 3) Transform to latent encodings
+#'#    Note: the underlying Python returns [mean | var] concatenated; depending on
+#'#    the implementation, you may receive 2*encoding_size columns.
+#'Z <- daltoolbox::transform(ae, X)
+#'dim(Z)
 #'}
 #'
 #'# See:

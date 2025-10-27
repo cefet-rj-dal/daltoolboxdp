@@ -14,10 +14,16 @@
 #'
 #'@examples
 #'\dontrun{
+#'# 1) Prepare data
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'
+#'# 2) Fit denoising autoencoder (encode-decode)
 #'ae <- autoenc_denoise_ed(input_size = 20, encoding_size = 5, noise_factor = 0.2, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
+#'
+#'# 3) Reconstruct inputs and compute error
 #'X_hat <- daltoolbox::transform(ae, X)
+#'mean((X - X_hat)^2)
 #'}
 #'
 #'# More examples:

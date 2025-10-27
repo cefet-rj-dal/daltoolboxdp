@@ -14,10 +14,16 @@
 #'
 #'@examples
 #'\dontrun{
+#'# 1) Prepare data
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'
+#'# 2) Fit denoising encoder (higher noise_factor = stronger noise during training)
 #'ae <- autoenc_denoise_e(input_size = 20, encoding_size = 5, noise_factor = 0.2, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'Z  <- daltoolbox::transform(ae, X)
+#'
+#'# 3) Obtain latent encodings
+#'Z <- daltoolbox::transform(ae, X)
+#'dim(Z)
 #'}
 #'
 #'# See:

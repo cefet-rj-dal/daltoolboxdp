@@ -13,6 +13,8 @@
 #'@examples
 #'\dontrun{
 #'data(iris)
+#'
+#'# Gaussian Naive Bayes for multi-class iris
 #'clf <- skcla_nb(attribute = 'Species', slevels = levels(iris$Species))
 #'clf <- daltoolbox::fit(clf, iris)
 #'pred <- predict(clf, iris)

@@ -13,12 +13,18 @@
 #'@examples
 #'\dontrun{
 #'data(iris)
-#'mod_iris <- iris[c(1:50, 51:71, 101:111), ]  # induce imbalance
 #'
+#'# 1) Induce imbalance by subsetting species
+#'mod_iris <- iris[c(1:50, 51:71, 101:111), ]
+#'table(mod_iris$Species)
+#'
+#'# 2) Oversample minority classes using SMOTE
 #'bal <- bal_oversampling('Species')
 #'bal <- daltoolbox::fit(bal, mod_iris)
 #'adjust_iris <- daltoolbox::transform(bal, mod_iris)
-#'table(adjust_iris$Species)                   # now more balanced
+#'
+#'# 3) Inspect new class distribution
+#'table(adjust_iris$Species)  # more balanced counts
 #'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit

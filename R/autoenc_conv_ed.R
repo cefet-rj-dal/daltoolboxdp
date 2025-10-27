@@ -12,7 +12,8 @@
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 #'ae <- autoenc_conv_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'X_hat <- daltoolbox::transform(ae, X)
+#'X_hat <- daltoolbox::transform(ae, X)  # same dims as X
+#'mean((X - X_hat)^2)
 #'}
 #'
 #'# See:

@@ -10,14 +10,17 @@
 #' Drummond, C., & Holte, R. (2003). C4.5, Class Imbalance, and Cost Sensitivity.
 #'
 #'@examples
+#'\dontrun{
 #'set.seed(123)
 #'data(iris)
-#'mod_iris <- iris[c(1:50, 51:71, 101:111), ]  # induce imbalance
+#'mod_iris <- iris[c(1:50, 51:71, 101:111), ]   # induce imbalance
+#'table(mod_iris$Species)
 #'
-#'bal <- bal_subsampling('Species')
+#'bal <- bal_subsampling('Species')              # random under-sampling
 #'bal <- daltoolbox::fit(bal, mod_iris)
 #'adjust_iris <- daltoolbox::transform(bal, mod_iris)
-#'table(adjust_iris$Species)
+#'table(adjust_iris$Species)                     # all classes at minority count
+#'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

@@ -13,8 +13,11 @@
 #'
 #'@examples
 #'\dontrun{
-#'# Fit a simple Conv1D forecaster (see linked vignette for full workflow)
+#'# Conv1D forecaster expects features + 't0' target internally; the R wrapper
+#'# builds the required data frame when you call do_fit/do_predict via tspredit.
+#'
 #'tsf <- ts_conv1d(input_size = 12, epochs = 1000L)
+#'# model <- daltoolbox::fit(tsf, your_data)
 #'}
 #'
 #'# See:

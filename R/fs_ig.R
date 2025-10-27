@@ -10,10 +10,21 @@
 #' Quinlan, J. R. (1986). Induction of Decision Trees.
 #'
 #'@examples
+#'\dontrun{
 #'data(iris)
-#'fs <- daltoolbox::fit(fs_ig("Species"), iris)  # fit IG selector
-#'data_ig <- daltoolbox::transform(fs, iris)      # keep top features + target
+#'
+#'# 1) Ensure target is a factor for IG-based ranking
+#'iris2 <- iris
+#'iris2$Species <- as.factor(iris2$Species)
+#'
+#'# 2) Fit selector and inspect chosen features
+#'fs <- daltoolbox::fit(fs_ig("Species"), iris2)
+#'fs$features                     # names of selected predictors
+#'
+#'# 3) Subset data to selected features + target
+#'data_ig <- daltoolbox::transform(fs, iris2)
 #'head(data_ig)
+#'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

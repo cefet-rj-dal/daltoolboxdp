@@ -19,7 +19,11 @@
 #'@examples
 #'\dontrun{
 #'data(iris)
+#'
+#'# 1) Initialize KNN (k=7) with target attribute + levels
 #'clf <- skcla_knn(attribute = 'Species', slevels = levels(iris$Species), n_neighbors = 7)
+#'
+#'# 2) Fit and predict; factors are handled internally
 #'clf <- daltoolbox::fit(clf, iris)
 #'pred <- predict(clf, iris)
 #'table(pred, iris$Species)

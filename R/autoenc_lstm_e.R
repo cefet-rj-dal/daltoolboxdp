@@ -13,10 +13,12 @@
 #'
 #'@examples
 #'\dontrun{
+#'# LSTM-based encoder over sequences stored as rows
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 #'ae <- autoenc_lstm_e(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'Z  <- daltoolbox::transform(ae, X)
+#'Z  <- daltoolbox::transform(ae, X)  # 50 x 5
+#'dim(Z)
 #'}
 #'
 #'# See:

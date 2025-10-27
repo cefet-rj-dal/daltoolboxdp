@@ -26,7 +26,11 @@
 #'@examples
 #'\dontrun{
 #'data(iris)
+#'
+#'# 1) Create SVM classifier (RBF kernel)
 #'clf <- skcla_svc(attribute = 'Species', slevels = levels(iris$Species), kernel = 'rbf', C = 1)
+#'
+#'# 2) Fit and predict
 #'clf <- daltoolbox::fit(clf, iris)
 #'pred <- predict(clf, iris)
 #'table(pred, iris$Species)

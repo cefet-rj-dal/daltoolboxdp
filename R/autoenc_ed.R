@@ -20,11 +20,18 @@
 #'
 #'@examples
 #'\dontrun{
+#'# Requirements: Python with torch installed and reticulate configured.
+#'
+#'# 1) Create sample data (50 x 20)
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'
+#'# 2) Fit encode-decode autoencoder (5-D bottleneck)
 #'ae <- autoenc_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'X_hat <- daltoolbox::transform(ae, X)  # reconstruction
-#'mean((X - X_hat)^2)                    # simple MSE reconstruction error
+#'
+#'# 3) Reconstruct inputs and inspect reconstruction error
+#'X_hat <- daltoolbox::transform(ae, X)  # same dimensions as X
+#'mean((X - X_hat)^2)                    # simple MSE across all entries
 #'}
 #'
 #'# More examples:

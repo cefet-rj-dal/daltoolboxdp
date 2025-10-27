@@ -12,10 +12,11 @@
 #' Masci, J., Meier, U., Cireşan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 #'@examples
 #'\dontrun{
+#'# Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 #'ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
-#'Z  <- daltoolbox::transform(ae, X)
+#'Z  <- daltoolbox::transform(ae, X)   # 50 x 5 encodings
 #'}
 #'
 #'# See:

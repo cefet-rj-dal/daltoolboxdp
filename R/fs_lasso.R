@@ -9,10 +9,17 @@
 #' Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso.
 #'
 #'@examples
+#'\dontrun{
 #'data(iris)
-#'fs <- daltoolbox::fit(fs_lasso("Sepal.Length"), iris)  # numeric response
+#'
+#'# 1) LASSO requires a numeric response
+#'fs <- daltoolbox::fit(fs_lasso("Sepal.Length"), iris)
+#'fs$features                 # selected predictors with non-zero coefficients
+#'
+#'# 2) Subset data to selected features + target
 #'data_lasso <- daltoolbox::transform(fs, iris)
 #'head(data_lasso)
+#'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

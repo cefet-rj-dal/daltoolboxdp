@@ -10,10 +10,21 @@
 #' Kononenko, I. (1994). Estimating attributes: analysis and extensions of Relief.
 #'
 #'@examples
+#'\dontrun{
 #'data(iris)
-#'fs <- daltoolbox::fit(fs_relief("Species"), iris)
-#'data_relief <- daltoolbox::transform(fs, iris)
+#'
+#'# 1) Relief expects a categorical target
+#'iris2 <- iris
+#'iris2$Species <- as.factor(iris2$Species)
+#'
+#'# 2) Fit Relief and check which features were kept
+#'fs <- daltoolbox::fit(fs_relief("Species"), iris2)
+#'fs$features
+#'
+#'# 3) Transform data to only selected features + target
+#'data_relief <- daltoolbox::transform(fs, iris2)
 #'head(data_relief)
+#'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

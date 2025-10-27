@@ -13,10 +13,18 @@
 #'
 #'@examples
 #'\dontrun{
+#'# Requirements: Python with torch installed and reticulate configured.
+#'
+#'# 1) Sample data
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'
+#'# 2) Fit VAE encode-decode
 #'ae <- autoenc_variational_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
 #'ae <- daltoolbox::fit(ae, X)
+#'
+#'# 3) Reconstruct inputs
 #'X_hat <- daltoolbox::transform(ae, X)
+#'mean((X - X_hat)^2)
 #'}
 #'
 #'# See:

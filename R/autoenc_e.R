@@ -20,14 +20,19 @@
 #'
 #'@examples
 #'\dontrun{
-#'# Example: learn encodings for a toy matrix
+#'# Requirements: Python with torch installed and reticulate configured.
 #'set.seed(123)
+#'
+#'# 1) Create a toy dataset with 100 samples and 20 features
 #'X <- matrix(rnorm(2000), nrow = 100, ncol = 20)
 #'
+#'# 2) Create and fit an encoder (5-D bottleneck)
 #'ae <- autoenc_e(input_size = 20, encoding_size = 5, num_epochs = 50)
-#'ae <- daltoolbox::fit(ae, X)           # train encoder
-#'Z  <- daltoolbox::transform(ae, X)     # obtain encodings (n x encoding_size)
-#'dim(Z)
+#'ae <- daltoolbox::fit(ae, X)
+#'
+#'# 3) Transform data to latent space
+#'Z <- daltoolbox::transform(ae, X)   # matrix with dimensions 100 x 5
+#'dim(Z)                              # c(100, 5)
 #'}
 #'
 #'# See a more complete example at:

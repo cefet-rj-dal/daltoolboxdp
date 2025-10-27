@@ -30,9 +30,13 @@
 #'@examples
 #'\dontrun{
 #'data(iris)
+#'
+#'# 1) Define classifier with target attribute and its levels
 #'clf <- skcla_rf(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 200)
+#'
+#'# 2) Fit and predict
 #'clf <- daltoolbox::fit(clf, iris)
-#'pred <- predict(clf, iris)
+#'pred <- predict(clf, iris)   # wrapper drops target column internally
 #'table(pred, iris$Species)
 #'}
 #'

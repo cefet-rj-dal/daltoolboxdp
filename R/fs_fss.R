@@ -9,10 +9,17 @@
 #' Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.
 #'
 #'@examples
+#'\dontrun{
 #'data(iris)
-#'fs <- daltoolbox::fit(fs_fss("Sepal.Length"), iris)  # numeric response
+#'
+#'# 1) Forward stepwise for numeric response (adjusted R^2 criterion)
+#'fs <- daltoolbox::fit(fs_fss("Sepal.Length"), iris)
+#'fs$features
+#'
+#'# 2) Subset to selected features + target
 #'data_fss <- daltoolbox::transform(fs, iris)
 #'head(data_fss)
+#'}
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

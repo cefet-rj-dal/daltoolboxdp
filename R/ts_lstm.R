@@ -12,8 +12,12 @@
 #'
 #'@examples
 #'\dontrun{
-#'# Fit a simple LSTM forecaster (see vignette for end-to-end usage)
+#'# LSTM forecaster expects a frame where 't0' is the target during fitting.
+#'# The R wrapper constructs it from (x, y), so you usually call do_fit via tspredit.
+#'
+#'# Minimal construction (see vignette for full workflow)
 #'tsf <- ts_lstm(input_size = 12, epochs = 1000L)
+#'# model <- daltoolbox::fit(tsf, your_data)  # delegated to tspredit
 #'}
 #'
 #'# See:
