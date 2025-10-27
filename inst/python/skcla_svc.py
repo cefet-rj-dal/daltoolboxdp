@@ -1,3 +1,12 @@
+"""
+SVC (Support Vector Classifier) wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_svc.R):
+  - skcla_svc_create(...hyperparams...) -> sklearn model
+  - skcla_svc_fit(model, df_train, target_column, slevels=None) -> fitted model
+  - skcla_svc_predict(model, df_test) -> list of labels
+"""
+
 from sklearn.svm import SVC
 import pandas as pd
 
@@ -27,6 +36,7 @@ def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001
     return model
 
 def skcla_svc_train(model, df_train, target_column):
+    """Fit SVC. df_train must include the target_column."""
     df_train = pd.DataFrame(df_train)
 
     #print("Column types:")
@@ -40,6 +50,7 @@ def skcla_svc_train(model, df_train, target_column):
     return model
 
 def skcla_svc_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)
         #print("Prediction input shape:", df_test.shape)
@@ -54,4 +65,5 @@ def skcla_svc_predict(model, df_test):
         return []
 
 def skcla_svc_fit(model, df_train, target_column, slevels=None):
+    """Entry from R to fit; delegates to skcla_svc_train."""
     return skcla_svc_train(model, df_train, target_column)

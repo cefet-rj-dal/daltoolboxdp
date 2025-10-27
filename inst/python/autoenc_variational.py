@@ -1,3 +1,16 @@
+"""
+Variational autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_variational_e.R and R/autoenc_variational_ed.R):
+  - autoenc_variational_create(input_size, encoding_size)
+  - autoenc_variational_fit(model, data, ...)
+  - autoenc_variational_encode(model, data, batch_size)
+  - autoenc_variational_encode_decode(model, data, batch_size)
+
+Data expectations: pandas.DataFrame of shape (n_samples, input_size).
+Encode returns concatenated mean and var vectors per sample.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -66,6 +79,7 @@ class Autoencoder_Variational(nn.Module):
     
 # Create the vae
 def autoenc_variational_create(input_size, encoding_size):
+  """Create VAE model (called from R)."""
   input_size = int(input_size)
   encoding_size = int(encoding_size)
   
@@ -84,6 +98,7 @@ def criterion(outputs, inputs, mean, var):
 
 # Train the vae
 def autoenc_variational_train(vae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
+  """Internal training loop; returns (model, train_loss_np, val_loss_np)."""
   optimizer = optim.Adam(vae.parameters(), lr=learning_rate)
 
   train_loss = []
@@ -138,6 +153,7 @@ def autoenc_variational_train(vae, data, batch_size=32, num_epochs = 1000, learn
 
 
 def autoenc_variational_fit(vae, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
+  """Entry from R to fit the VAE; returns (model, train_loss, val_loss)."""
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
     
@@ -147,7 +163,7 @@ def autoenc_variational_fit(vae, data, batch_size = 32, num_epochs = 1000, learn
 
 
 def autoenc_variational_encode_data(vae, data_loader):
-  # Encode the synthetic time series data using the trained vae
+  # Helper: run forward pass and return mean and var concatenated
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -163,6 +179,7 @@ def autoenc_variational_encode_data(vae, data_loader):
 
 
 def autoenc_variational_encode(vae, data, batch_size = 32):
+  """Entry from R to return [mean | var] encodings as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :]
   
@@ -175,7 +192,7 @@ def autoenc_variational_encode(vae, data, batch_size = 32):
 
 
 def autoenc_variational_encode_decode_data(vae, data_loader):
-  # Encode the synthetic time series data using the trained vae
+  # Helper: reconstruction pass (decoded outputs)
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -190,6 +207,7 @@ def autoenc_variational_encode_decode_data(vae, data_loader):
 
 
 def autoenc_variational_encode_decode(vae, data, batch_size = 32):
+  """Entry from R to return reconstructions as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :]
   

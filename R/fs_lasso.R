@@ -1,13 +1,18 @@
-#'@title Feature Selection using Lasso
-#'@description Feature selection using Lasso regression is a technique for selecting a subset of relevant features.
-#' It wraps the glmnet library.
-#'@param attribute The target variable.
+#'@title LASSO Feature Selection
+#'@description Performs feature selection using L1-regularized regression (LASSO),
+#' implemented with `glmnet`.
+#'
+#'@param attribute Character. Name of the target variable.
 #'@return A `fs_lasso` object.
+#'
+#'@references
+#' Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso.
+#'
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(fs_lasso("Species"), iris)
-#'data <- daltoolbox::transform(myfeature, iris)
-#'head(data)
+#'fs <- daltoolbox::fit(fs_lasso("Sepal.Length"), iris)  # numeric response
+#'data_lasso <- daltoolbox::transform(fs, iris)
+#'head(data_lasso)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

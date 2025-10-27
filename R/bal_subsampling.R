@@ -1,10 +1,14 @@
 #'@title Subsampling
-#'@description Subsampling balances the class distribution of a dataset by reducing the representation of the majority class in the dataset.
-#'@param attribute The class attribute to target balancing using subsampling
+#'@description Subsampling balances class distributions by reducing the representation
+#' of majority classes through random under-sampling.
+#'
+#'@param attribute Character. Name of the target class attribute to balance.
 #'@return A `bal_subsampling` object.
+#'
 #'@examples
+#'set.seed(123)
 #'data(iris)
-#'mod_iris <- iris[c(1:50,51:71,101:111),]
+#'mod_iris <- iris[c(1:50, 51:71, 101:111), ]  # induce imbalance
 #'
 #'bal <- bal_subsampling('Species')
 #'bal <- daltoolbox::fit(bal, mod_iris)
@@ -24,6 +28,7 @@ bal_subsampling <- function(attribute) {
 #'@importFrom daltoolbox transform
 #'@export
 transform.bal_subsampling <- function(obj, data, ...) {
+  # Randomly downsample each class to match the minority count
   data <- data
   attribute <- obj$attribute
   x <- sort((table(data[,attribute])))

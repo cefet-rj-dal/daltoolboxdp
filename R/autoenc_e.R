@@ -1,15 +1,38 @@
 #'@title Autoencoder - Encode
-#'@description Creates an deep learning autoencoder to encode a sequence of observations.
-#' It wraps the pytorch and reticulate libraries.
-#'@param input_size input size
-#'@param encoding_size encoding size
-#'@param batch_size size for batch learning
-#'@param num_epochs number of epochs for training
-#'@param learning_rate learning rate
-#'@return returns a `autoenc_e` object.
+#'@description Creates a deep learning autoencoder that learns a latent representation (encoding)
+#' for a sequence of observations. Wraps a PyTorch implementation via the `reticulate` bridge.
+#'
+#'@details This encoder provides dimensionality reduction by training a neural network to
+#' compress inputs into a lower-dimensional bottleneck. The learned encoding can be used
+#' for downstream tasks such as clustering, visualization, or as features for predictive models.
+#'
+#'@param input_size Integer. Number of input features per observation.
+#'@param encoding_size Integer. Size of the latent (bottleneck) representation.
+#'@param batch_size Integer. Mini-batch size used during training. Default is 32.
+#'@param num_epochs Integer. Maximum number of training epochs. Default is 1000.
+#'@param learning_rate Numeric. Optimizer learning rate. Default is 0.001.
+#'
+#'@return A `autoenc_e` object.
+#'
+#'@references
+#' Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the Dimensionality of Data with Neural Networks.
+#' Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library.
+#'
 #'@examples
-#'#See an example of using `autoenc_e` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_e.md
+#'\dontrun{
+#'# Example: learn encodings for a toy matrix
+#'set.seed(123)
+#'X <- matrix(rnorm(2000), nrow = 100, ncol = 20)
+#'
+#'ae <- autoenc_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)           # train encoder
+#'Z  <- daltoolbox::transform(ae, X)     # obtain encodings (n x encoding_size)
+#'dim(Z)
+#'}
+#'
+#'# See a more complete example at:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_e.md
+#'
 #'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export
@@ -27,12 +50,15 @@ autoenc_e <- function(input_size, encoding_size, batch_size = 32, num_epochs = 1
 
 #'@exportS3Method fit autoenc_e
 fit.autoenc_e <- function(obj, data, ...) {
+  # Lazily load Python implementation only when needed
   if (!exists("autoenc_create"))
     reticulate::source_python(system.file("python", "autoenc.py", package = "daltoolboxdp"))
 
+  # Create model once and reuse it across fits
   if (is.null(obj$model))
     obj$model <- autoenc_create(obj$input_size, obj$encoding_size)
 
+  # Train and capture training/validation losses
   result <- autoenc_fit(obj$model, data, num_epochs = obj$num_epochs, learning_rate = obj$learning_rate)
 
   obj$model <- result[[1]]
@@ -44,11 +70,13 @@ fit.autoenc_e <- function(obj, data, ...) {
 
 #'@exportS3Method transform autoenc_e
 transform.autoenc_e <- function(obj, data, ...) {
+  # Ensure backing Python functions are available
   if (!exists("autoenc_create"))
     reticulate::source_python(system.file("python", "autoenc.py", package = "daltoolboxdp"))
 
   result <- NULL
   if (!is.null(obj$model)) {
+    # Forward pass to obtain latent encodings
     result <- autoenc_encode(obj$model, data)
   }
   return(result)

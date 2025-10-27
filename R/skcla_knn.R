@@ -1,7 +1,7 @@
 #' K-Nearest Neighbors Classifier
 #'@title K-Nearest Neighbors Classifier
-#'@description Implements classification using the K-Nearest Neighbors algorithm.
-#' This function wraps the KNeighborsClassifier from Python's scikit-learn library.
+#'@description Implements classification using the k-Nearest Neighbors algorithm.
+#' Wraps scikit-learn's `KNeighborsClassifier` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param n_neighbors Number of neighbors to use for queries
@@ -12,11 +12,21 @@
 #'@param metric Distance metric for the tree ('euclidean', 'manhattan', 'chebyshev', 'minkowski', etc.)
 #'@param metric_params Additional parameters for the metric function
 #'@param n_jobs Number of parallel jobs for neighbor searches
-#'@return A K-Nearest Neighbors classifier object
-#'@return `skcla_knn` object
+#'@return A `skcla_knn` classifier object.
+#'
+#'@references
+#' Cover, T., & Hart, P. (1967). Nearest neighbor pattern classification.
 #'@examples
-#'#See an example of using `skcla_knn` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_knn.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_knn(attribute = 'Species', slevels = levels(iris$Species), n_neighbors = 7)
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_knn.md
 #'@import daltoolbox
 #'@export
 skcla_knn <- function(attribute, slevels, 
@@ -87,6 +97,7 @@ predict.skcla_knn <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
   
+  # Prepare features for prediction
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
   

@@ -1,3 +1,16 @@
+"""
+Convolutional autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_conv_e.R and R/autoenc_conv_ed.R):
+  - autoenc_conv_create(input_size, encoding_size)
+  - autoenc_conv_fit(model, data, batch_size=32, num_epochs=1000, learning_rate=1e-3)
+  - autoenc_conv_encode(model, data, batch_size=32)
+  - autoenc_conv_encode_decode(model, data, batch_size=32)
+
+Data expectations: data is a pandas.DataFrame (n_samples, input_size).
+This module reshapes to (n_samples, input_size, 1) to feed Conv1d.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -47,6 +60,7 @@ class Autoencoder_Conv(nn.Module):
     
 # Create the cae
 def autoenc_conv_create(input_size, encoding_size):
+  """Create a Conv1D autoencoder model for given sizes (called from R)."""
   input_size = int(input_size)
   encoding_size = int(encoding_size)
   
@@ -56,6 +70,7 @@ def autoenc_conv_create(input_size, encoding_size):
 
 # Train the cae
 def autoenc_conv_train(cae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
+  """Internal training routine; returns (model, train_loss_np, val_loss_np)."""
   criterion = nn.MSELoss()
   optimizer = optim.Adam(cae.parameters(), lr=learning_rate)
 
@@ -109,6 +124,7 @@ def autoenc_conv_train(cae, data, batch_size=32, num_epochs = 1000, learning_rat
 
 
 def autoenc_conv_fit(cae, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
+  """Entry from R to fit the ConvAE; returns (model, train_loss, val_loss)."""
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
 
@@ -117,7 +133,7 @@ def autoenc_conv_fit(cae, data, batch_size = 32, num_epochs = 1000, learning_rat
 
 
 def autoenc_conv_encode_data(cae, data_loader):
-  # Encode the synthetic time series data using the trained cae
+  # Helper: run encoder over dataset and stack numpy batches
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -130,6 +146,7 @@ def autoenc_conv_encode_data(cae, data_loader):
   return encoded_data
 
 def autoenc_conv_encode(cae, data, batch_size = 32):
+  """Entry from R to get latent encodings as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :, np.newaxis]
   
@@ -142,7 +159,7 @@ def autoenc_conv_encode(cae, data, batch_size = 32):
 
 
 def autoenc_conv_encode_decode_data(cae, data_loader):
-  # Encode the synthetic time series data using the trained cae
+  # Helper: reconstruction pass (decode(encode(x))) over dataset
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -157,6 +174,7 @@ def autoenc_conv_encode_decode_data(cae, data_loader):
 
 
 def autoenc_conv_encode_decode(cae, data, batch_size = 32):
+  """Entry from R to get reconstructions as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :, np.newaxis]
   

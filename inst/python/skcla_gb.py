@@ -1,3 +1,12 @@
+"""
+GradientBoostingClassifier wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_gb.R):
+  - skcla_gb_create(...hyperparams...) -> sklearn model
+  - skcla_gb_fit(model, df_train, target_column) -> fitted model
+  - skcla_gb_predict(model, df_test) -> list of labels
+"""
+
 from sklearn.ensemble import GradientBoostingClassifier
 import pandas as pd
 
@@ -33,6 +42,7 @@ def skcla_gb_create(loss='log_loss', learning_rate=0.1, n_estimators=100, subsam
     return model
 
 def skcla_gb_train(model, df_train, target_column):
+    """Fit GradientBoostingClassifier. df_train must include the target_column."""
     df_train = pd.DataFrame(df_train)
     #print("Column types:", df_train.dtypes)
     #print("Data shape:", df_train.shape)
@@ -44,6 +54,7 @@ def skcla_gb_train(model, df_train, target_column):
     return model
 
 def skcla_gb_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)
         #print(df_test)
@@ -55,4 +66,5 @@ def skcla_gb_predict(model, df_test):
         print(f"Error occurred: {e}")
 
 def skcla_gb_fit(model, df_train, target_column, n_epochs=None, lr=None):
+    """Entry from R to fit; delegates to skcla_gb_train."""
     return skcla_gb_train(model, df_train, target_column)

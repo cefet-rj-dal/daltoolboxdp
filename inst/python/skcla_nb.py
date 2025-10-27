@@ -1,3 +1,14 @@
+"""
+GaussianNB wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_nb.R):
+  - skcla_nb_create(priors=None, var_smoothing=1e-9)
+  - skcla_nb_fit(model, df_train, target_column)
+  - skcla_nb_predict(model, df_test)
+
+All predictions are returned as Python lists for easy conversion on the R side.
+"""
+
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
 import pandas as pd
@@ -10,6 +21,7 @@ def skcla_nb_create(priors=None, var_smoothing=1e-9):
     return model
 
 def skcla_nb_fit(model, df_train, target_column):
+    """Fit GaussianNB. df_train must include the target_column."""
     try:
         df_train = pd.DataFrame(df_train)
         X_train = df_train.drop(columns=[target_column])
@@ -33,6 +45,7 @@ def skcla_nb_fit(model, df_train, target_column):
         return model
 
 def skcla_nb_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)
 

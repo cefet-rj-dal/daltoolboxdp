@@ -1,16 +1,24 @@
 #'@title Stacked Autoencoder - Encode
-#'@description Creates an deep learning stacked autoencoder to encode a sequence of observations.
-#'The autoencoder layers are based on DAL Toolbox Vanilla Autoencoder
-#' It wraps the pytorch library.
+#'@description Creates a deep learning stacked autoencoder to encode sequences of observations.
+#' The autoencoder layers are based on DAL Toolbox vanilla autoencoder and wrap a PyTorch implementation.
 #'@param input_size input size
 #'@param encoding_size encoding size
 #'@param batch_size size for batch learning
 #'@param num_epochs number of epochs for training
 #'@param learning_rate learning rate
-#'@param k number of AE layers in the stack
-#'@return a `autoenc_stacked_e_decode` object.
-#'#See an example of using `autoenc_stacked_e_decode` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
+#'@param k Integer. Number of autoencoder layers in the stack.
+#'@return A `autoenc_stacked_e` object.
+#'
+#'@examples
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_stacked_e(input_size = 20, encoding_size = 5, k = 3, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'Z  <- daltoolbox::transform(ae, X)
+#'}
+#'
+#'# See:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
 #'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export

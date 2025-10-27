@@ -1,3 +1,17 @@
+"""
+Adversarial autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_adv_e.R and R/autoenc_adv_ed.R):
+  - autoenc_adv_create(input_size, encoding_size)
+  - autoenc_adv_fit(model, data, ...)
+  - autoenc_adv_encode(model, data, batch_size)
+  - autoenc_adv_encode_decode(model, data, batch_size)
+
+Notes:
+  - The returned model holds submodules Q (encoder), P (decoder) and D_gauss (discriminator).
+  - Fit returns (model, train_loss, val_loss) to match R expectations.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -127,6 +141,7 @@ class Autoencoder_Adv(nn.Module):
         
 # Create the aae
 def autoenc_adv_create(input_size, encoding_size):
+  """Create AAE model and its optimizers (called from R)."""
   input_size = int(input_size)
   encoding_size = int(encoding_size)
   
@@ -150,6 +165,7 @@ def autoenc_adv_create(input_size, encoding_size):
 
 # Train the aae
 def autoenc_adv_train(aae, data, batch_size = 350, num_epochs = 1000, learning_rate = 0.001):
+  """Internal training loop with alternating reconstruction and adversarial steps."""
   recon_criterion = nn.MSELoss()
   
   TINY = 1e-15
@@ -263,6 +279,7 @@ def autoenc_adv_train(aae, data, batch_size = 350, num_epochs = 1000, learning_r
 
 
 def autoenc_adv_fit(aae, data, batch_size = 350, num_epochs = 1000, learning_rate = 0.001):
+  """Entry from R to fit AAE; returns (model, train_loss, val_loss)."""
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
   
@@ -272,7 +289,7 @@ def autoenc_adv_fit(aae, data, batch_size = 350, num_epochs = 1000, learning_rat
 
 
 def autoenc_adv_encode_data(aae, data_loader):
-  # Encode the synthetic time series data using the trained aae
+  # Helper: run encoder Q on dataset and stack numpy arrays
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -286,6 +303,7 @@ def autoenc_adv_encode_data(aae, data_loader):
   return encoded_data
 
 def autoenc_adv_encode(aae, data, batch_size = 32):
+  """Entry from R to obtain latent encodings as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :, np.newaxis]
   
@@ -300,8 +318,7 @@ def autoenc_adv_encode(aae, data, batch_size = 32):
 def autoenc_adv_encode_decode_data(aae, data_loader):
   aae.Q.eval()
   aae.P.eval()
-  
-  # Encode the synthetic time series data using the trained aae
+  # Helper: reconstruction pass using Q and P
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -319,6 +336,7 @@ def autoenc_adv_encode_decode_data(aae, data_loader):
 
 
 def autoenc_adv_encode_decode(aae, data, batch_size = 350):
+  """Entry from R to obtain reconstructions as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :, np.newaxis]
   

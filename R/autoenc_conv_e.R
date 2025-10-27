@@ -1,15 +1,25 @@
 #'@title Convolutional Autoencoder - Encode
-#'@description Creates an deep learning convolutional autoencoder to encode a sequence of observations.
-#' It wraps the pytorch library.
+#'@description Creates a deep learning convolutional autoencoder (ConvAE) to encode sequences
+#' of observations. Wraps a PyTorch implementation.
 #'@param input_size input size
 #'@param encoding_size encoding size
 #'@param batch_size size for batch learning
 #'@param num_epochs number of epochs for training
 #'@param learning_rate learning rate
-#'@return a `autoenc_conv_e` object.
+#'@return A `autoenc_conv_e` object.
+#'
+#'@references
+#' Masci, J., Meier, U., Cireşan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 #'@examples
-#'#See an example of using `autoenc_conv_e` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_e.md
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'Z  <- daltoolbox::transform(ae, X)
+#'}
+#'
+#'# See:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_e.md
 #'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export

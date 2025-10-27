@@ -1,7 +1,7 @@
 #' Tree Ensemble
 #'@title Random Forest Classifier
-#'@description Implements classification using Random Forest algorithm.
-#' This function wraps the RandomForestClassifier from Python's scikit-learn library.
+#'@description Implements classification using the Random Forest algorithm.
+#' Wraps scikit-learn's `RandomForestClassifier` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param n_estimators Number of trees in random forest
@@ -23,11 +23,21 @@
 #'@param ccp_alpha Complexity parameter value for pruning
 #'@param max_samples Number of samples for training estimators
 #'@param monotonic_cst Monotonicity constraints for features
-#'@return A Random Forest classifier object
-#'@return `skcla_rf` object
+#'@return A `skcla_rf` classifier object.
+#'
+#'@references
+#' Breiman, L. (2001). Random Forests. Machine Learning.
 #'@examples
-#'#See an example of using `skcla_rf` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_rf(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 200)
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
 #'@import daltoolbox
 #'@export
 skcla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_depth=NULL, min_samples_split=2,
@@ -98,7 +108,7 @@ fit.skcla_rf <- function(obj, data, ...) {
     )
   }
   
-  # Adjust the data frame
+  # Adjust the data frame (factor handling, ordering, etc.)
   data <- adjust_data.frame(data)
   
   obj$model <- skcla_rf_fit(obj$model, data, obj$attribute)
@@ -118,6 +128,7 @@ predict.skcla_rf  <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
   
+  # Prepare features for prediction
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
   

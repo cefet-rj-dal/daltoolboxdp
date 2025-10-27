@@ -1,14 +1,31 @@
 #'@title Adversarial Autoencoder - Encode
-#'@description Creates an deep learning adversarial autoencoder to encode a sequence of observations.
-#' It wraps the pytorch library.
+#'@description Creates a deep learning adversarial autoencoder (AAE) to encode sequences
+#' of observations. Wraps a PyTorch implementation.
+#'
+#'@details Adversarial autoencoders regularize the latent space using an adversarial
+#' training objective, encouraging the aggregated posterior to match a prior distribution.
+#' This can lead to more structured latent representations.
 #'@param input_size input size
 #'@param encoding_size encoding size
 #'@param batch_size size for batch learning
 #'@param num_epochs number of epochs for training
 #'@param learning_rate learning rate
-#'@return a `autoenc_adv_e` object.
-#'#See an example of using `autoenc_adv_e` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
+#'@return A `autoenc_adv_e` object.
+#'
+#'@references
+#' Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2016).
+#' Adversarial Autoencoders.
+#'
+#'@examples
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_adv_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'Z  <- daltoolbox::transform(ae, X)
+#'}
+#'
+#'# See a complete example:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
 #'@importFrom daltoolbox autoenc_base_e
 #'@import reticulate
 #'@export

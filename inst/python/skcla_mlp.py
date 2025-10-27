@@ -1,3 +1,12 @@
+"""
+MLPClassifier wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_mlp.R):
+  - skcla_mlp_create(...hyperparams...) -> sklearn model
+  - skcla_mlp_fit(model, df_train, target_column) -> fitted model
+  - skcla_mlp_predict(model, df_test) -> list of labels
+"""
+
 from sklearn.neural_network import MLPClassifier
 import pandas as pd
 
@@ -41,6 +50,7 @@ def skcla_mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam'
     return model
 
 def skcla_mlp_fit(model, df_train, target_column):
+    """Fit MLP. df_train must include the target_column."""
     df_train = pd.DataFrame(df_train)
     X_train = df_train.drop(columns=[target_column])
     y_train = df_train[target_column].values
@@ -49,6 +59,7 @@ def skcla_mlp_fit(model, df_train, target_column):
     return model
 
 def skcla_mlp_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)
         predictions = model.predict(df_test)

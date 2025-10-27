@@ -1,16 +1,26 @@
 #' Naive Bayes Classifier
 #'@title Gaussian Naive Bayes Classifier
-#'@description Implements classification using the Gaussian Naive Bayes algorithm.
-#' This function wraps the GaussianNB from Python's scikit-learn library.
+#'@description Implements classification using Gaussian Naive Bayes.
+#' Wraps scikit-learn's `GaussianNB` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param var_smoothing Portion of the largest variance of all features that is added to variances
 #'@param priors Prior probabilities of the classes. If specified must be a list of length n_classes
-#'@return A Naive Bayes classifier object
-#'@return `skcla_nb` object
+#'@return A `skcla_nb` classifier object.
+#'
+#'@references
+#' Murphy, K. P. (2012). Machine Learning: A Probabilistic Perspective. (Gaussian Naive Bayes)
 #'@examples
-#'#See an example of using `skcla_nb` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_nb.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_nb(attribute = 'Species', slevels = levels(iris$Species))
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_nb.md
 #'@import daltoolbox
 #'@export
 skcla_nb <- function(attribute, slevels, var_smoothing=1e-9, priors=NULL) {
@@ -85,6 +95,7 @@ predict.skcla_nb <- function(object, x, ...) {
     warning("Missing values detected in the prediction data. These will be handled as part of the process.")
   }
   
+  # Prepare features for prediction
   x <- adjust_data.frame(x)
   
   if (object$attribute %in% names(x)) {

@@ -1,5 +1,15 @@
 """
-Stacked Autoencoder (Autoencoder_Stacked)
+Stacked Autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_stacked_e.R and R/autoenc_stacked_ed.R):
+  - autoenc_stacked_create(input_size, encoding_size, k)
+  - autoenc_stacked_fit(stack, data, ...)
+  - autoenc_stacked_encode(model, data, batch_size)
+  - autoenc_stacked_encode_decode(model, data, batch_size)
+
+Notes:
+  - The create function returns a Python list of k independent autoencoders.
+  - Fit performs layer-wise training, feeding reconstructions to deeper layers.
 """
 
 import torch
@@ -55,6 +65,7 @@ class Autoencoder_Stacked(nn.Module):
 
 #Create Stack of Autoencoders
 def autoenc_stacked_create(input_size, encoding_size, k=3):
+    """Create a list (stack) of k autoencoders for layer-wise training."""
     input_size = int(input_size)
     encoding_size = int(encoding_size)
     k = int(k)
@@ -70,6 +81,7 @@ def autoenc_stacked_create(input_size, encoding_size, k=3):
 
 #Train Autoencoder_Stacked
 def autoenc_stacked_train(sae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
+  """Train a single autoencoder in the stack; returns (model, train_loss, val_loss)."""
   criterion = nn.MSELoss()
   optimizer = optim.Adam(sae.parameters(), lr=learning_rate)
 
@@ -123,6 +135,11 @@ def autoenc_stacked_train(sae, data, batch_size=32, num_epochs = 1000, learning_
 
 
 def autoenc_stacked_fit(stack, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
+    """Layer-wise training entry point called from R.
+
+    Returns the result of training the final autoencoder as a tuple
+    (model, train_loss_np, val_loss_np) to match R side expectations.
+    """
     batch_size = int(batch_size)
     num_epochs = int(num_epochs)
 
@@ -146,7 +163,7 @@ def autoenc_stacked_fit(stack, data, batch_size = 32, num_epochs = 1000, learnin
 
 
 def autoenc_stacked_encode_data(sae, data_loader):
-    # Encode the synthetic time series data using the trained autoencoder
+    # Helper: run encoder and stack numpy batches
     encoded_data = []
     for data in data_loader:
         inputs, _ = data
@@ -161,6 +178,7 @@ def autoenc_stacked_encode_data(sae, data_loader):
 
 
 def autoenc_stacked_encode(sae, data, batch_size = 32):
+    """Entry from R to compute latent encodings."""
     #Condition to check numpy array in internal stacked autoencoders
     if not isinstance(data, np.ndarray):
         array = data.to_numpy()
@@ -178,7 +196,7 @@ def autoenc_stacked_encode(sae, data, batch_size = 32):
 
 
 def autoenc_stacked_encode_decode_data(sae, data_loader):
-    # Encode the synthetic time series data using the trained autoencoder
+    # Helper: reconstruction pass over dataset
     encoded_decoded_data = []
     for data in data_loader:
         inputs, _ = data
@@ -194,6 +212,7 @@ def autoenc_stacked_encode_decode_data(sae, data_loader):
 
 
 def autoenc_stacked_encode_decode(sae, data, batch_size = 32):
+    """Entry from R to compute reconstructions."""
     #Condition to check numpy array in internal stacked autoencoders
     if not isinstance(data, np.ndarray):
         array = data.to_numpy()

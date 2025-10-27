@@ -1,15 +1,35 @@
-#'@title Autoencoder - Encode-decode
-#'@description Creates an deep learning autoencoder to encode-decode a sequence of observations.
-#' It wraps the pytorch and reticulate libraries.
-#'@param input_size input size
-#'@param encoding_size encoding size
-#'@param batch_size size for batch learning
-#'@param num_epochs number of epochs for training
-#'@param learning_rate learning rate
-#'@return returns a `autoenc_ed` object.
+#'@title Autoencoder - Encode-Decode
+#'@description Creates a deep learning autoencoder that encodes and decodes sequences
+#' of observations. Wraps a PyTorch implementation via `reticulate`.
+#'
+#'@details This variant both compresses inputs into a latent representation and
+#' reconstructs them back to input space, allowing the reconstruction error to be used
+#' as a quality metric or for anomaly detection.
+#'
+#'@param input_size Integer. Number of input features per observation.
+#'@param encoding_size Integer. Size of the latent (bottleneck) representation.
+#'@param batch_size Integer. Mini-batch size used during training. Default is 32.
+#'@param num_epochs Integer. Maximum number of training epochs. Default is 1000.
+#'@param learning_rate Numeric. Optimizer learning rate. Default is 0.001.
+#'
+#'@return A `autoenc_ed` object.
+#'
+#'@references
+#' Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the Dimensionality of Data with Neural Networks.
+#' Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library.
+#'
 #'@examples
-#'#See an example of using `autoenc_ed` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_ed.md
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'X_hat <- daltoolbox::transform(ae, X)  # reconstruction
+#'mean((X - X_hat)^2)                    # simple MSE reconstruction error
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_ed.md
+#'
 #'@importFrom daltoolbox autoenc_base_ed
 #'@import reticulate
 #'@export
@@ -33,6 +53,7 @@ fit.autoenc_ed <- function(obj, data, ...) {
   if (is.null(obj$model))
     obj$model <- autoenc_create(obj$input_size, obj$encoding_size)
 
+  # Train model and collect loss traces
   result <- autoenc_fit(obj$model, data, batch_size=obj$batch_size, num_epochs = obj$num_epochs, learning_rate = obj$learning_rate)
 
   obj$model <- result[[1]]
@@ -49,6 +70,7 @@ transform.autoenc_ed <- function(obj, data, ...) {
 
   result <- NULL
   if (!is.null(obj$model)) {
+    # Reconstruct inputs from the latent representation
     result <- autoenc_encode_decode(obj$model, data, batch_size=obj$batch_size)
   }
   return(result)

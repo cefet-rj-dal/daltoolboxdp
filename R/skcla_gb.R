@@ -1,7 +1,7 @@
 #' Tree Boosting 
 #'@title Gradient Boosting Classifier
 #'@description Implements a classifier using the Gradient Boosting algorithm.
-#' This function wraps the GradientBoostingClassifier from Python's scikit-learn library.
+#' Wraps scikit-learn's `GradientBoostingClassifier` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels Possible values for the target classification
 #'@param loss Loss function to be optimized ('log_loss', 'exponential')
@@ -24,11 +24,21 @@
 #'@param n_iter_no_change Used to decide if early stopping will be used
 #'@param tol Tolerance for early stopping
 #'@param ccp_alpha Complexity parameter for cost-complexity pruning
-#'@return A Gradient Boosting classifier object
-#'@return `skcla_gb` object
+#'@return A `skcla_gb` classifier object.
+#'
+#'@references
+#' Friedman, J. H. (2001). Greedy Function Approximation: A Gradient Boosting Machine.
 #'@examples
-#'#See an example of using `skcla_gb` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_gb.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_gb(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 150)
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_gb.md
 #'@import daltoolbox
 #'@export
 skcla_gb <- function(attribute, slevels,

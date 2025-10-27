@@ -1,13 +1,23 @@
 #'@title LSTM
-#'@description Creates a time series prediction object that uses the LSTM.
-#' It wraps the pytorch library.
-#'@param preprocess normalization
-#'@param input_size input size for machine learning model
-#'@param epochs maximum number of epochs
-#'@return returns a `ts_lstm` object.
+#'@description Time series forecaster using an LSTM neural network.
+#' Wraps a PyTorch implementation via `reticulate`.
+#'
+#'@param preprocess Optional preprocessing/normalization object.
+#'@param input_size Integer. Number of lagged inputs per training example.
+#'@param epochs Integer. Maximum number of training epochs.
+#'@return A `ts_lstm` object.
+#'
+#'@references
+#' Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory.
+#'
 #'@examples
-#'#See an example of using `ts_ts_lstmconv1d` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_lstm.md
+#'\dontrun{
+#'# Fit a simple LSTM forecaster (see vignette for end-to-end usage)
+#'tsf <- ts_lstm(input_size = 12, epochs = 1000L)
+#'}
+#'
+#'# See:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_lstm.md
 #'@importFrom tspredit ts_regsw
 #'@import reticulate
 #'@export
@@ -28,6 +38,7 @@ do_fit.ts_lstm <- function(obj, x, y) {
   if (is.null(obj$model))
     obj$model <- ts_lstm_create(obj$input_size, obj$input_size)
 
+  # Build training frame with target in column t0 as expected by Python code
   df_train <- as.data.frame(x)
   df_train$t0 <- as.vector(y)
 
@@ -43,6 +54,7 @@ do_predict.ts_lstm <- function(obj, x) {
   if (!exists("ts_lstm_predict"))
     reticulate::source_python(system.file("python", "ts_lstm.py", package = "daltoolboxdp"))
 
+  # Prediction frame with dummy target column as required by Python code
   X_values <- as.data.frame(x)
   X_values$t0 <- 0
 

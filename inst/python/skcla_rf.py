@@ -1,3 +1,14 @@
+"""
+RandomForestClassifier wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_rf.R):
+  - skcla_rf_create(...hyperparams...) -> sklearn model
+  - skcla_rf_fit(model, df_train, target_column) -> fitted model
+  - skcla_rf_predict(model, df_test) -> list of labels (for R compatibility)
+
+Data expectations: pandas.DataFrame; target_column is present in df_train and excluded for prediction.
+"""
+
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
@@ -30,6 +41,7 @@ def skcla_rf_create(n_estimators=100, criterion='gini', max_depth=None, min_samp
     return model
 
 def skcla_rf_train(model, df_train, target_column):
+    """Fit RandomForestClassifier. df_train must include the target_column."""
     df_train = pd.DataFrame(df_train)  # garante consistência com R
     #print("Column types:", df_train.dtypes)
     #print("Shape of data:", df_train.shape)
@@ -41,6 +53,7 @@ def skcla_rf_train(model, df_train, target_column):
     return model
 
 def skcla_rf_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)  # garante estrutura consistente
         #print(df_test)
@@ -52,4 +65,5 @@ def skcla_rf_predict(model, df_test):
         print(f"Error occurred: {e}")
 
 def skcla_rf_fit(model, df_train, target_column):
+    """Entry from R to fit; delegates to skcla_rf_train."""
     return skcla_rf_train(model, df_train, target_column)

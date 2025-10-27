@@ -1,3 +1,18 @@
+"""
+PyTorch autoencoder used by daltoolboxdp via reticulate.
+
+Entry points called from R (see R/autoenc_e.R and R/autoenc_ed.R):
+  - autoenc_create(input_size, encoding_size) -> nn.Module
+  - autoenc_fit(model, data, batch_size=32, num_epochs=1000, learning_rate=1e-3)
+      Returns (model, train_loss_array, val_loss_array)
+  - autoenc_encode(model, data, batch_size=32) -> np.ndarray [n_samples, encoding_size]
+  - autoenc_encode_decode(model, data, batch_size=32) -> np.ndarray [n_samples, input_size]
+
+Data expectations:
+  - data: pandas.DataFrame with shape (n_samples, input_size), numeric columns only.
+  - Encoding returns a dense NumPy array suitable to be consumed back in R.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -41,8 +56,21 @@ class Autoencoder(nn.Module):
         x = self.decoder(x)
         return x
     
-# Create the autoencoder
 def autoenc_create(input_size, encoding_size):
+  """Factory called from R to create the PyTorch autoencoder model.
+
+  Parameters
+  ----------
+  input_size : int
+      Number of input features (must match columns in the R data.frame).
+  encoding_size : int
+      Size of the latent bottleneck.
+
+  Returns
+  -------
+  torch.nn.Module
+      Initialized autoencoder on CPU.
+  """
   input_size = int(input_size)
   encoding_size = int(encoding_size)
   
@@ -51,8 +79,11 @@ def autoenc_create(input_size, encoding_size):
   return autoencoder  
 
 
-# Train the autoencoder
 def autoenc_train(autoencoder, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
+  """Internal training loop. Splits data each epoch and tracks losses.
+
+  Returns (model, train_loss_np, val_loss_np) to match R expectations.
+  """
   criterion = nn.MSELoss()
   optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate)
 
@@ -105,6 +136,10 @@ def autoenc_train(autoencoder, data, batch_size=32, num_epochs = 1000, learning_
   return autoencoder, np.array(train_loss), np.array(val_loss)
 
 def autoenc_fit(autoencoder, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
+  """Entry point from R to fit the model.
+
+  R receives a 3-tuple: (model, train_loss, val_loss) as a Python object.
+  """
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
   
@@ -113,7 +148,7 @@ def autoenc_fit(autoencoder, data, batch_size = 32, num_epochs = 1000, learning_
 
 
 def encode_data(autoencoder, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: run encoder over a DataLoader and stack numpy batches
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -126,6 +161,12 @@ def encode_data(autoencoder, data_loader):
   return encoded_data
 
 def autoenc_encode(autoencoder, data, batch_size = 32):
+  """Entry point from R to obtain latent encodings.
+
+  Returns
+  -------
+  np.ndarray of shape (n_samples, encoding_size)
+  """
   array = data.to_numpy()
   array = array[:, :]
   
@@ -138,7 +179,7 @@ def autoenc_encode(autoencoder, data, batch_size = 32):
 
 
 def encode_decode_data(autoencoder, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: encode and then decode a full dataset, returning reconstructions
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -153,6 +194,12 @@ def encode_decode_data(autoencoder, data_loader):
 
 
 def autoenc_encode_decode(autoencoder, data, batch_size = 32):
+  """Entry point from R to obtain reconstructions (decode(encode(x))).
+
+  Returns
+  -------
+  np.ndarray of shape (n_samples, input_size)
+  """
   batch_size = int(batch_size)
   
   array = data.to_numpy()

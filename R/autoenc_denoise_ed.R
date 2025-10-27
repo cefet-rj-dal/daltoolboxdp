@@ -1,16 +1,27 @@
-#'@title Denoising Autoencoder - Encode
-#'@description Creates an deep learning denoising autoencoder to encode a sequence of observations.
-#' It wraps the pytorch library.
+#'@title Denoising Autoencoder - Encode-Decode
+#'@description Creates a deep learning denoising autoencoder (DAE) that encodes and decodes sequences,
+#' learning robustness to input noise. Wraps a PyTorch implementation.
 #'@param input_size input size
 #'@param encoding_size encoding size
 #'@param batch_size size for batch learning
 #'@param num_epochs number of epochs for training
 #'@param learning_rate learning rate
-#'@param noise_factor level of noise to be added to the data
-#'@return a `autoenc_denoise_ed` object.
+#'@param noise_factor Numeric. Standard deviation (scale) of the noise added during training.
+#'@return A `autoenc_denoise_ed` object.
+#'
+#'@references
+#' Vincent, P. et al. (2008). Extracting and Composing Robust Features with Denoising Autoencoders.
+#'
 #'@examples
-#'#See an example of using `autoenc_denoise_ed` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_ed.md
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_denoise_ed(input_size = 20, encoding_size = 5, noise_factor = 0.2, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'X_hat <- daltoolbox::transform(ae, X)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_ed.md
 #'@importFrom daltoolbox autoenc_base_ed
 #'@import reticulate
 #'@export

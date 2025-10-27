@@ -1,3 +1,17 @@
+"""
+LSTM autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_lstm_e.R):
+  - autoenc_lstm_create(input_size, encoding_size)
+  - autoenc_lstm_fit(model, data, batch_size=20, num_epochs=1000, learning_rate)
+  - autoenc_lstm_encode(model, data, batch_size=20)
+  - autoenc_lstm_encode_decode(model, data, batch_size=20)
+
+Data expectations:
+  - data: pandas.DataFrame with shape (n_samples, input_size) before being reshaped to (n, 1, input_size).
+  - encode returns a 2D array (n_samples, encoding_size) after squeezing the sequence dim.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -74,6 +88,7 @@ class LSTM(nn.Module):
     
 # Create the autoencoder
 def autoenc_lstm_create(input_size, encoding_size):
+  """Create LSTM-based autoencoder model (called from R)."""
   input_size = int(input_size)
   encoding_size = int(encoding_size)
   
@@ -83,6 +98,7 @@ def autoenc_lstm_create(input_size, encoding_size):
 
 # Train the lae
 def autoenc_lstm_train(lae, data, batch_size=20, num_epochs = 1000, learning_rate = 0.00001):
+  """Internal training; returns (model, train_loss_np, val_loss_np)."""
   criterion = nn.MSELoss()
   optimizer = optim.Adam(lae.parameters(), lr=learning_rate)
 
@@ -136,6 +152,7 @@ def autoenc_lstm_train(lae, data, batch_size=20, num_epochs = 1000, learning_rat
 
 
 def autoenc_lstm_fit(lae, data, batch_size = 20, num_epochs = 1000, learning_rate = 0.001, return_loss=False):
+  """Entry from R to fit the LSTM AE; returns (model, train_loss, val_loss)."""
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
 
@@ -144,7 +161,7 @@ def autoenc_lstm_fit(lae, data, batch_size = 20, num_epochs = 1000, learning_rat
 
 
 def autoenc_lstm_encode_data(lae, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: run encoder on batches and stack numpy arrays
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -157,6 +174,7 @@ def autoenc_lstm_encode_data(lae, data_loader):
   return encoded_data
 
 def autoenc_lstm_encode(lae, data, batch_size = 20):
+  """Entry from R to obtain latent encodings as np.ndarray (n, encoding_size)."""
   array = data.to_numpy()
   array = array.reshape(array.shape[0], 1, array.shape[1])
   
@@ -171,7 +189,7 @@ def autoenc_lstm_encode(lae, data, batch_size = 20):
 
 
 def autoenc_lstm_encode_decode_data(lae, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: reconstruction pass over dataset
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -186,6 +204,7 @@ def autoenc_lstm_encode_decode_data(lae, data_loader):
 
 
 def autoenc_lstm_encode_decode(lae, data, batch_size = 20):
+  """Entry from R to obtain reconstructions as np.ndarray."""
   array = data.to_numpy()
   array = array.reshape(array.shape[0], 1, array.shape[1])
   

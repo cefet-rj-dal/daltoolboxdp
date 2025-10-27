@@ -1,3 +1,12 @@
+"""
+KNeighborsClassifier wrapper used by daltoolboxdp via reticulate.
+
+R entry points (see R/skcla_knn.R):
+  - skcla_knn_create(...hyperparams...) -> sklearn model
+  - skcla_knn_fit(model, df_train, target_column) -> fitted model
+  - skcla_knn_predict(model, df_test) -> list of labels
+"""
+
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import pandas as pd
@@ -17,6 +26,7 @@ def skcla_knn_create(n_neighbors=5, weights='uniform', algorithm='auto', leaf_si
     return model
 
 def skcla_knn_fit(model, df_train, target_column):
+    """Fit KNN. df_train must include the target_column."""
     try:
         df_train = pd.DataFrame(df_train)
 
@@ -38,6 +48,7 @@ def skcla_knn_fit(model, df_train, target_column):
         return model
 
 def skcla_knn_predict(model, df_test):
+    """Predict labels as a Python list to simplify R interop."""
     try:
         df_test = pd.DataFrame(df_test)
         #print(f"X_test shape: {df_test.shape}")

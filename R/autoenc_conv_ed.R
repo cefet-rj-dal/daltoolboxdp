@@ -1,15 +1,22 @@
-#'@title Convolutional Autoencoder - Encode
-#'@description Creates an deep learning convolutional autoencoder to encode a sequence of observations.
-#' It wraps the pytorch library.
+#'@title Convolutional Autoencoder - Encode-Decode
+#'@description Creates a deep learning convolutional autoencoder (ConvAE) to encode and decode
+#' sequences of observations. Wraps a PyTorch implementation.
 #'@param input_size input size
 #'@param encoding_size encoding size
 #'@param batch_size size for batch learning
 #'@param num_epochs number of epochs for training
 #'@param learning_rate learning rate
-#'@return a `autoenc_conv_ed` object.
+#'@return A `autoenc_conv_ed` object.
 #'@examples
-#'#See an example of using `autoenc_conv_ed` at this
-#'#https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_ed.md
+#'\dontrun{
+#'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+#'ae <- autoenc_conv_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+#'ae <- daltoolbox::fit(ae, X)
+#'X_hat <- daltoolbox::transform(ae, X)
+#'}
+#'
+#'# See:
+#'# https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_ed.md
 #'@importFrom daltoolbox autoenc_base_ed
 #'@import reticulate
 #'@export
@@ -49,6 +56,7 @@ transform.autoenc_conv_ed <- function(obj, data, ...) {
 
   result <- NULL
   if (!is.null(obj$model)) {
+    # Reconstruct inputs using the trained convolutional autoencoder
     result <- autoenc_conv_encode_decode(obj$model, data)
   }
 

@@ -1,7 +1,7 @@
 #' Neural Network Classifier
 #'@title Multi-layer Perceptron Classifier
-#'@description Implements classification using Multi-layer Perceptron algorithm.
-#' This function wraps the MLPClassifier from Python's scikit-learn library.
+#'@description Implements classification using a multi-layer perceptron (MLP).
+#' Wraps scikit-learn's `MLPClassifier` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param hidden_layer_sizes Number of neurons in each hidden layer
@@ -27,11 +27,21 @@
 #'@param epsilon Value for numerical stability in adam
 #'@param n_iter_no_change Maximum number of epochs to not meet tol improvement
 #'@param max_fun Maximum number of loss function calls
-#'@return A Multi-layer Perceptron classifier object
-#'@return `skcla_mlp` object
+#'@return A `skcla_mlp` classifier object.
+#'
+#'@references
+#' Bishop, C. M. (1995). Neural Networks for Pattern Recognition.
 #'@examples
-#'#See an example of using `skcla_mlp` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_mlp.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_mlp(attribute = 'Species', slevels = levels(iris$Species), hidden_layer_sizes = c(32, 16))
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_mlp.md
 #'@import daltoolbox
 #'@export
 skcla_mlp <- function(attribute, slevels,
@@ -147,6 +157,7 @@ predict.skcla_mlp <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
   
+  # Prepare features for prediction
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
   

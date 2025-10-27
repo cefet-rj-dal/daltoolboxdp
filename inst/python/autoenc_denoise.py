@@ -1,3 +1,15 @@
+"""
+Denoising autoencoder used by daltoolboxdp via reticulate.
+
+R entry points (see R/autoenc_denoise_e.R and R/autoenc_denoise_ed.R):
+  - autoenc_denoise_create(input_size, encoding_size, noise_factor)
+  - autoenc_denoise_fit(model, data, ...)
+  - autoenc_denoise_encode(model, data, batch_size)
+  - autoenc_denoise_encode_decode(model, data, batch_size)
+
+Noise handling: noise is added to inputs during training and validation using add_noise().
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -56,6 +68,7 @@ def add_noise(data, noise_factor=0.3):
 
 
 def autoenc_denoise_create(input_size, encoding_size, noise_factor=0.3):
+    """Create denoising AE and store noise_factor on the model (called from R)."""
     input_size = int(input_size)
     encoding_size = int(encoding_size)
     
@@ -68,6 +81,7 @@ def autoenc_denoise_create(input_size, encoding_size, noise_factor=0.3):
 
 # Train the autoencoder
 def autoenc_denoise_train(dns, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
+  """Internal training; returns (model, train_loss_np, val_loss_np)."""
   criterion = nn.MSELoss()
   optimizer = optim.Adam(dns.parameters(), lr=learning_rate)
 
@@ -127,6 +141,7 @@ def autoenc_denoise_train(dns, data, batch_size=32, num_epochs = 1000, learning_
 
 
 def autoenc_denoise_fit(dns, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
+  """Entry from R to fit the DAE; returns (model, train_loss, val_loss)."""
   batch_size = int(batch_size)
   num_epochs = int(num_epochs)
   
@@ -135,7 +150,7 @@ def autoenc_denoise_fit(dns, data, batch_size = 32, num_epochs = 1000, learning_
 
 
 def autoenc_denoise_encode_data(dns, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: run encoder on batches and stack numpy arrays
   encoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -150,6 +165,7 @@ def autoenc_denoise_encode_data(dns, data_loader):
 
 
 def autoenc_denoise_encode(dns, data, batch_size = 32):
+  """Entry from R to compute latent encodings as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :]
   
@@ -162,7 +178,7 @@ def autoenc_denoise_encode(dns, data, batch_size = 32):
 
 
 def autoenc_denoise_encode_decode_data(dns, data_loader):
-  # Encode the synthetic time series data using the trained autoencoder
+  # Helper: reconstruction pass over dataset
   encoded_decoded_data = []
   for data in data_loader:
       inputs, _ = data
@@ -178,6 +194,7 @@ def autoenc_denoise_encode_decode_data(dns, data_loader):
 
 
 def autoenc_denoise_encode_decode(dns, data, batch_size = 32):
+  """Entry from R to compute reconstructions as np.ndarray."""
   array = data.to_numpy()
   array = array[:, :, np.newaxis]
   

@@ -1,3 +1,16 @@
+"""
+LSTM forecaster used by daltoolboxdp via reticulate.
+
+R entry points (see R/ts_lstm.R):
+  - ts_lstm_create(n_neurons, look_back) -> torch model
+  - ts_lstm_fit(model, df_train, n_epochs, lr) -> model
+  - ts_lstm_predict(model, df_test) -> np.ndarray of shape (n_samples,)
+
+Data expectations:
+  - df_train/df_test: pandas.DataFrame with lagged features and a column 't0' as the target.
+  - The code reshapes to LSTM expected shapes and preserves device placement.
+"""
+
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
@@ -20,6 +33,7 @@ class TsLSTMNet(nn.Module):
 
 
 def ts_lstm_create(n_neurons, look_back):
+  """Factory called from R to create the LSTM model for a given look-back window."""
   n_neurons = int(n_neurons)
   look_back = int(look_back)
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -28,7 +42,7 @@ def ts_lstm_create(n_neurons, look_back):
 
 
 def ts_lstm_train(epochs, lr, model, train_loader, opt_func=torch.optim.SGD):
-  # to track the training loss as the model trains
+  # Internal training routine; returns (model, avg_train_losses)
   
   train_losses = []
   # to track the average training loss per epoch as the model trains
@@ -88,6 +102,7 @@ def ts_lstm_train(epochs, lr, model, train_loader, opt_func=torch.optim.SGD):
 
 
 def ts_lstm_fit(model, df_train, n_epochs = 10000, lr = 0.001):
+  """Entry from R to fit the LSTM model using df_train with column 't0'."""
   n_epochs = int(n_epochs)
   
   X_train = df_train.drop('t0', axis=1).to_numpy()
@@ -111,6 +126,7 @@ def ts_lstm_fit(model, df_train, n_epochs = 10000, lr = 0.001):
 
 
 def ts_lstm_predict(model, df_test):
+  """Entry from R to predict using the trained LSTM; returns a 1D numpy array."""
   X_test = df_test.drop('t0', axis=1).to_numpy()
   y_test = df_test.t0.to_numpy()
   X_test = X_test[:, :, np.newaxis]

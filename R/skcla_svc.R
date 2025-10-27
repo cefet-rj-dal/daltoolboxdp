@@ -1,7 +1,7 @@
 #' SVM Classifier
 #'@title Support Vector Machine Classification
-#'@description Implements classification using Support Vector Machine (SVM) algorithm.
-#' This function wraps the SVC classifier from Python's scikit-learn library.
+#'@description Implements classification using support vector machines.
+#' Wraps scikit-learn's `SVC` through `reticulate`.
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param C Regularization strength parameter
@@ -19,11 +19,21 @@
 #'@param decision_function_shape Shape of decision function ('ovo', 'ovr')
 #'@param break_ties Whether to break tie decisions
 #'@param random_state Seed for random number generation
-#'@return An SVM classifier object
-#'@return `skcla_svc` object
+#'@return A `skcla_svc` classifier object.
+#'
+#'@references
+#' Cortes, C., & Vapnik, V. (1995). Support-Vector Networks.
 #'@examples
-#'#See an example of using `skcla_svc` at this
-#'#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
+#'\dontrun{
+#'data(iris)
+#'clf <- skcla_svc(attribute = 'Species', slevels = levels(iris$Species), kernel = 'rbf', C = 1)
+#'clf <- daltoolbox::fit(clf, iris)
+#'pred <- predict(clf, iris)
+#'table(pred, iris$Species)
+#'}
+#'
+#'# More examples:
+#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
 #'@import daltoolbox
 #'@export
 skcla_svc <- function(attribute, slevels,
@@ -117,6 +127,7 @@ predict.skcla_svc <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
   
+  # Prepare features for prediction
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
   

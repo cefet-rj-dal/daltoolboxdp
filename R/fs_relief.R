@@ -1,13 +1,19 @@
 #'@title Relief
-#'@description Feature selection using Relief is a technique for selecting a subset of relevant features. It calculates the relevance of a feature by considering the difference in feature values between nearest neighbors of the same and different classes.
-#' It wraps the FSelector library.
-#'@param attribute The target variable.
+#'@description Relief ranks features by how well they differentiate between instances of
+#' different classes in local neighborhoods. Wraps `FSelector`'s Relief.
+#'
+#'@param attribute Character. Name of the (categorical) target variable.
 #'@return A `fs_relief` object.
+#'
+#'@references
+#' Kira, K., & Rendell, L. A. (1992). The Feature Selection Problem: Traditional Methods and a New Algorithm.
+#' Kononenko, I. (1994). Estimating attributes: analysis and extensions of Relief.
+#'
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(fs_relief("Species"), iris)
-#'data <- daltoolbox::transform(myfeature, iris)
-#'head(data)
+#'fs <- daltoolbox::fit(fs_relief("Species"), iris)
+#'data_relief <- daltoolbox::transform(fs, iris)
+#'head(data_relief)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

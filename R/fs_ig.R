@@ -1,13 +1,19 @@
 #'@title Information Gain
-#'@description Information Gain is a feature selection technique based on information theory. It measures the information obtained for the target variable by knowing the presence or absence of a feature.
-#' It wraps the FSelector library.
-#'@param attribute The target variable.
+#'@description Information Gain (IG) is an information-theoretic feature selection technique
+#' that measures reduction in entropy of the target when a feature is observed. Wraps the
+#' `FSelector` package.
+#'
+#'@param attribute Character. Name of the target variable.
 #'@return A `fs_ig` object.
+#'
+#'@references
+#' Quinlan, J. R. (1986). Induction of Decision Trees.
+#'
 #'@examples
 #'data(iris)
-#'myfeature <- daltoolbox::fit(fs_ig("Species"), iris)
-#'data <- daltoolbox::transform(myfeature, iris)
-#'head(data)
+#'fs <- daltoolbox::fit(fs_ig("Species"), iris)  # fit IG selector
+#'data_ig <- daltoolbox::transform(fs, iris)      # keep top features + target
+#'head(data_ig)
 #'@importFrom daltoolbox dal_transform
 #'@importFrom daltoolbox fit
 #'@importFrom daltoolbox transform

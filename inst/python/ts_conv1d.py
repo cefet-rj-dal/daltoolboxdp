@@ -1,3 +1,16 @@
+"""
+Conv1D forecaster used by daltoolboxdp via reticulate.
+
+R entry points (see R/ts_conv1d.R):
+  - ts_conv1d_create(in_channels, input_dim)
+  - ts_conv1d_fit(model, df_train, n_epochs, lr)
+  - ts_conv1d_predict(model, df_test)
+
+Data expectations:
+  - df_train/df_test contain lagged features and a 't0' target column.
+  - Shapes are adjusted to (batch, channels, sequence_len) for Conv1D.
+"""
+
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
@@ -39,6 +52,7 @@ class TsConv1DNet(nn.Module):
       
 
 def ts_conv1d_create(in_channels, input_dim):
+  """Create Conv1D model given number of channels and input length (called from R)."""
   in_channels = int(in_channels)
   input_dim = int(input_dim)
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -47,7 +61,7 @@ def ts_conv1d_create(in_channels, input_dim):
 
 
 def ts_conv1d_train(epochs, lr, model, train_loader, opt_func=torch.optim.SGD):
-  # to track the training loss as the model trains
+  # Internal training routine; returns (model, avg_train_losses)
   
   train_losses = []
   # to track the average training loss per epoch as the model trains
@@ -109,6 +123,7 @@ def ts_conv1d_train(epochs, lr, model, train_loader, opt_func=torch.optim.SGD):
 
 
 def ts_conv1d_fit(model, df_train, n_epochs = 3000, lr = 0.001):
+  """Entry from R to fit the Conv1D model using df_train with column 't0'."""
   n_epochs = int(n_epochs)
   
   X_train = df_train.drop('t0', axis=1).to_numpy()
@@ -134,6 +149,7 @@ def ts_conv1d_fit(model, df_train, n_epochs = 3000, lr = 0.001):
 
 
 def ts_conv1d_predict(model, df_test):
+  """Entry from R to predict using the trained Conv1D; returns a 1D numpy array."""
   X_test = df_test.drop('t0', axis=1).to_numpy()
   y_test = df_test.t0.to_numpy()
   
