@@ -1,57 +1,59 @@
-# Time Series Encoder
+## Codificação de Séries Temporais (encode)
+
+Este exemplo mostra como transformar uma série temporal em janelas de tamanho fixo e treinar um autoencoder para aprender uma representação latente compacta (p → k) dessas janelas.
+
+Pré‑requisitos
+- pacotes R: daltoolbox, ggplot2
+- Python com PyTorch acessível via reticulate (o backend é carregado por funções internas)
 
 ```{r}
-
-
-
-
-
-#loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 ```
 
-# Series for studying
+## Série para estudo
 
 ```{r}
 data(tsd)
-tsd$y[39] <- tsd$y[39]*6
+tsd$y[39] <- tsd$y[39] * 6   # injeta um outlier sintético para ilustração no gráfico
 ```
 
 ```{r}
-sw_size <- 5
-ts <- ts_data(tsd$y, sw_size)
-ts_head(ts, 3)
+sw_size <- 5                         # tamanho da janela deslizante (p)
+ts <- ts_data(tsd$y, sw_size)        # converte a série em janelas com p colunas
+ts_head(ts, 3)                       # visualiza as 3 primeiras janelas
 ```
 
 ```{r}
 library(ggplot2)
-plot_ts(x=tsd$x, y=tsd$y) + theme(text = element_text(size=16))
+plot_ts(x = tsd$x, y = tsd$y) +      # gráfico da série com o ponto atípico marcado pelo pico
+  theme(text = element_text(size = 16))
 ```
 
-# data sampling
+## Amostragem dos dados
 
 ```{r}
-samp <- ts_sample(ts, test_size = 5)
+samp <- ts_sample(ts, test_size = 5) # separa as últimas 5 janelas para teste
 train <- as.data.frame(samp$train)
-test <- as.data.frame(samp$test)
+test  <- as.data.frame(samp$test)
 ```
 
-# Model training
+## Treinando o modelo
 
 ```{r}
-auto <- autoenc_e(5, 3)
+auto <- autoenc_e(5, 3)              # reduz de 5 → 3 dimensões (p → k)
 auto <- fit(auto, train)
 ```
 
-# Evaluation of encoding
+## Avaliação da codificação (treino)
 
 ```{r}
-print(head(train))
-result <- transform(auto, train)
+print(head(train))                    # janelas originais (p colunas)
+result <- transform(auto, train)      # codificações (k colunas)
 print(head(result))
 ```
 
-# Encoding of test
+## Codificação do conjunto de teste
 
 ```{r}
 print(head(test))
