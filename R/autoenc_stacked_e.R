@@ -9,6 +9,10 @@
 #'@param k Integer. Number of autoencoder layers in the stack.
 #'@return A `autoenc_stacked_e` object.
 #'
+#'@references
+#' Vincent, P., Larochelle, H., Lajoie, I., Bengio, Y., & Manzagol, P.-A. (2010).
+#' Stacked Denoising Autoencoders: Learning Useful Representations in a Deep Network with a Local Denoising Criterion.
+#'
 #'@examples
 #'\dontrun{
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)

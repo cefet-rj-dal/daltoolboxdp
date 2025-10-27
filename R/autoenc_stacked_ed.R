@@ -9,6 +9,9 @@
 #'@param k Integer. Number of autoencoder layers in the stack.
 #'@return A `autoenc_stacked_ed` object.
 #'
+#'@references
+#' Vincent, P. et al. (2010). Stacked Denoising Autoencoders.
+#'
 #'@examples
 #'\dontrun{
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)

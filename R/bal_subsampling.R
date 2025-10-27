@@ -5,6 +5,10 @@
 #'@param attribute Character. Name of the target class attribute to balance.
 #'@return A `bal_subsampling` object.
 #'
+#'@references
+#' Kubat, M., & Matwin, S. (1997). Addressing the Curse of Imbalanced Training Sets: One-Sided Selection.
+#' Drummond, C., & Holte, R. (2003). C4.5, Class Imbalance, and Cost Sensitivity.
+#'
 #'@examples
 #'set.seed(123)
 #'data(iris)

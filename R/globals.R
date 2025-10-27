@@ -1,4 +1,11 @@
-# Declare global functions used in package
+#' Package Globals
+#'@description Declares external symbols referenced dynamically (e.g., Python entry points
+#' loaded via `reticulate`) to silence R CMD check NOTES about undefined globals.
+#'
+#' These are not user-facing; they simply document that these names are resolved at runtime.
+#'@keywords internal
+#'@noRd
+#' Declare global functions used in package
 utils::globalVariables(c(
   "ts_lstm_create", "ts_lstm_fit", "ts_lstm_predict",
   "ts_conv1d_create","ts_conv1d_fit", "ts_conv1d_predict",
@@ -31,5 +38,5 @@ utils::globalVariables(c(
   "create_fe_rfe_model", "fit_transform_fe_rfe"
 ))
 
-#"adjust_class_label", "adjust_data.frame", 
+#"adjust_class_label", "adjust_data.frame",
 #"ts_regsw", "sample_random"

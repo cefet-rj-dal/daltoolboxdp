@@ -7,6 +7,10 @@
 #'@param epochs Integer. Maximum number of training epochs.
 #'@return A `ts_conv1d` object.
 #'
+#'@references
+#' LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P. (1998). Gradient-Based Learning Applied to Document Recognition.
+#' Bai, S., Kolter, J. Z., & Koltun, V. (2018). An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling.
+#'
 #'@examples
 #'\dontrun{
 #'# Fit a simple Conv1D forecaster (see linked vignette for full workflow)
