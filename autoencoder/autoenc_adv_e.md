@@ -14,8 +14,8 @@ Notas rápidas
 
 ``` r
 # Instalando dependências do exemplo (se necessário)
-#install.packages("tspredit")
-#install.packages("daltoolboxdp")
+install.packages("tspredit")
+install.packages("daltoolboxdp")
 ```
 
 

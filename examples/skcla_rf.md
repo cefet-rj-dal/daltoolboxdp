@@ -10,7 +10,7 @@ Pré‑requisitos
 
 ``` r
 # Instalação de pacotes necessários (se ainda não instalados)
-#install.packages("daltoolboxdp")
+install.packages("daltoolboxdp")
 ```
 
 
