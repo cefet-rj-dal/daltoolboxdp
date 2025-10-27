@@ -1,26 +1,26 @@
-## Codificação e Reconstrução de Séries (encode-decode)
+## Time Series Encoding and Reconstruction (encode-decode)
 
-Este exemplo mostra como transformar uma série temporal em janelas (p) e treinar um autoencoder para codificar (p → k) e reconstruir (k → p) essas janelas, permitindo avaliar a qualidade da reconstrução.
+This example shows how to transform a time series into windows (p) and train an autoencoder to encode (p -> k) and reconstruct (k -> p) these windows, allowing evaluation of reconstruction quality.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, ggplot2
-- Python com PyTorch acessível via reticulate (backend chamado internamente)
+Prerequisites
+- R packages: daltoolbox, ggplot2
+- Python with PyTorch accessible via reticulate (backend called internally)
 
 ```{r}
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 ```
 
-## Série para estudo
+## Series for study
 
 ```{r}
 data(tsd)
-tsd$y[39] <- tsd$y[39] * 6   # injeta um outlier sintético para ilustração
+tsd$y[39] <- tsd$y[39] * 6   # inject a synthetic outlier for illustration
 ```
 
 ```{r}
-sw_size <- 5                         # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)        # série → janelas com p colunas
+sw_size <- 5                         # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)        # series -> windows with p columns
 ts_head(ts, 3)
 ```
 
@@ -30,7 +30,7 @@ plot_ts(x = tsd$x, y = tsd$y) +
   theme(text = element_text(size = 16))
 ```
 
-## Amostragem dos dados
+## Data sampling
 
 ```{r}
 samp <- ts_sample(ts, test_size = 5)
@@ -38,22 +38,22 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Treinando o modelo (encode-decode)
+## Train the model (encode-decode)
 
 ```{r}
-auto <- autoenc_ed(5, 3)             # 5 → 3 → 5 dimensões
+auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
 auto <- fit(auto, train)
 ```
 
-## Avaliação da reconstrução (treino)
+## Reconstruction evaluation (train)
 
 ```{r}
-print(head(train))                    # janelas originais (p colunas)
-result <- transform(auto, train)      # janelas reconstruídas (p colunas)
+print(head(train))                    # original windows (p columns)
+result <- transform(auto, train)      # reconstructed windows (p columns)
 print(head(result))
 ```
 
-## Reconstrução do conjunto de teste
+## Reconstruction of the test set
 
 ```{r}
 print(head(test))

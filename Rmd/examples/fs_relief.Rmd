@@ -1,37 +1,37 @@
-## Seleção de Atributos com Relief
+## Feature Selection with Relief
 
-Este exemplo usa o método Relief para estimar a relevância de atributos considerando vizinhos próximos e diferenças entre classes, ranqueando e selecionando atributos mais informativos para o alvo.
+This example uses the Relief method to estimate feature relevance by considering nearest neighbors and differences across classes, ranking and selecting the most informative features for the target.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
 
 ```{r}
-# Instalação (se necessário)
+# Installation (if needed)
 install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
 
 
 ```{r}
-# Dados de exemplo
+# Example data
 iris <- datasets::iris
 ```
 
 ```{r}
-# Relief — passo a passo
+# Relief - step by step
 
-# 1) Ajustar o seletor com alvo "Species"
+# 1) Fit the selector with target "Species"
 myfeature <- fit(fs_relief("Species"), iris)
 
-# 2) Ver os atributos selecionados
+# 2) View selected features
 print(myfeature$features)
 
-# 3) Transformar os dados para manter selecionados + alvo
+# 3) Transform data to keep selected features + target
 data <- transform(myfeature, iris)
 print(head(data))
 ```

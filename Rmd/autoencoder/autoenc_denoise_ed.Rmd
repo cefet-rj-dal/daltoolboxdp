@@ -1,29 +1,29 @@
-## Autoencoder com Denoising (encode-decode)
+## Denoising Autoencoder (encode-decode)
 
-Este exemplo demonstra como usar um autoencoder com ruído (denoising) para codificar e reconstruir janelas da série temporal, permitindo avaliar a qualidade da reconstrução sob ruído.
+This example demonstrates how to use a denoising autoencoder to encode and reconstruct time-series windows, enabling evaluation of reconstruction quality under noise.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
- 
- Notas rápidas
- - O ruído é aplicado na entrada durante o treino; na inferência, a reconstrução tende a ser mais suave.
- - Métricas por coluna (R² e MAPE) ajudam a verificar robustez por passo.
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Quick notes
+- Noise is applied to the input during training; at inference, the reconstruction tends to be smoother.
+- Per-column metrics (R2 and MAPE) help assess robustness per step.
+
 ```{r}
 # Denoising Autoencoder transformation (encode-decode)
 
 # Considering a dataset with $p$ numerical attributes. 
 
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However, from the $k$ dimensions the data is returned back to $p$ dimensions. The higher the autoencoder quality, the more similar the output is to the input. 
 
-# installing packages
-
+# Installing packages
 install.packages("tspredit")
 install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -31,8 +31,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# Dataset de exemplo (série -> janelas) 
-
+# Example dataset (series -> windows) 
 data(tsd)
 
 sw_size <- 5
@@ -42,8 +41,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -52,18 +50,15 @@ ts_head(ts)
 ```
 
 ```{r}
-# Divisão treino/teste
-
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# Treinando autoencoder (reduz 5 -> 3)
-
+# Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_denoise_ed(5, 3)
-
 auto <- fit(auto, train)
 ```
 
@@ -75,15 +70,15 @@ plot(grf)
 ```
 
 ```{r}
-# Testando autoencoder
-# Apresentando o conjunto de teste e exibindo reconstrução
-
+# Testing the autoencoder
+# Show test samples and display reconstruction
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
 
 ```{r}
+# Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -93,12 +88,12 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
  
 ```{r}
-# Observação: ajuste do nível de ruído impacta a capacidade de reconstrução.
+# Note: the noise level impacts reconstruction capacity.
 ```
 

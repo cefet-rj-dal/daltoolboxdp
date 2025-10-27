@@ -1,33 +1,32 @@
-## Autoencoder (Encode-Decode) — Visão Geral
+## Autoencoder (Encode-Decode) - Overview
 
-Este exemplo mostra um autoencoder que codifica e reconstrói a entrada. Após treinar a redução de p → k dimensões, o modelo decodifica de volta para p. Quanto melhor o treino, mais próximo o reconstruído fica do original (erro de reconstrução baixo).
+This example shows an autoencoder that encodes and reconstructs the input. After training the reduction from p -> k dimensions, the model decodes back to p. The better the training, the closer the reconstruction is to the original (low reconstruction error).
 
-Pré‑requisitos
-- Reticulate configurado e Python com PyTorch instalado
-- pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Reticulate configured and Python with PyTorch installed
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
-Passo a passo
-1) Construir janelas da série temporal
-2) Normalizar dados
-3) Separar treino e teste
-4) Treinar o AE (5 → 3) e acompanhar perdas
-5) Reconstruir e calcular métricas (R2, MAPE)
+Steps
+1) Build time-series windows
+2) Normalize data
+3) Split into train and test
+4) Train the AE (5 -> 3) and track losses
+5) Reconstruct and compute metrics (R2, MAPE)
 
 ```{r}
 # Vanilla autoencoder transformation (encode-decode)
 
 # Considering a dataset with $p$ numerical attributes.
 
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input.
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensions the data is returned back to $p$ dimensions. The higher the autoencoder quality, the more similar is the output to the input.
 
-# installing packages
-
+# Installing packages
 install.packages("tspredit")
 install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -35,8 +34,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# Dataset de exemplo (série → janelas)
-
+# Example dataset (series -> windows)
 data(tsd)
 
 sw_size <- 5
@@ -46,8 +44,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -56,23 +53,20 @@ ts_head(ts)
 ```
 
 ```{r}
-# Divisão treino / teste
-
+# Train / test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# Treinando autoencoder (redução 5 → 3)
-
+# Training autoencoder (reduction 5 -> 3)
 auto <- autoenc_ed(5, 3)
-
 auto <- fit(auto, train)
 ```
 
 ```{r}
-# Curvas de perda de treino e validação
+# Loss curves (train and validation)
 fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss, val_loss=auto$val_loss)
 
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
@@ -80,25 +74,25 @@ plot(grf)
 ```
 
 ```{r}
-# Testando: reconstrução do conjunto de teste
-
+# Testing: reconstruction of the test set
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
 
 ```{r}
-# Avaliando qualidade da reconstrução: R² e MAPE por atributo
+# Evaluating reconstruction quality: R2 and MAPE per attribute
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
+

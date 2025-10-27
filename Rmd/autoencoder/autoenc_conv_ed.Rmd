@@ -1,29 +1,29 @@
-## Autoencoder Convolucional (encode-decode)
+## Convolutional Autoencoder (encode-decode)
 
-Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar e reconstruir janelas de uma série temporal. Após reduzir de p para k dimensões, o modelo reconstrói de volta para p, permitindo avaliar o erro de reconstrução.
+This example demonstrates how to use a 1D convolutional autoencoder to encode and reconstruct windows from a time series. After reducing from p to k dimensions, the model reconstructs back to p, enabling evaluation of reconstruction error.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
- 
- Notas rápidas
- - Reconstrução: compare entrada e saída para verificar se os padrões locais foram preservados.
- - Métricas: R² e MAPE por coluna ajudam a medir a qualidade por passo da janela.
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Quick notes
+- Reconstruction: compare input and output to verify local patterns are preserved.
+- Metrics: R2 and MAPE per column help measure quality across window steps.
+
 ```{r}
 # Convolutional Autoencoder transformation (encode-decode)
 
 # Considering a dataset with $p$ numerical attributes. 
 
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However, from the $k$ dimensions the data is returned back to $p$ dimensions. The higher the autoencoder quality, the more similar the output is to the input. 
 
-# installing packages
-
+# Installing packages
 install.packages("tspredit")
 install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -31,8 +31,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# Dataset de exemplo (série -> janelas) 
-
+# Example dataset (series -> windows) 
 data(tsd)
 
 sw_size <- 5
@@ -42,8 +41,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -52,18 +50,15 @@ ts_head(ts)
 ```
 
 ```{r}
-# Divisão treino/teste
-
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# Treinando autoencoder (reduz 5 -> 3)
-
+# Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_conv_ed(5, 3)
-
 auto <- fit(auto, train)
 ```
 
@@ -75,15 +70,15 @@ plot(grf)
 ```
 
 ```{r}
-# Testando autoencoder
-# Apresentando o conjunto de teste e exibindo reconstrução
-
+# Testing the autoencoder
+# Show test samples and display reconstruction
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
 
 ```{r}
+# Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -93,12 +88,12 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
  
 ```{r}
-# Observação: cuidado com divisões por valores muito próximos de zero ao calcular o MAPE.
+# Note: beware of divisions by values near zero when computing MAPE.
 ```
 
