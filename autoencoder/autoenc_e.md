@@ -1,3 +1,18 @@
+## Autoencoder (Encode) — Visão Geral
+
+Este exemplo demonstra como treinar um autoencoder “vanilla” para aprender uma representação latente (codificação) de uma janela deslizante de uma série temporal. A ideia é reduzir a dimensão de p atributos para k, preservando a informação relevante. Você pode usar os vetores codificados como insumo para outras tarefas (como clustering ou predição).
+
+Pré‑requisitos
+- Reticulate configurado e Python com PyTorch instalado
+- pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Passo a passo
+1) Preparar o dataset (janelas da série)
+2) Normalizar dados (evita escala desbalanceada)
+3) Separar treino e teste
+4) Treinar o autoencoder (redução de 5 para 3 dimensões)
+5) Avaliar perdas e transformar dados em códigos latentes
+
 
 ``` r
 # Vanilla autoencoder transformation (encode)
@@ -8,13 +23,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +38,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
+# Dataset de exemplo (série temporal e janelas)
 
 data(tsd)
 
@@ -45,7 +60,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo) para estabilizar o treino
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +81,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino / teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +90,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Criando e treinando o autoencoder (reduz de 5 para 3 dimensões)
 
 auto <- autoenc_e(5, 3)
 
@@ -84,6 +99,7 @@ auto <- fit(auto, train)
 
 
 ``` r
+# Visualizando curvas de perda (treino/validação)
 fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
 
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
@@ -94,7 +110,7 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder - presenting the original test set and display encoding
+# Testando o autoencoder: codificando exemplos de teste
 
 print(head(test))
 ```
@@ -116,11 +132,10 @@ print(head(result))
 
 ```
 ##           [,1]     [,2]       [,3]
-## [1,] -2.140050 1.008414 -0.5566416
-## [2,] -2.229779 1.102272 -0.4843711
-## [3,] -2.252422 1.154634 -0.3962967
-## [4,] -2.206272 1.161761 -0.2980624
-## [5,] -2.093218 1.121616 -0.1963333
-## [6,] -1.920914 1.037710 -0.0970799
+## [1,] -2.133319 1.083079 -0.6535907
+## [2,] -2.223497 1.183873 -0.5868651
+## [3,] -2.246743 1.240983 -0.5009663
+## [4,] -2.201395 1.250513 -0.4013102
+## [5,] -2.089066 1.209927 -0.2945161
+## [6,] -1.917528 1.123016 -0.1869479
 ```
-

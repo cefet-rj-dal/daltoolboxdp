@@ -1,20 +1,21 @@
+## Autoencoder Empilhado (encode)
+
+Este exemplo demonstra um Autoencoder Empilhado (Stacked) para codificação de janelas de série temporal, reduzindo de p para k dimensões com camadas densas sucessivas.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
 
 ``` r
-# Stacked Autoencode transformation (encode)
-
-# Considering a dataset with $p$ numerical attributes. 
-
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
-
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Instalando dependências do exemplo (se necessário)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,12 +24,11 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
-
+# Conjunto de dados de exemplo (série -> janelas)
 data(tsd)
 
-sw_size <- 5
-ts <- ts_data(tsd$y, sw_size)
+sw_size <- 5                      # tamanho da janela deslizante (p)
+ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
 
 ts_head(ts)
 ```
@@ -45,8 +45,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
-
+# Normalização (min-max por grupo)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -66,27 +65,30 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
-
+# Divisão em treino e teste
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
-test <- as.data.frame(samp$test)
+test  <- as.data.frame(samp$test)
 ```
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
-
+# Criando o autoencoder empilhado: reduz de 5 -> 3 dimensões (p -> k)
 auto <- autoenc_stacked_e(5, 3)
 
+# Treinando o modelo
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
-
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+# Curvas de aprendizado (perda de treino e validação por época)
+fit_loss <- data.frame(
+  x = 1:length(auto$train_loss),
+  train_loss = auto$train_loss,
+  val_loss = auto$val_loss
+)
+grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
 plot(grf)
 ```
 
@@ -94,9 +96,8 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
-
+# Testando o autoencoder (codificação)
+# Mostra amostras do conjunto de teste e a codificação (k colunas)
 print(head(test))
 ```
 
@@ -116,12 +117,12 @@ print(head(result))
 ```
 
 ```
-##           [,1]        [,2]      [,3]
-## [1,] -1.712589 -0.41983718 0.4875411
-## [2,] -1.760517 -0.35106206 0.5962838
-## [3,] -1.748370 -0.27903786 0.6868336
-## [4,] -1.680636 -0.20830457 0.7527531
-## [5,] -1.561683 -0.14378418 0.7887868
-## [6,] -1.398531 -0.08822196 0.7954895
+##           [,1]       [,2]      [,3]
+## [1,] -1.717798 -0.3960363 0.4805241
+## [2,] -1.764115 -0.3701235 0.6014170
+## [3,] -1.753038 -0.3417968 0.7039358
+## [4,] -1.682193 -0.3114120 0.7822108
+## [5,] -1.559606 -0.2807115 0.8295491
+## [6,] -1.393909 -0.2516010 0.8447872
 ```
 

@@ -1,15 +1,21 @@
+## Classificador Naive Bayes
+
+Este exemplo utiliza Naive Bayes (scikit‑learn via reticulate) para classificar a base Iris.
+Fluxo: dividir treino/teste, treinar, prever e avaliar.
+
+Pré‑requisitos
+- pacotes R: daltoolbox, daltoolboxdp
+- Python acessível pelo reticulate (scikit‑learn instalado)
+
 
 ``` r
-# Naive Bayes Classifier
-
-# installing packages
-
-install.packages("daltoolboxdp")
+# Instalação (se necessário)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -17,14 +23,13 @@ library(daltoolboxdp)
 
 
 ``` r
-# General function for exploring Naive Bayes classifier
-
+# Carregando dataset Iris
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Naive Bayes
+# Treino e avaliação com Naive Bayes
 
 slevels <- levels(iris$Species)
 
@@ -34,6 +39,7 @@ sr <- train_test(sr, iris)
 iris_train <- sr$train
 iris_test <- sr$test
 
+# Codificação numérica do alvo para scikit‑learn
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 

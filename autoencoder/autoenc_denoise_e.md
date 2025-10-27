@@ -1,3 +1,14 @@
+## Autoencoder com Denoising (encode)
+
+Este exemplo demonstra como usar um autoencoder com ruído (denoising) para aprender uma codificação robusta das janelas da série temporal. Durante o treino, ruído é adicionado à entrada.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - Ideia: adicionar ruído na entrada e treinar o modelo para recuperar o sinal limpo.
+ - Benefício: representações latentes mais robustas a perturbações.
 
 ``` r
 # Denoising Autoencoder transformation (encode)
@@ -8,13 +19,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -45,7 +56,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +77,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +86,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
 
@@ -91,11 +102,16 @@ plot(grf)
 ```
 
 ![plot of chunk unnamed-chunk-7](fig/autoenc_denoise_e/unnamed-chunk-7-1.png)
+ 
+
+``` r
+# A convergência deve ser estável; ruído em excesso pode dificultar o ajuste.
+```
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo codificação
 
 print(head(test))
 ```
@@ -117,11 +133,11 @@ print(head(result))
 
 ```
 ##           [,1]       [,2]      [,3]
-## [1,] 0.9786387 -0.5594079 0.7341204
-## [2,] 0.9915323 -0.6838336 0.7502946
-## [3,] 0.9707655 -0.7982574 0.7396640
-## [4,] 0.9215176 -0.8827088 0.7068284
-## [5,] 0.8468506 -0.9319379 0.6538290
-## [6,] 0.7514073 -0.9428831 0.5839612
+## [1,] 0.9756731 -0.5861361 0.7299481
+## [2,] 0.9892359 -0.7131050 0.7412537
+## [3,] 0.9668233 -0.8284920 0.7290662
+## [4,] 0.9183574 -0.9070378 0.6973485
+## [5,] 0.8438716 -0.9509255 0.6469927
+## [6,] 0.7479969 -0.9574272 0.5811294
 ```
 

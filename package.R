@@ -64,8 +64,8 @@ if (FALSE) { #build package for cran
   pkgbuild::build(manual = TRUE)
   
   #run in terminal
-  #R CMD check daltoolboxdp_1.2.727.tar.gz
-  #R CMD check daltoolboxdp_1.2.727.tar.gz --as-cran
+  #R CMD check daltoolboxdp_1.2.737.tar.gz
+  #R CMD check daltoolboxdp_1.2.737.tar.gz --as-cran
 
   #upload package
   #https://cran.r-project.org/submit.html

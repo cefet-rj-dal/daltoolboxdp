@@ -1,20 +1,21 @@
+## Autoencoder Variacional (encode-decode)
+
+Este exemplo usa um Autoencoder Variacional (VAE) para codificar janelas de série temporal (p -> k) e reconstruí‑las (k -> p). Avaliamos a qualidade de reconstrução ao final.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
 
 ``` r
-# Variational Autoencoder transformation (encode-decode)
-
-# Considering a dataset with $p$ numerical attributes. 
-
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
-
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Instalando dependências do exemplo (se necessário)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,12 +24,11 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
-
+# Conjunto de dados de exemplo (série -> janelas)
 data(tsd)
 
-sw_size <- 5
-ts <- ts_data(tsd$y, sw_size)
+sw_size <- 5                      # tamanho da janela deslizante (p)
+ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
 
 ts_head(ts)
 ```
@@ -45,8 +45,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
-
+# Normalização (min-max por grupo)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -66,27 +65,30 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
-
+# Divisão em treino e teste
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
-test <- as.data.frame(samp$test)
+test  <- as.data.frame(samp$test)
 ```
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Criando o VAE (encode-decode): 5 -> 3 -> 5 dimensões
+auto <- autoenc_variational_ed(5, 3, num_epochs = 350)
 
-auto <- autoenc_variational_ed(5, 3, num_epochs=350)
-
+# Treinando o modelo
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
-
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+# Curvas de aprendizado (perda total por época)
+fit_loss <- data.frame(
+  x = 1:length(auto$train_loss),
+  train_loss = auto$train_loss,
+  val_loss = auto$val_loss
+)
+grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
 plot(grf)
 ```
 
@@ -94,9 +96,8 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
-
+# Testando o VAE (reconstrução)
+# Mostra amostras do conjunto de teste e a reconstrução (p colunas)
 print(head(test))
 ```
 
@@ -117,42 +118,43 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8503924 0.9010798 0.9247387 0.9158779 0.8796081
-## [2,] 0.9037983 0.9470333 0.9642365 0.9575155 0.9278008
-## [3,] 0.9280986 0.9643915 0.9777374 0.9725425 0.9477884
-## [4,] 0.9180168 0.9572936 0.9722769 0.9663282 0.9392009
-## [5,] 0.9078665 0.9488264 0.9654988 0.9586376 0.9286421
-## [6,] 0.8397235 0.8884937 0.9126164 0.9026169 0.8641211
+## [1,] 0.8658016 0.9143311 0.9332994 0.9248589 0.8885081
+## [2,] 0.9182333 0.9558818 0.9686602 0.9629863 0.9362608
+## [3,] 0.9173912 0.9552435 0.9681830 0.9624683 0.9354554
+## [4,] 0.9112223 0.9507433 0.9645520 0.9584417 0.9299828
+## [5,] 0.8886793 0.9333327 0.9499095 0.9425718 0.9095617
+## [6,] 0.8478112 0.8984355 0.9188799 0.9098283 0.8713625
 ```
 
 
 ``` r
+# Métricas de reconstrução por coluna: R² e MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 test: 0.300668414499789 MAPE: 0.163572792345232"
-## [1] "t3 R2 test: 0.885527173774105 MAPE: 0.0892645997644482"
-## [1] "t2 R2 test: 0.993385915231971 MAPE: 0.0156393648859861"
-## [1] "t1 R2 test: 0.953405389569612 MAPE: 0.133314215584661"
-## [1] "t0 R2 test: 0.901868402746441 MAPE: 0.320658077772262"
+## [1] "t4 R2 teste: 0.25372679697881 MAPE: 0.179561415728927"
+## [1] "t3 R2 teste: 0.856623084935602 MAPE: 0.105108304525086"
+## [1] "t2 R2 teste: 0.9881941390026 MAPE: 0.0231449247897302"
+## [1] "t1 R2 teste: 0.960674531393627 MAPE: 0.117206708324891"
+## [1] "t0 R2 teste: 0.920002718236098 MAPE: 0.301727970903343"
 ```
 
 ``` r
-print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.806971059164383 MAPE: 0.144489810070518"
+## [1] "Médias R2 teste: 0.795844254109347 MAPE: 0.145349864854396"
 ```
 

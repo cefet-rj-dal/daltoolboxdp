@@ -1,3 +1,14 @@
+## Autoencoder Convolucional (encode-decode)
+
+Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar e reconstruir janelas de uma série temporal. Após reduzir de p para k dimensões, o modelo reconstrói de volta para p, permitindo avaliar o erro de reconstrução.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - Reconstrução: compare entrada e saída para verificar se os padrões locais foram preservados.
+ - Métricas: R² e MAPE por coluna ajudam a medir a qualidade por passo da janela.
 
 ``` r
 # Convolutional Autoencoder transformation (encode-decode)
@@ -8,13 +19,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -45,7 +56,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +77,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +86,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_conv_ed(5, 3)
 
@@ -94,8 +105,8 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo reconstrução
 
 print(head(test))
 ```
@@ -119,12 +130,12 @@ print(head(result))
 ## , , 1
 ## 
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7376174 0.8504223 0.9196946 0.9547557 0.9577525
-## [2,] 0.8425559 0.9124171 0.9481962 0.9670938 0.9593468
-## [3,] 0.9095808 0.9415893 0.9564646 0.9647772 0.9457748
-## [4,] 0.9448016 0.9541111 0.9543768 0.9505221 0.9128845
-## [5,] 0.9604099 0.9545908 0.9389857 0.9107245 0.8424618
-## [6,] 0.9636966 0.9424592 0.9006068 0.8232714 0.7186844
+## [1,] 0.7350522 0.8451846 0.9175721 0.9551076 0.9580944
+## [2,] 0.8408093 0.9095408 0.9467298 0.9662982 0.9594948
+## [3,] 0.9086373 0.9395595 0.9554131 0.9637793 0.9463183
+## [4,] 0.9442120 0.9525085 0.9533068 0.9487289 0.9136994
+## [5,] 0.9598675 0.9535236 0.9376767 0.9079835 0.8431801
+## [6,] 0.9625239 0.9414502 0.8985656 0.8223424 0.7194853
 ```
 
 
@@ -134,27 +145,32 @@ names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 test: 0.984264368834454 MAPE: 0.0168798105498943"
-## [1] "t3 R2 test: 0.971408992727373 MAPE: 0.0226748577876404"
-## [1] "t2 R2 test: 0.990686132462013 MAPE: 0.0182235234653678"
-## [1] "t1 R2 test: 0.99699843133822 MAPE: 0.0160812065379796"
-## [1] "t0 R2 test: 0.994587062249781 MAPE: 0.0190722143802145"
+## [1] "t4 R2 teste: 0.983630142182545 MAPE: 0.0166417209415435"
+## [1] "t3 R2 teste: 0.973015334778284 MAPE: 0.0223837161040003"
+## [1] "t2 R2 teste: 0.990854085601842 MAPE: 0.0189836249166383"
+## [1] "t1 R2 teste: 0.997112470874845 MAPE: 0.0148726794853899"
+## [1] "t0 R2 teste: 0.9944221154644 MAPE: 0.0193923005139626"
 ```
 
 ``` r
-print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.987588997522368 MAPE: 0.0185863225442193"
+## [1] "Médias R2 teste: 0.987806829780383 MAPE: 0.0184548083923069"
+```
+ 
+
+``` r
+# Observação: cuidado com divisões por valores muito próximos de zero ao calcular o MAPE.
 ```
 

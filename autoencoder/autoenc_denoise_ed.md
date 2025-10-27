@@ -1,3 +1,14 @@
+## Autoencoder com Denoising (encode-decode)
+
+Este exemplo demonstra como usar um autoencoder com ruído (denoising) para codificar e reconstruir janelas da série temporal, permitindo avaliar a qualidade da reconstrução sob ruído.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - O ruído é aplicado na entrada durante o treino; na inferência, a reconstrução tende a ser mais suave.
+ - Métricas por coluna (R² e MAPE) ajudam a verificar robustez por passo.
 
 ``` r
 # Denoising Autoencoder transformation (encode-decode)
@@ -8,13 +19,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -45,7 +56,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +77,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +86,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_denoise_ed(5, 3)
 
@@ -94,8 +105,8 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo reconstrução
 
 print(head(test))
 ```
@@ -117,12 +128,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7473772 0.8352346 0.9166490 0.9350689 1.0282799
-## [2,] 0.8511374 0.9138131 0.9768189 0.9649199 1.0295873
-## [3,] 0.9364104 0.9676077 1.0084138 0.9615696 0.9936918
-## [4,] 0.9961447 0.9952801 1.0104955 0.9264631 0.9267105
-## [5,] 1.0251760 0.9934155 0.9796249 0.8624241 0.8347023
-## [6,] 1.0199766 0.9621935 0.9164958 0.7748238 0.7235330
+## [1,] 0.7396999 0.8332940 0.9097936 0.9345015 1.0293039
+## [2,] 0.8429305 0.9125763 0.9687915 0.9646028 1.0300387
+## [3,] 0.9270367 0.9686274 1.0002644 0.9633082 0.9996707
+## [4,] 0.9869005 0.9953306 1.0023001 0.9289137 0.9322840
+## [5,] 1.0146942 0.9919669 0.9707832 0.8665791 0.8393714
+## [6,] 1.0115509 0.9587041 0.9094107 0.7778739 0.7271910
 ```
 
 
@@ -132,27 +143,32 @@ names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 test: 0.998598086143027 MAPE: 0.0230980966347936"
-## [1] "t3 R2 test: 0.999700491628216 MAPE: 0.00303204488585393"
-## [1] "t2 R2 test: 0.99925284987327 MAPE: 0.0127217467792608"
-## [1] "t1 R2 test: 0.999890793592561 MAPE: 0.0543102997750671"
-## [1] "t0 R2 test: 0.999936933915017 MAPE: 0.0257454709038543"
+## [1] "t4 R2 teste: 0.999428846495296 MAPE: 0.0144892787032499"
+## [1] "t3 R2 teste: 0.999677285827726 MAPE: 0.00308049490259746"
+## [1] "t2 R2 teste: 0.998895027450938 MAPE: 0.00941670657819297"
+## [1] "t1 R2 teste: 0.999955854921998 MAPE: 0.053086348105404"
+## [1] "t0 R2 teste: 0.999780720017651 MAPE: 0.041589368158733"
 ```
 
 ``` r
-print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.999475831030418 MAPE: 0.023781531795766"
+## [1] "Médias R2 teste: 0.999547546942722 MAPE: 0.0243324392896355"
+```
+ 
+
+``` r
+# Observação: ajuste do nível de ruído impacta a capacidade de reconstrução.
 ```
 

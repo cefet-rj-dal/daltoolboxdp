@@ -1,15 +1,20 @@
+## Classificador Multi-Layer Perceptron (MLP)
+
+Este exemplo utiliza MLP (scikit‑learn via reticulate) para classificar a base Iris. Fluxo: dividir treino/teste, treinar, prever e avaliar.
+
+Pré‑requisitos
+- pacotes R: daltoolbox, daltoolboxdp
+- Python acessível pelo reticulate (scikit‑learn instalado)
+
 
 ``` r
-# Multi-Layer Perceptron Classifier
-
-# installing packages
-
-install.packages("daltoolboxdp")
+# Instalação (se necessário)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -17,14 +22,13 @@ library(daltoolboxdp)
 
 
 ``` r
-# General function for exploring MLP classifier
-
+# Carregando dataset Iris
 iris <- datasets::iris
 ```
 
 
 ``` r
-# MLP
+# Treino e avaliação com MLP
 
 slevels <- levels(iris$Species)
 
@@ -34,10 +38,11 @@ sr <- train_test(sr, iris)
 iris_train <- sr$train
 iris_test <- sr$test
 
+# Codificação numérica do alvo para scikit‑learn
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)
+model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)  # aumentar max_iter para convergir
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 

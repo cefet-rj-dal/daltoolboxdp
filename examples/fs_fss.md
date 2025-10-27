@@ -1,15 +1,22 @@
+## Seleção de Atributos com Forward Sequential Selection (FSS)
+
+Este exemplo utiliza FSS (seleção sequencial forward) para construir um subconjunto de atributos adicionando, a cada passo, o atributo que mais melhora o critério de avaliação.
+
+Pré‑requisitos
+- pacotes R: daltoolbox, daltoolboxdp
+
 
 ``` r
 # Feature Selection
 
-# installing packages
+# Instalação (se necessário)
 
-install.packages("daltoolboxdp")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -17,16 +24,18 @@ library(daltoolboxdp)
 
 
 ``` r
-#General function for exploring feature selection methods
-
+# Dados de exemplo
 iris <- datasets::iris
 ```
 
 
 ``` r
-# FSS
+# FSS — passo a passo
 
+# 1) Ajustar o seletor com alvo "Species"
 myfeature <- fit(fs_fss("Species"), iris)
+
+# 2) Ver os atributos selecionados
 print(myfeature$features)
 ```
 
@@ -35,6 +44,7 @@ print(myfeature$features)
 ```
 
 ``` r
+# 3) Transformar os dados para manter selecionados + alvo
 data <- transform(myfeature, iris)
 print(head(data))
 ```

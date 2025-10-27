@@ -1,3 +1,14 @@
+## Autoencoder Convolucional (encode)
+
+Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar janelas de uma série temporal, reduzindo de p para k dimensões e preservando informação relevante.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - Arquitetura: camadas Conv1D no encoder/decoder para capturar padrões locais na janela.
+ - Indicado quando há estruturas locais (tendências curtas, padrões repetitivos) na janela.
 
 ``` r
 # Convolutional Autoencoder transformation (encode)
@@ -8,13 +19,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -45,7 +56,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +77,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +86,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_conv_e(5, 3)
 
@@ -91,11 +102,16 @@ plot(grf)
 ```
 
 ![plot of chunk unnamed-chunk-7](fig/autoenc_conv_e/unnamed-chunk-7-1.png)
+ 
+
+``` r
+# As curvas mostram a evolução da perda; quedas estáveis indicam bom aprendizado
+```
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo codificação
 
 print(head(test))
 ```
@@ -116,12 +132,12 @@ print(head(result))
 ```
 
 ```
-##            [,1]       [,2]     [,3]
-## [1,] -1.2731477 -0.9769869 1.192716
-## [2,] -1.0700616 -1.1430701 1.353911
-## [3,] -0.8552702 -1.2584052 1.447700
-## [4,] -0.5956703 -1.3110173 1.407075
-## [5,] -0.3396660 -1.2988396 1.273922
-## [6,] -0.1231325 -1.2046665 1.044430
+##             [,1]       [,2]     [,3]
+## [1,] -1.22700810 -0.9831961 1.169764
+## [2,] -1.03069568 -1.1428639 1.329685
+## [3,] -0.81910223 -1.2539396 1.421351
+## [4,] -0.56431830 -1.2991978 1.380158
+## [5,] -0.31255794 -1.2778066 1.244296
+## [6,] -0.09585384 -1.1735302 1.011502
 ```
 

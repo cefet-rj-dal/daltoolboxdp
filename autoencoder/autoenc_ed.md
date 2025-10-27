@@ -1,3 +1,18 @@
+## Autoencoder (Encode-Decode) — Visão Geral
+
+Este exemplo mostra um autoencoder que codifica e reconstrói a entrada. Após treinar a redução de p → k dimensões, o modelo decodifica de volta para p. Quanto melhor o treino, mais próximo o reconstruído fica do original (erro de reconstrução baixo).
+
+Pré‑requisitos
+- Reticulate configurado e Python com PyTorch instalado
+- pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Passo a passo
+1) Construir janelas da série temporal
+2) Normalizar dados
+3) Separar treino e teste
+4) Treinar o AE (5 → 3) e acompanhar perdas
+5) Reconstruir e calcular métricas (R2, MAPE)
+
 
 ``` r
 # Vanilla autoencoder transformation (encode-decode)
@@ -8,13 +23,13 @@
 
 # installing packages
 
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,7 +38,7 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example
+# Dataset de exemplo (série → janelas)
 
 data(tsd)
 
@@ -45,7 +60,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -66,7 +81,7 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
+# Divisão treino / teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -75,7 +90,7 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (redução 5 → 3)
 
 auto <- autoenc_ed(5, 3)
 
@@ -84,7 +99,8 @@ auto <- fit(auto, train)
 
 
 ``` r
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
+# Curvas de perda de treino e validação
+fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss, val_loss=auto$val_loss)
 
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
@@ -94,8 +110,7 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando: reconstrução do conjunto de teste
 
 print(head(test))
 ```
@@ -117,16 +132,17 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7234102 0.8266780 0.9120744 0.9679873 0.9992983
-## [2,] 0.8319029 0.9134725 0.9718521 0.9985037 0.9958833
-## [3,] 0.9190652 0.9737118 1.0017951 0.9978745 0.9620523
-## [4,] 0.9708288 0.9965771 0.9954042 0.9640718 0.9005641
-## [5,] 0.9955361 0.9913880 0.9598846 0.9015055 0.8136153
-## [6,] 0.9916517 0.9584675 0.8974445 0.8140648 0.7066115
+## [1,] 0.7257841 0.8304496 0.9142101 0.9680263 0.9986345
+## [2,] 0.8293212 0.9119390 0.9704733 0.9979895 0.9959698
+## [3,] 0.9138330 0.9689782 0.9982723 0.9971814 0.9626188
+## [4,] 0.9741088 0.9989527 0.9963259 0.9653509 0.9001243
+## [5,] 1.0027015 0.9971723 0.9630279 0.9038267 0.8129374
+## [6,] 0.9945748 0.9612569 0.8989261 0.8158607 0.7069759
 ```
 
 
 ``` r
+# Avaliando qualidade da reconstrução: R² e MAPE por atributo
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -141,11 +157,11 @@ print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 ```
 
 ```
-## [1] "t4 R2 test: 0.999106142903094 MAPE: 0.00288508771869391"
-## [1] "t3 R2 test: 0.99948740042114 MAPE: 0.00367657234397969"
-## [1] "t2 R2 test: 0.999826044802703 MAPE: 0.00273305794394285"
-## [1] "t1 R2 test: 0.999940434993695 MAPE: 0.00369941137522779"
-## [1] "t0 R2 test: 0.999985856779446 MAPE: 0.00182619984778775"
+## [1] "t4 R2 test: 0.999477894224947 MAPE: 0.00186637045768297"
+## [1] "t3 R2 test: 0.999831023227896 MAPE: 0.0018737623897964"
+## [1] "t2 R2 test: 0.999944909950231 MAPE: 0.00146192645278539"
+## [1] "t1 R2 test: 0.999918722856224 MAPE: 0.00371470278147964"
+## [1] "t0 R2 test: 0.999991330346745 MAPE: 0.00113579679380565"
 ```
 
 ``` r
@@ -153,5 +169,5 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.999669175980016 MAPE: 0.0029640658459264"
+## [1] "Means R2 test: 0.999832776121208 MAPE: 0.00201051177511001"
 ```

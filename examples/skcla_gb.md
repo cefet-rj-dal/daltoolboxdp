@@ -1,15 +1,24 @@
+## Classificador Gradient Boosting — Visão Geral
+
+Este exemplo utiliza o Gradient Boosting (scikit‑learn via reticulate) para classificar a base Iris.
+Fluxo: dividir treino/teste, treinar, prever e avaliar (métricas de classificação).
+
+Pré‑requisitos
+- pacotes R: daltoolbox, daltoolboxdp
+- Python acessível pelo reticulate (scikit‑learn instalado)
+
 
 ``` r
 # Gradient Boosting Classifier
 
-# installing packages
+# Instalação (se necessário)
 
-install.packages("daltoolboxdp")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -17,31 +26,33 @@ library(daltoolboxdp)
 
 
 ``` r
-# General function for exploring Gradient Boosting classifier
-
+# Carregando dataset Iris
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Gradient Boosting
+# Treino e avaliação com Gradient Boosting
 
-slevels <- levels(iris$Species)
+slevels <- levels(iris$Species)                 # níveis da variável alvo
 
 set.seed(1)
-sr <- sample_random()
-sr <- train_test(sr, iris)
+sr <- sample_random()                           # amostragem aleatória estratificada
+sr <- train_test(sr, iris)                      # separa dados
 iris_train <- sr$train
 iris_test <- sr$test
 
+# Codificação numérica do alvo para scikit‑learn (mantendo Species como alvo original)
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
+# 1) Treinar
 model <- skcla_gb("species_encoded", slevels)
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
+# 2) Avaliação no treino
+iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # rótulos originais
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
 ```
@@ -52,6 +63,7 @@ print(train_eval$metrics)
 ```
 
 ``` r
+# 3) Avaliação no teste
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)

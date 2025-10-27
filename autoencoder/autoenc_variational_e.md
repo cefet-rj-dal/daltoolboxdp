@@ -1,20 +1,25 @@
+## Autoencoder Variacional (encode)
+
+Este exemplo usa um Autoencoder Variacional (VAE) para aprender representações latentes de janelas de série temporal. O VAE reduz de p para k dimensões e regulariza o espaço latente para aproximar uma distribuição alvo (ex.: normal padrão) via termo KL.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Notas rápidas
+- Perda: reconstrutiva + divergência KL entre a distribuição latente e a prior.
+- Útil para gerar representações contínuas e bem comportadas no espaço latente.
+
 
 ``` r
-# Variational Autoencoder transformation (encode)
-
-# Considering a dataset with $p$ numerical attributes. 
-
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
-
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Instalando dependências do exemplo (se necessário)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -23,12 +28,11 @@ library(ggplot2)
 
 
 ``` r
-# dataset for example 
-
+# Conjunto de dados de exemplo (série -> janelas)
 data(tsd)
 
-sw_size <- 5
-ts <- ts_data(tsd$y, sw_size)
+sw_size <- 5                      # tamanho da janela deslizante (p)
+ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
 
 ts_head(ts)
 ```
@@ -45,8 +49,7 @@ ts_head(ts)
 
 
 ``` r
-# applying data normalization
-
+# Normalização (min-max por grupo)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -66,27 +69,31 @@ ts_head(ts)
 
 
 ``` r
-# spliting into training and test
-
+# Divisão em treino e teste
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
-test <- as.data.frame(samp$test)
+test  <- as.data.frame(samp$test)
 ```
 
 
 ``` r
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Criando o VAE: reduz de 5 -> 3 dimensões (p -> k)
+# - num_epochs: menos épocas podem ser suficientes dado o termo KL adicional
+auto <- autoenc_variational_e(5, 3, num_epochs = 350)
 
-auto <- autoenc_variational_e(5, 3, num_epochs=350)
-
+# Treinando o modelo
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
-
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+# Curvas de aprendizado (perda total por época)
+fit_loss <- data.frame(
+  x = 1:length(auto$train_loss),
+  train_loss = auto$train_loss,
+  val_loss = auto$val_loss
+)
+grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
 plot(grf)
 ```
 
@@ -94,9 +101,8 @@ plot(grf)
 
 
 ``` r
-# testing autoencoder
-# presenting the original test set and display encoding
-
+# Testando o VAE (codificação)
+# Mostra amostras do conjunto de teste e a codificação (k colunas)
 print(head(test))
 ```
 
@@ -116,12 +122,12 @@ print(head(result))
 ```
 
 ```
-##             [,1]       [,2]       [,3]          [,4]         [,5]          [,6]
-## [1,] -0.09832741 0.06763819 -0.1862340  7.487163e-04  0.010535383 -0.0027102083
-## [2,] -0.06025762 0.11941473 -0.1941513 -1.064472e-03  0.009145199 -0.0081434250
-## [3,] -0.01386508 0.16390879 -0.1842456 -3.433973e-05  0.007194844 -0.0096726269
-## [4,]  0.03571769 0.19047585 -0.1558494 -2.006814e-04  0.004157037 -0.0064738542
-## [5,]  0.07666413 0.19414660 -0.1145832 -3.034063e-03  0.001377662 -0.0006879866
-## [6,]  0.11004244 0.18372124 -0.0652075 -5.937316e-03 -0.001337080  0.0046074241
+##              [,1]        [,2]       [,3]          [,4]          [,5]         [,6]
+## [1,] -0.179695413 -0.01619485 -0.1237035 -0.0054883212 -0.0041387216 -0.001536518
+## [2,] -0.178664550  0.04040169 -0.1584055 -0.0035014600 -0.0017229831 -0.002821684
+## [3,] -0.154285535  0.11013719 -0.1796886 -0.0021705031  0.0003623795 -0.006522253
+## [4,] -0.107917659  0.16292368 -0.1805526 -0.0026185811  0.0005510515 -0.006827340
+## [5,] -0.051479183  0.18558842 -0.1566449 -0.0032125860 -0.0040512243 -0.005097672
+## [6,] -0.001374023  0.18620345 -0.1135110 -0.0006585643 -0.0081541426 -0.005980015
 ```
 

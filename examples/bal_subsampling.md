@@ -1,27 +1,30 @@
+## Balanceamento de Classes: Subsampling
+
+Este exemplo mostra como lidar com desbalanceamento de classes aplicando subsampling (reduzir a classe majoritária) em um subconjunto desbalanceado da base Iris.
+
+Pré‑requisitos
+- pacotes R: daltoolbox, daltoolboxdp
+
 
 ``` r
-# Feature Selection
-
-# installing packages
-
-install.packages("daltoolboxdp")
+# Instalação (se necessário)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(daltoolboxdp)
 ```
 
 
 ``` r
-# General function for exploring feature selection methods
-
+# Dados de exemplo e criação de desbalanceamento artificial
 iris <- datasets::iris
 data(iris)
 mod_iris <- iris[c(1:50,51:71,101:111),]
-table(mod_iris$Species)
+table(mod_iris$Species)                      # distribuição original
 ```
 
 ```
@@ -32,12 +35,11 @@ table(mod_iris$Species)
 
 
 ``` r
-# subsampling
-
+# Subsampling — reduz a classe majoritária para balancear
 bal <- bal_subsampling('Species')
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)
-table(adjust_iris$Species)
+table(adjust_iris$Species)                    # distribuição após subsampling
 ```
 
 ```
