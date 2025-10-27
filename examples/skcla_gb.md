@@ -1,24 +1,23 @@
-## Classificador Gradient Boosting — Visão Geral
+## Gradient Boosting Classifier - Overview
 
-Este exemplo utiliza o Gradient Boosting (scikit‑learn via reticulate) para classificar a base Iris.
-Fluxo: dividir treino/teste, treinar, prever e avaliar (métricas de classificação).
+This example uses Gradient Boosting (scikit-learn via reticulate) to classify the Iris dataset.
+Workflow: split train/test, train, predict, and evaluate (classification metrics).
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
-- Python acessível pelo reticulate (scikit‑learn instalado)
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
+- Python accessible via reticulate (scikit-learn installed)
 
 
 ``` r
 # Gradient Boosting Classifier
 
-# Instalação (se necessário)
-
-install.packages("daltoolboxdp")
+# Installation (if needed)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -26,33 +25,33 @@ library(daltoolboxdp)
 
 
 ``` r
-# Carregando dataset Iris
+# Loading Iris dataset
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Treino e avaliação com Gradient Boosting
+# Training and evaluation with Gradient Boosting
 
-slevels <- levels(iris$Species)                 # níveis da variável alvo
+slevels <- levels(iris$Species)                 # target variable levels
 
 set.seed(1)
-sr <- sample_random()                           # amostragem aleatória estratificada
-sr <- train_test(sr, iris)                      # separa dados
+sr <- sample_random()                           # stratified random sampling
+sr <- train_test(sr, iris)                      # split data
 iris_train <- sr$train
 iris_test <- sr$test
 
-# Codificação numérica do alvo para scikit‑learn (mantendo Species como alvo original)
+# Numeric encoding of the target for scikit-learn (keeping Species as original target)
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-# 1) Treinar
+# 1) Train
 model <- skcla_gb("species_encoded", slevels)
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 
-# 2) Avaliação no treino
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # rótulos originais
+# 2) Evaluate on train
+iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # original labels
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
 ```
@@ -63,7 +62,7 @@ print(train_eval$metrics)
 ```
 
 ``` r
-# 3) Avaliação no teste
+# 3) Evaluate on test
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
@@ -77,3 +76,4 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+

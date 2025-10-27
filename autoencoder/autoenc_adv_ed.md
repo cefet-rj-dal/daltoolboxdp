@@ -1,25 +1,25 @@
-## Autoencoder Adversarial (encode-decode)
+## Adversarial Autoencoder (encode-decode)
 
-Este exemplo mostra como treinar e usar um Autoencoder Adversarial (AAE) no modo encode-decode: o modelo comprime janelas de p para k dimensões e, em seguida, reconstrói de volta para p, permitindo avaliar o erro de reconstrução.
+This example shows how to train and use an Adversarial Autoencoder (AAE) in encode-decode mode: the model compresses windows from p to k dimensions and then reconstructs back to p, enabling evaluation of reconstruction error.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
-Notas rápidas
-- Avaliação: qualidade de reconstrução medida, por exemplo, via R² e MAPE por coluna da janela.
-- Hiperparâmetros: `num_epochs`, `batch_size` influenciam convergência e estabilidade adversarial.
+Quick notes
+- Evaluation: reconstruction quality measured, for example, via R2 and MAPE per window column.
+- Hyperparameters: `num_epochs`, `batch_size` influence convergence and adversarial stability.
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -28,11 +28,11 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
 ts_head(ts)
 ```
@@ -49,7 +49,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -69,7 +69,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -77,16 +77,16 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder adversarial (encode-decode): 5 -> 3 -> 5 dimensões
+# Creating the adversarial autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
 auto <- autoenc_adv_ed(5, 3, batch_size = 3, num_epochs = 1500)
 
-# Treinando o modelo
+# Training the model
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -100,8 +100,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (reconstrução)
-# Mostra amostras do conjunto de teste e a reconstrução gerada (p colunas)
+# Testing the autoencoder (reconstruction)
+# Show samples from the test set and the generated reconstruction (p columns)
 print(head(test))
 ```
 
@@ -122,18 +122,18 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8515993 0.9055303 0.9264832 0.9258715 0.8865762
-## [2,] 0.8792633 0.9296120 0.9473595 0.9474165 0.9116967
-## [3,] 0.8907688 0.9388611 0.9552834 0.9553570 0.9217457
-## [4,] 0.8889199 0.9374500 0.9540140 0.9540896 0.9201584
-## [5,] 0.8720955 0.9236389 0.9420888 0.9419913 0.9052253
-## [6,] 0.8380271 0.8929982 0.9148843 0.9138092 0.8737197
+## [1,] 0.8748461 0.9243001 0.9433252 0.9438757 0.9001501
+## [2,] 0.9001871 0.9445894 0.9605389 0.9619084 0.9236136
+## [3,] 0.9101514 0.9520443 0.9665964 0.9681612 0.9325433
+## [4,] 0.9083825 0.9507392 0.9655417 0.9670541 0.9309527
+## [5,] 0.8939266 0.9397373 0.9564961 0.9575964 0.9178482
+## [6,] 0.8629656 0.9138687 0.9340841 0.9341509 0.8881984
 ```
 
 
 ``` r
-# Métricas de reconstrução por coluna: R² e MAPE
-# Observação: MAPE pode ser sensível a valores próximos de zero.
+# Reconstruction metrics per column: R2 and MAPE
+# Note: MAPE can be sensitive to values close to zero.
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -143,23 +143,23 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 teste: 0.330045151311239 MAPE: 0.171485470747373"
-## [1] "t3 R2 teste: 0.88838766928187 MAPE: 0.0962939665543128"
-## [1] "t2 R2 teste: 0.960612560838776 MAPE: 0.0429462170623562"
-## [1] "t1 R2 teste: 0.910201756900088 MAPE: 0.132826902133761"
-## [1] "t0 R2 teste: 0.850324108959418 MAPE: 0.318265658329421"
+## [1] "t4 R2 test: 0.336150523040516 MAPE: 0.154577600368949"
+## [1] "t3 R2 test: 0.887231399788245 MAPE: 0.0766732043316122"
+## [1] "t2 R2 test: 0.947307595381657 MAPE: 0.049589323209285"
+## [1] "t1 R2 test: 0.891538647337745 MAPE: 0.146771943275277"
+## [1] "t0 R2 test: 0.841176053201888 MAPE: 0.324652269485291"
 ```
 
 ``` r
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Médias R2 teste: 0.787914249458278 MAPE: 0.152363642965445"
+## [1] "Means R2 test: 0.78068084375001 MAPE: 0.150452868134083"
 ```
 

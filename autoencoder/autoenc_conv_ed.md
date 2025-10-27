@@ -1,31 +1,31 @@
-## Autoencoder Convolucional (encode-decode)
+## Convolutional Autoencoder (encode-decode)
 
-Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar e reconstruir janelas de uma série temporal. Após reduzir de p para k dimensões, o modelo reconstrói de volta para p, permitindo avaliar o erro de reconstrução.
+This example demonstrates how to use a 1D convolutional autoencoder to encode and reconstruct windows from a time series. After reducing from p to k dimensions, the model reconstructs back to p, enabling evaluation of reconstruction error.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
- 
- Notas rápidas
- - Reconstrução: compare entrada e saída para verificar se os padrões locais foram preservados.
- - Métricas: R² e MAPE por coluna ajudam a medir a qualidade por passo da janela.
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Quick notes
+- Reconstruction: compare input and output to verify local patterns are preserved.
+- Metrics: R2 and MAPE per column help measure quality across window steps.
+
 
 ``` r
 # Convolutional Autoencoder transformation (encode-decode)
 
 # Considering a dataset with $p$ numerical attributes. 
 
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
+# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However, from the $k$ dimensions the data is returned back to $p$ dimensions. The higher the autoencoder quality, the more similar the output is to the input. 
 
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing packages
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -34,8 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# Dataset de exemplo (série -> janelas) 
-
+# Example dataset (series -> windows) 
 data(tsd)
 
 sw_size <- 5
@@ -56,8 +55,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -77,8 +75,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão treino/teste
-
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
@@ -86,10 +83,8 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# Treinando autoencoder (reduz 5 -> 3)
-
+# Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_conv_ed(5, 3)
-
 auto <- fit(auto, train)
 ```
 
@@ -105,9 +100,8 @@ plot(grf)
 
 
 ``` r
-# Testando autoencoder
-# Apresentando o conjunto de teste e exibindo reconstrução
-
+# Testing the autoencoder
+# Show test samples and display reconstruction
 print(head(test))
 ```
 
@@ -130,16 +124,17 @@ print(head(result))
 ## , , 1
 ## 
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7350522 0.8451846 0.9175721 0.9551076 0.9580944
-## [2,] 0.8408093 0.9095408 0.9467298 0.9662982 0.9594948
-## [3,] 0.9086373 0.9395595 0.9554131 0.9637793 0.9463183
-## [4,] 0.9442120 0.9525085 0.9533068 0.9487289 0.9136994
-## [5,] 0.9598675 0.9535236 0.9376767 0.9079835 0.8431801
-## [6,] 0.9625239 0.9414502 0.8985656 0.8223424 0.7194853
+## [1,] 0.7372409 0.8403004 0.9169574 0.9475093 0.9605477
+## [2,] 0.8524565 0.9117986 0.9507064 0.9559878 0.9585148
+## [3,] 0.9222489 0.9451454 0.9607049 0.9535189 0.9396356
+## [4,] 0.9536644 0.9581279 0.9596072 0.9402247 0.8997511
+## [5,] 0.9646096 0.9590759 0.9458622 0.9068383 0.8281026
+## [6,] 0.9632307 0.9479400 0.9095864 0.8358452 0.7201958
 ```
 
 
 ``` r
+# Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -149,28 +144,28 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 teste: 0.983630142182545 MAPE: 0.0166417209415435"
-## [1] "t3 R2 teste: 0.973015334778284 MAPE: 0.0223837161040003"
-## [1] "t2 R2 teste: 0.990854085601842 MAPE: 0.0189836249166383"
-## [1] "t1 R2 teste: 0.997112470874845 MAPE: 0.0148726794853899"
-## [1] "t0 R2 teste: 0.9944221154644 MAPE: 0.0193923005139626"
+## [1] "t4 R2 test: 0.980776692349086 MAPE: 0.017222690270282"
+## [1] "t3 R2 test: 0.981881013023193 MAPE: 0.0184134057970992"
+## [1] "t2 R2 test: 0.98939855688938 MAPE: 0.0179452563311743"
+## [1] "t1 R2 test: 0.991838337444727 MAPE: 0.0235474020856277"
+## [1] "t0 R2 test: 0.99583589231356 MAPE: 0.0232460239907908"
 ```
 
 ``` r
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Médias R2 teste: 0.987806829780383 MAPE: 0.0184548083923069"
+## [1] "Means R2 test: 0.987946098403989 MAPE: 0.0200749556949948"
 ```
  
 
 ``` r
-# Observação: cuidado com divisões por valores muito próximos de zero ao calcular o MAPE.
+# Note: beware of divisions by values near zero when computing MAPE.
 ```
 

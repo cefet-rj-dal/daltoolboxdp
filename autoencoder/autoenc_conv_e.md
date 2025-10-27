@@ -1,14 +1,15 @@
-## Autoencoder Convolucional (encode)
+## Convolutional Autoencoder (encode)
 
-Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar janelas de uma série temporal, reduzindo de p para k dimensões e preservando informação relevante.
+This example demonstrates how to use a 1D convolutional autoencoder to encode windows from a time series, reducing from p to k dimensions while preserving relevant information.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
- 
- Notas rápidas
- - Arquitetura: camadas Conv1D no encoder/decoder para capturar padrões locais na janela.
- - Indicado quando há estruturas locais (tendências curtas, padrões repetitivos) na janela.
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Quick notes
+- Architecture: Conv1D layers in encoder/decoder to capture local patterns in each window.
+- Useful when there are local structures (short trends, repeating patterns) within the window.
+
 
 ``` r
 # Convolutional Autoencoder transformation (encode)
@@ -17,15 +18,14 @@ Pré‑requisitos
 
 # The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
 
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing packages
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -34,8 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# Dataset de exemplo (série -> janelas) 
-
+# Example dataset (series -> windows) 
 data(tsd)
 
 sw_size <- 5
@@ -56,8 +55,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -77,8 +75,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão treino/teste
-
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
@@ -86,10 +83,8 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# Treinando autoencoder (reduz 5 -> 3)
-
+# Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_conv_e(5, 3)
-
 auto <- fit(auto, train)
 ```
 
@@ -105,14 +100,13 @@ plot(grf)
  
 
 ``` r
-# As curvas mostram a evolução da perda; quedas estáveis indicam bom aprendizado
+# The curves show the loss evolution; stable decreases indicate good learning
 ```
 
 
 ``` r
-# Testando autoencoder
-# Apresentando o conjunto de teste e exibindo codificação
-
+# Testing the autoencoder
+# Show test samples and display encoding
 print(head(test))
 ```
 
@@ -132,12 +126,12 @@ print(head(result))
 ```
 
 ```
-##             [,1]       [,2]     [,3]
-## [1,] -1.22700810 -0.9831961 1.169764
-## [2,] -1.03069568 -1.1428639 1.329685
-## [3,] -0.81910223 -1.2539396 1.421351
-## [4,] -0.56431830 -1.2991978 1.380158
-## [5,] -0.31255794 -1.2778066 1.244296
-## [6,] -0.09585384 -1.1735302 1.011502
+##             [,1]     [,2]         [,3]
+## [1,] -0.80192018 1.675806  0.083039850
+## [2,] -0.70148075 1.843275  0.004572242
+## [3,] -0.55600095 1.929131 -0.046672493
+## [4,] -0.38351277 1.934611 -0.070133835
+## [5,] -0.20160201 1.851456 -0.058320910
+## [6,] -0.02404198 1.686655 -0.012578696
 ```
 

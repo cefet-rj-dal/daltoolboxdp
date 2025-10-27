@@ -1,25 +1,25 @@
-## Autoencoder LSTM (encode)
+## LSTM Autoencoder (encode)
 
-Este exemplo demonstra o uso de um Autoencoder baseado em LSTM para codificar janelas de uma série temporal. O encoder LSTM aprende representações de sequência reduzindo de p para k dimensões.
+This example demonstrates the use of an LSTM-based Autoencoder to encode windows of a time series. The LSTM encoder learns sequence representations, reducing from p to k dimensions.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
-Notas rápidas
-- Arquitetura: LSTM encoder + MLP/decoder para representar janelas de série temporal.
-- Indicado quando há dependência temporal forte na janela.
+Quick notes
+- Architecture: LSTM encoder + MLP/decoder to represent time-series windows.
+- Useful when there is strong temporal dependence within each window.
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -28,11 +28,11 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
 ts_head(ts)
 ```
@@ -49,7 +49,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -69,7 +69,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -77,17 +77,17 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder LSTM: reduz de 5 -> 3 dimensões (p -> k)
-# - num_epochs: número de épocas (LSTM pode exigir mais épocas para convergir)
+# Creating the LSTM autoencoder: reduce from 5 -> 3 dimensions (p -> k)
+# - num_epochs: number of epochs (LSTM may require more epochs to converge)
 auto <- autoenc_lstm_e(5, 3, num_epochs = 1500)
 
-# Treinando o modelo
+# Training the model
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -101,8 +101,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (codificação)
-# Mostra amostras do conjunto de teste e a codificação (k colunas)
+# Testing the autoencoder (encoding)
+# Show samples from the test set and the encoding (k columns)
 print(head(test))
 ```
 
@@ -122,12 +122,12 @@ print(head(result))
 ```
 
 ```
-##            [,1]        [,2]       [,3]
-## [1,] -0.6699934 -0.14605272 -0.4743539
-## [2,] -0.6795750 -0.20150003 -0.5163391
-## [3,] -0.6827961 -0.22082050 -0.5377484
-## [4,] -0.6801143 -0.20352292 -0.5414943
-## [5,] -0.6711098 -0.14908570 -0.5283383
-## [6,] -0.6544824 -0.05886586 -0.4968916
+##            [,1]       [,2]       [,3]
+## [1,] -0.3479043 -0.6824905 -0.5433463
+## [2,] -0.4355167 -0.6932887 -0.5470400
+## [3,] -0.4915374 -0.6974526 -0.5269975
+## [4,] -0.5218865 -0.6958049 -0.4774391
+## [5,] -0.5311725 -0.6878982 -0.3873469
+## [6,] -0.5212508 -0.6718977 -0.2455782
 ```
 

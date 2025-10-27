@@ -1,20 +1,20 @@
-## Classificador Multi-Layer Perceptron (MLP)
+## Multi-Layer Perceptron (MLP) Classifier
 
-Este exemplo utiliza MLP (scikit‑learn via reticulate) para classificar a base Iris. Fluxo: dividir treino/teste, treinar, prever e avaliar.
+This example uses MLP (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
-- Python acessível pelo reticulate (scikit‑learn instalado)
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
+- Python accessible via reticulate (scikit-learn installed)
 
 
 ``` r
-# Instalação (se necessário)
-install.packages("daltoolboxdp")
+# Installation (if needed)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -22,13 +22,13 @@ library(daltoolboxdp)
 
 
 ``` r
-# Carregando dataset Iris
+# Loading Iris dataset
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Treino e avaliação com MLP
+# Training and evaluation with MLP
 
 slevels <- levels(iris$Species)
 
@@ -38,11 +38,11 @@ sr <- train_test(sr, iris)
 iris_train <- sr$train
 iris_test <- sr$test
 
-# Codificação numérica do alvo para scikit‑learn
+# Numeric encoding of the target for scikit-learn
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)  # aumentar max_iter para convergir
+model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)  # increase max_iter for convergence
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 
@@ -52,8 +52,8 @@ print(train_eval$metrics)
 ```
 
 ```
-##   accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1    0.975 39 81  0  0         1      1           1           1  1
+##    accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1 0.9833333 39 81  0  0         1      1           1           1  1
 ```
 
 ``` r
@@ -67,6 +67,7 @@ print(test_eval$metrics)
 ```
 
 ```
-##   accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1        1 11 19  0  0         1      1           1           1  1
+##    accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1 0.9666667 11 19  0  0         1      1           1           1  1
 ```
+

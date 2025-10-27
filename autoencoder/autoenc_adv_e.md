@@ -1,26 +1,26 @@
-## Autoencoder Adversarial (encode)
+## Adversarial Autoencoder (encode)
 
-Este exemplo mostra como treinar e usar um Autoencoder Adversarial (AAE) para codificar janelas de uma série temporal, reduzindo de p para k dimensões enquanto impõe uma distribuição desejada no espaço latente via um discriminador adversarial.
+This example shows how to train and use an Adversarial Autoencoder (AAE) to encode windows of a time series, reducing from p to k dimensions while imposing a desired distribution in the latent space via an adversarial discriminator.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
-Notas rápidas
-- Arquitetura: encoder + decoder, com um discriminador no espaço latente para regularização adversarial.
-- Objetivo: aprender representações compactas (k) que preservem a informação das janelas originais (p).
-- Hiperparâmetros importantes: `num_epochs`, `batch_size`, taxa de aprendizado definida internamente.
+Quick notes
+- Architecture: encoder + decoder, with a discriminator in the latent space for adversarial regularization.
+- Goal: learn compact representations (k) that preserve information from the original windows (p).
+- Important hyperparameters: `num_epochs`, `batch_size`, learning rate defined internally.
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -29,13 +29,13 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
-ts_head(ts)                       # visualiza primeiras linhas
+ts_head(ts)                       # preview first rows
 ```
 
 ```
@@ -50,8 +50,8 @@ ts_head(ts)                       # visualiza primeiras linhas
 
 
 ``` r
-# Normalização (min-max por grupo)
-# Mantém cada coluna (passo na janela) na mesma escala [0,1]
+# Normalization (min-max by group)
+# Keeps each column (window step) on the same [0,1] scale
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -71,7 +71,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -79,18 +79,18 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder adversarial: reduz de 5 -> 3 dimensões (p -> k)
-# - batch_size: tamanho do lote de treino por passo
-# - num_epochs: número de épocas de treinamento
+# Creating the adversarial autoencoder: reduce from 5 -> 3 dimensions (p -> k)
+# - batch_size: training batch size per step
+# - num_epochs: number of training epochs
 auto <- autoenc_adv_e(5, 3, batch_size = 3, num_epochs = 1500)
 
-# Treinando o modelo no conjunto de treino
+# Training the model on the train set
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -104,8 +104,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (apenas codificação)
-# Mostra amostras do conjunto de teste e a codificação resultante (k colunas)
+# Testing the autoencoder (encoding only)
+# Show samples from the test set and the resulting encoding (k columns)
 print(head(test))
 ```
 
@@ -125,12 +125,12 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]        [,3]
-## [1,] 2.077030 -2.763866  0.31004682
-## [2,] 4.126608 -3.448654 -0.03613988
-## [3,] 4.606299 -5.684927  1.44706571
-## [4,] 2.575879 -2.300527 -0.06199043
-## [5,] 1.964557 -2.980399 -0.50611705
-## [6,] 3.081575 -3.323361  0.65095603
+##          [,1]       [,2]       [,3]
+## [1,] 3.607282 -3.0186756 -0.1026756
+## [2,] 2.812734 -2.1106026 -1.0102599
+## [3,] 5.310607 -5.0031152  1.1005849
+## [4,] 3.372642 -3.7733111  0.4434870
+## [5,] 2.983050 -3.1247714  0.8006033
+## [6,] 2.159602 -0.9902421 -0.9553011
 ```
 

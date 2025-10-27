@@ -1,19 +1,19 @@
-## Seleção de Atributos com Information Gain (IG)
+## Feature Selection with Information Gain (IG)
 
-Este exemplo mostra como usar o método de Information Gain para ranquear atributos e selecionar um subconjunto relevante para o alvo. Em seguida, aplicamos a transformação para manter apenas os atributos escolhidos junto do alvo.
+This example shows how to use the Information Gain method to rank attributes and select a relevant subset for the target. Then, we apply the transformation to keep only the chosen attributes along with the target.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
 
 
 ``` r
-# Instalação (se necessário)
-install.packages("daltoolboxdp")
+# Installation (if needed)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -21,18 +21,18 @@ library(daltoolboxdp)
 
 
 ``` r
-# Dados de exemplo
+# Example data
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Information Gain (IG) — passo a passo
+# Information Gain (IG) - step by step
 
-# 1) Ajustar o seletor de atributos (alvo: Species)
+# 1) Fit the feature selector (target: Species)
 myfeature <- fit(fs_ig("Species"), iris)
 
-# 2) Ver atributos selecionados
+# 2) View selected features
 print(myfeature$features)
 ```
 
@@ -41,7 +41,7 @@ print(myfeature$features)
 ```
 
 ``` r
-# 3) Aplicar transformação para manter apenas selecionados + alvo
+# 3) Apply transformation to keep only selected features + target
 data <- transform(myfeature, iris)
 print(head(data))
 ```

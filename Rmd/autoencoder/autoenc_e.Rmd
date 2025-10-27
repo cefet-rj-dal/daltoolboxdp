@@ -21,8 +21,8 @@ Steps
 # The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
 
 # Installing packages
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 ```{r}

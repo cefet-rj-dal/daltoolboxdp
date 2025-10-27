@@ -9,7 +9,7 @@ Prerequisites
 
 ```{r}
 # Installation (if needed)
-install.packages("daltoolboxdp")
+#install.packages("daltoolboxdp")
 ```
 
 ```{r}

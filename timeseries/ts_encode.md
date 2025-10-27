@@ -1,30 +1,30 @@
-## Codificação de Séries Temporais (encode)
+## Time Series Encoding (encode)
 
-Este exemplo mostra como transformar uma série temporal em janelas de tamanho fixo e treinar um autoencoder para aprender uma representação latente compacta (p → k) dessas janelas.
+This example shows how to transform a time series into fixed-size windows and train an autoencoder to learn a compact latent representation (p -> k) of these windows.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, ggplot2
-- Python com PyTorch acessível via reticulate (o backend é carregado por funções internas)
+Prerequisites
+- R packages: daltoolbox, ggplot2
+- Python with PyTorch accessible via reticulate (the backend is loaded by internal functions)
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 ```
 
-## Série para estudo
+## Series for study
 
 
 ``` r
 data(tsd)
-tsd$y[39] <- tsd$y[39] * 6   # injeta um outlier sintético para ilustração no gráfico
+tsd$y[39] <- tsd$y[39] * 6   # inject a synthetic outlier for illustration in the plot
 ```
 
 
 ``` r
-sw_size <- 5                         # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)        # converte a série em janelas com p colunas
-ts_head(ts, 3)                       # visualiza as 3 primeiras janelas
+sw_size <- 5                         # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)        # convert the series into windows with p columns
+ts_head(ts, 3)                       # view the first 3 windows
 ```
 
 ```
@@ -37,34 +37,34 @@ ts_head(ts, 3)                       # visualiza as 3 primeiras janelas
 
 ``` r
 library(ggplot2)
-plot_ts(x = tsd$x, y = tsd$y) +      # gráfico da série com o ponto atípico marcado pelo pico
+plot_ts(x = tsd$x, y = tsd$y) +      # series plot with the outlier peak
   theme(text = element_text(size = 16))
 ```
 
 ![plot of chunk unnamed-chunk-4](fig/ts_encode/unnamed-chunk-4-1.png)
 
-## Amostragem dos dados
+## Data sampling
 
 
 ``` r
-samp <- ts_sample(ts, test_size = 5) # separa as últimas 5 janelas para teste
+samp <- ts_sample(ts, test_size = 5) # hold out the last 5 windows for test
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Treinando o modelo
+## Train the model
 
 
 ``` r
-auto <- autoenc_e(5, 3)              # reduz de 5 → 3 dimensões (p → k)
+auto <- autoenc_e(5, 3)              # reduce from 5 -> 3 dimensions (p -> k)
 auto <- fit(auto, train)
 ```
 
-## Avaliação da codificação (treino)
+## Encoding evaluation (train)
 
 
 ``` r
-print(head(train))                    # janelas originais (p colunas)
+print(head(train))                    # original windows (p columns)
 ```
 
 ```
@@ -78,21 +78,21 @@ print(head(train))                    # janelas originais (p colunas)
 ```
 
 ``` r
-result <- transform(auto, train)      # codificações (k colunas)
+result <- transform(auto, train)      # encodings (k columns)
 print(head(result))
 ```
 
 ```
-##           [,1]        [,2]     [,3]
-## [1,] 0.6414449 -0.36973172 1.129125
-## [2,] 0.8229654 -0.06447159 1.355677
-## [3,] 0.9272192  0.25786611 1.499546
-## [4,] 0.9709718  0.55090469 1.567538
-## [5,] 0.9543616  0.79748935 1.555104
-## [6,] 0.8768654  0.98048949 1.460820
+##             [,1]        [,2]     [,3]
+## [1,]  0.22648616 -0.40368652 1.052468
+## [2,] -0.06453681 -0.39891106 1.332368
+## [3,] -0.31144375 -0.36293596 1.521470
+## [4,] -0.52965814 -0.29867691 1.614531
+## [5,] -0.70728850 -0.20391817 1.605729
+## [6,] -0.82797480 -0.09796806 1.491266
 ```
 
-## Codificação do conjunto de teste
+## Encoding of the test set
 
 
 ``` r
@@ -114,11 +114,11 @@ print(head(result))
 ```
 
 ```
-##            [,1]      [,2]      [,3]
-## [1,]  0.5950999 1.0993470 1.1122403
-## [2,]  0.3932760 1.0232307 0.8621345
-## [3,]  0.1322747 1.0763371 0.5148003
-## [4,] -0.1042039 0.6923359 0.1891492
-## [5,] -0.3764235 0.4324733 0.0455029
+##            [,1]      [,2]       [,3]
+## [1,] -0.8756180 0.1156995  1.0514680
+## [2,] -0.8039520 0.2421409  0.7306187
+## [3,] -0.7604721 0.5356805  0.1999664
+## [4,] -0.4357923 0.6562659 -0.2364654
+## [5,] -0.2507795 0.6871595 -0.4442591
 ```
 

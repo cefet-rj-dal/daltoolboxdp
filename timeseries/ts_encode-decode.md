@@ -1,29 +1,29 @@
-## Codificação e Reconstrução de Séries (encode-decode)
+## Time Series Encoding and Reconstruction (encode-decode)
 
-Este exemplo mostra como transformar uma série temporal em janelas (p) e treinar um autoencoder para codificar (p → k) e reconstruir (k → p) essas janelas, permitindo avaliar a qualidade da reconstrução.
+This example shows how to transform a time series into windows (p) and train an autoencoder to encode (p -> k) and reconstruct (k -> p) these windows, allowing evaluation of reconstruction quality.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, ggplot2
-- Python com PyTorch acessível via reticulate (backend chamado internamente)
+Prerequisites
+- R packages: daltoolbox, ggplot2
+- Python with PyTorch accessible via reticulate (backend called internally)
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 ```
 
-## Série para estudo
+## Series for study
 
 
 ``` r
 data(tsd)
-tsd$y[39] <- tsd$y[39] * 6   # injeta um outlier sintético para ilustração
+tsd$y[39] <- tsd$y[39] * 6   # inject a synthetic outlier for illustration
 ```
 
 
 ``` r
-sw_size <- 5                         # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)        # série → janelas com p colunas
+sw_size <- 5                         # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)        # series -> windows with p columns
 ts_head(ts, 3)
 ```
 
@@ -43,7 +43,7 @@ plot_ts(x = tsd$x, y = tsd$y) +
 
 ![plot of chunk unnamed-chunk-4](fig/ts_encode-decode/unnamed-chunk-4-1.png)
 
-## Amostragem dos dados
+## Data sampling
 
 
 ``` r
@@ -52,19 +52,19 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Treinando o modelo (encode-decode)
+## Train the model (encode-decode)
 
 
 ``` r
-auto <- autoenc_ed(5, 3)             # 5 → 3 → 5 dimensões
+auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
 auto <- fit(auto, train)
 ```
 
-## Avaliação da reconstrução (treino)
+## Reconstruction evaluation (train)
 
 
 ``` r
-print(head(train))                    # janelas originais (p colunas)
+print(head(train))                    # original windows (p columns)
 ```
 
 ```
@@ -78,21 +78,21 @@ print(head(train))                    # janelas originais (p colunas)
 ```
 
 ``` r
-result <- transform(auto, train)      # janelas reconstruídas (p colunas)
+result <- transform(auto, train)      # reconstructed windows (p columns)
 print(head(result))
 ```
 
 ```
 ##              [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] -0.004245751 0.2486698 0.4804802 0.6832375 0.8490135
-## [2,]  0.249563813 0.4737409 0.6837005 0.8419298 0.9492305
-## [3,]  0.482917935 0.6841216 0.8420411 0.9526980 1.0006322
-## [4,]  0.679013610 0.8401371 0.9437020 0.9972167 0.9843364
-## [5,]  0.842465878 0.9516642 0.9954049 0.9838211 0.9105142
-## [6,]  0.948686600 0.9983174 0.9868610 0.9075404 0.7791224
+## [1,] -0.002651408 0.2519338 0.4806079 0.6835559 0.8483858
+## [2,]  0.246472508 0.4767506 0.6854194 0.8455573 0.9485818
+## [3,]  0.479897857 0.6811470 0.8389929 0.9482122 0.9914607
+## [4,]  0.683245242 0.8428527 0.9452431 0.9958377 0.9812375
+## [5,]  0.837078154 0.9476513 0.9936196 0.9844607 0.9168946
+## [6,]  0.950966239 0.9965621 0.9838800 0.9051438 0.7736503
 ```
 
-## Reconstrução do conjunto de teste
+## Reconstruction of the test set
 
 
 ``` r
@@ -114,11 +114,11 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]        [,3]        [,4]       [,5]
-## [1,] 0.9868255 0.92032683  0.80141675  0.62701482  0.4106435
-## [2,] 0.9292169 0.80038536  0.62367135  0.41496181  0.1812990
-## [3,] 0.8090640 0.60129547  0.27755004  0.02878652 -0.2629534
-## [4,] 0.5980129 0.36838448  0.08149122 -0.16708124 -0.4286862
-## [5,] 0.2953016 0.05227197 -0.20142742 -0.44397157 -0.6837102
+##           [,1]      [,2]        [,3]        [,4]       [,5]
+## [1,] 0.9892928 0.9221959  0.80985981  0.62523818  0.4060521
+## [2,] 0.9199583 0.7979741  0.61731499  0.40836576  0.1730291
+## [3,] 0.7715520 0.5583513  0.29034555  0.02987423 -0.2264732
+## [4,] 0.5740357 0.3364635  0.07846792 -0.18131925 -0.4635475
+## [5,] 0.3386195 0.1006934 -0.14451335 -0.39260590 -0.6194894
 ```
 

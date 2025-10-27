@@ -11,7 +11,7 @@ Prerequisites
 # Gradient Boosting Classifier
 
 # Installation (if needed)
-install.packages("daltoolboxdp")
+#install.packages("daltoolboxdp")
 ```
 
 ```{r}

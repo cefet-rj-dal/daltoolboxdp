@@ -1,21 +1,21 @@
-## Autoencoder Empilhado (encode)
+## Stacked Autoencoder (encode)
 
-Este exemplo demonstra um Autoencoder Empilhado (Stacked) para codificação de janelas de série temporal, reduzindo de p para k dimensões com camadas densas sucessivas.
+This example demonstrates a Stacked Autoencoder for encoding time-series windows, reducing from p to k dimensions with successive dense layers.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -24,11 +24,11 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
 ts_head(ts)
 ```
@@ -45,7 +45,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -65,7 +65,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -73,16 +73,16 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder empilhado: reduz de 5 -> 3 dimensões (p -> k)
+# Creating the stacked autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 auto <- autoenc_stacked_e(5, 3)
 
-# Treinando o modelo
+# Training the model
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -96,8 +96,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (codificação)
-# Mostra amostras do conjunto de teste e a codificação (k colunas)
+# Testing the autoencoder (encoding)
+# Show samples from the test set and the encoding (k columns)
 print(head(test))
 ```
 
@@ -117,12 +117,12 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] -1.717798 -0.3960363 0.4805241
-## [2,] -1.764115 -0.3701235 0.6014170
-## [3,] -1.753038 -0.3417968 0.7039358
-## [4,] -1.682193 -0.3114120 0.7822108
-## [5,] -1.559606 -0.2807115 0.8295491
-## [6,] -1.393909 -0.2516010 0.8447872
+##           [,1]     [,2]      [,3]
+## [1,] 0.3379881 1.706060 1.4081891
+## [2,] 0.3798830 1.819173 1.4078604
+## [3,] 0.4180354 1.887251 1.3618232
+## [4,] 0.4500733 1.906060 1.2729404
+## [5,] 0.4744907 1.875879 1.1442902
+## [6,] 0.4897180 1.798432 0.9841311
 ```
 

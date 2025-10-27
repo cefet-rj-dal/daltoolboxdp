@@ -1,17 +1,17 @@
-## Autoencoder (Encode) — Visão Geral
+## Autoencoder (Encode) - Overview
 
-Este exemplo demonstra como treinar um autoencoder “vanilla” para aprender uma representação latente (codificação) de uma janela deslizante de uma série temporal. A ideia é reduzir a dimensão de p atributos para k, preservando a informação relevante. Você pode usar os vetores codificados como insumo para outras tarefas (como clustering ou predição).
+This example demonstrates how to train a vanilla autoencoder to learn a latent representation (encoding) of a sliding window from a time series. The idea is to reduce the dimensionality from p attributes to k, preserving relevant information. You can use the encoded vectors as input to other tasks (such as clustering or prediction).
 
-Pré‑requisitos
-- Reticulate configurado e Python com PyTorch instalado
-- pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Reticulate configured and Python with PyTorch installed
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
-Passo a passo
-1) Preparar o dataset (janelas da série)
-2) Normalizar dados (evita escala desbalanceada)
-3) Separar treino e teste
-4) Treinar o autoencoder (redução de 5 para 3 dimensões)
-5) Avaliar perdas e transformar dados em códigos latentes
+Steps
+1) Prepare the dataset (series windows)
+2) Normalize data (avoid unbalanced scales)
+3) Split into train and test
+4) Train the autoencoder (reduce from 5 to 3 dimensions)
+5) Inspect losses and transform data into latent codes
 
 
 ``` r
@@ -21,15 +21,14 @@ Passo a passo
 
 # The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
 
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing packages
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -38,8 +37,7 @@ library(ggplot2)
 
 
 ``` r
-# Dataset de exemplo (série temporal e janelas)
-
+# Example dataset (time series and windows)
 data(tsd)
 
 sw_size <- 5
@@ -60,8 +58,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo) para estabilizar o treino
-
+# Normalization (min-max by group) to stabilize training
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -81,8 +78,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão treino / teste
-
+# Train / test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
@@ -90,16 +86,14 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando e treinando o autoencoder (reduz de 5 para 3 dimensões)
-
+# Creating and training the autoencoder (reduce from 5 to 3 dimensions)
 auto <- autoenc_e(5, 3)
-
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Visualizando curvas de perda (treino/validação)
+# Visualizing loss curves (train/validation)
 fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
 
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
@@ -110,8 +104,7 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder: codificando exemplos de teste
-
+# Testing the autoencoder: encoding test examples
 print(head(test))
 ```
 
@@ -131,11 +124,12 @@ print(head(result))
 ```
 
 ```
-##           [,1]     [,2]       [,3]
-## [1,] -2.133319 1.083079 -0.6535907
-## [2,] -2.223497 1.183873 -0.5868651
-## [3,] -2.246743 1.240983 -0.5009663
-## [4,] -2.201395 1.250513 -0.4013102
-## [5,] -2.089066 1.209927 -0.2945161
-## [6,] -1.917528 1.123016 -0.1869479
+##          [,1]      [,2]     [,3]
+## [1,] 2.011396 0.2588778 1.403596
+## [2,] 2.110755 0.3669979 1.409943
+## [3,] 2.159090 0.4713396 1.379695
+## [4,] 2.153396 0.5654156 1.314733
+## [5,] 2.094027 0.6433767 1.219095
+## [6,] 1.984381 0.7001306 1.098126
 ```
+

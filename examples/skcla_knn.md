@@ -1,20 +1,20 @@
-## Classificador K-Nearest Neighbors (KNN)
+## K-Nearest Neighbors (KNN) Classifier
 
-Este exemplo utiliza KNN (scikit‑learn via reticulate) para classificar a base Iris. Fluxo: dividir treino/teste, treinar, prever e avaliar.
+This example uses KNN (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
-- Python acessível pelo reticulate (scikit‑learn instalado)
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
+- Python accessible via reticulate (scikit-learn installed)
 
 
 ``` r
-# Instalação (se necessário)
-install.packages("daltoolboxdp")
+# Installation (if needed)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -22,13 +22,13 @@ library(daltoolboxdp)
 
 
 ``` r
-# Carregando dataset Iris
+# Loading Iris dataset
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Treino e avaliação com KNN
+# Training and evaluation with KNN
 
 slevels <- levels(iris$Species)
 
@@ -38,7 +38,7 @@ sr <- train_test(sr, iris)
 iris_train <- sr$train
 iris_test <- sr$test
 
-# Codificação numérica do alvo para scikit‑learn
+# Numeric encoding of the target for scikit-learn
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
@@ -70,3 +70,4 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+

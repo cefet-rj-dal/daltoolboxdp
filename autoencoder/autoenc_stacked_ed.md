@@ -1,21 +1,21 @@
-## Autoencoder Empilhado (encode-decode)
+## Stacked Autoencoder (encode-decode)
 
-Este exemplo demonstra um Autoencoder Empilhado (Stacked) para codificar janelas de série temporal (p -> k) e reconstruí‑las (k -> p), permitindo avaliar a qualidade da reconstrução.
+This example demonstrates a Stacked Autoencoder to encode time-series windows (p -> k) and reconstruct them (k -> p), enabling evaluation of reconstruction quality.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -24,11 +24,11 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
 ts_head(ts)
 ```
@@ -45,7 +45,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -65,7 +65,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -73,16 +73,16 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder empilhado (encode-decode): 5 -> 3 -> 5 dimensões
+# Creating the stacked autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
 auto <- autoenc_stacked_ed(5, 3)
 
-# Treinando o modelo
+# Training the model
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -96,8 +96,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (reconstrução)
-# Mostra amostras do conjunto de teste e a reconstrução (p colunas)
+# Testing the autoencoder (reconstruction)
+# Show samples from the test set and the reconstruction (p columns)
 print(head(test))
 ```
 
@@ -118,17 +118,17 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7266038 0.8304667 0.9121040 0.9696807 0.9988025
-## [2,] 0.8276812 0.9122886 0.9685760 0.9978245 0.9947267
-## [3,] 0.9114290 0.9718435 0.9982654 0.9974596 0.9597241
-## [4,] 0.9697254 1.0016009 0.9968022 0.9656054 0.8966446
-## [5,] 0.9970743 0.9948100 0.9613092 0.8992624 0.8117816
-## [6,] 0.9966623 0.9610325 0.8993629 0.8107460 0.7062079
+## [1,] 0.7260794 0.8288990 0.9127500 0.9699163 0.9983885
+## [2,] 0.8278872 0.9124767 0.9711289 0.9987084 0.9976344
+## [3,] 0.9103234 0.9722115 0.9975937 0.9948781 0.9600648
+## [4,] 0.9694829 1.0003972 0.9957926 0.9625811 0.8984017
+## [5,] 0.9983066 0.9970360 0.9620579 0.8998305 0.8123058
+## [6,] 0.9960436 0.9631370 0.9000041 0.8122368 0.7066228
 ```
 
 
 ``` r
-# Métricas de reconstrução por coluna: R² e MAPE
+# Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -138,23 +138,23 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 teste: 0.999858419129994 MAPE: 0.00143806596442908"
-## [1] "t3 R2 teste: 0.999882271129685 MAPE: 0.00145641875493568"
-## [1] "t2 R2 teste: 0.999985089957161 MAPE: 0.00108683576264808"
-## [1] "t1 R2 teste: 0.999957431865056 MAPE: 0.00145122837050569"
-## [1] "t0 R2 teste: 0.999975096053065 MAPE: 0.00308187516293525"
+## [1] "t4 R2 test: 0.999935603269328 MAPE: 0.000715105607067624"
+## [1] "t3 R2 test: 0.99997179673414 MAPE: 0.000751606831289366"
+## [1] "t2 R2 test: 0.999986073595076 MAPE: 0.000769983453759387"
+## [1] "t1 R2 test: 0.999992735430267 MAPE: 0.00105526147628156"
+## [1] "t0 R2 test: 0.99998228144594 MAPE: 0.00132006539930698"
 ```
 
 ``` r
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Médias R2 teste: 0.999931661626992 MAPE: 0.00170288480309076"
+## [1] "Means R2 test: 0.99997369809495 MAPE: 0.000922404553540983"
 ```
 

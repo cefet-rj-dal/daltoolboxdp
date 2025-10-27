@@ -13,8 +13,8 @@ Quick notes
 
 ```{r}
 # Installing example dependencies (if needed)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 ```{r}

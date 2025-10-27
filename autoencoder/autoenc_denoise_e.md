@@ -1,14 +1,15 @@
-## Autoencoder com Denoising (encode)
+## Denoising Autoencoder (encode)
 
-Este exemplo demonstra como usar um autoencoder com ruído (denoising) para aprender uma codificação robusta das janelas da série temporal. Durante o treino, ruído é adicionado à entrada.
+This example demonstrates how to use a denoising autoencoder to learn a robust encoding of time-series windows. During training, noise is added to the input.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
- 
- Notas rápidas
- - Ideia: adicionar ruído na entrada e treinar o modelo para recuperar o sinal limpo.
- - Benefício: representações latentes mais robustas a perturbações.
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Quick notes
+- Idea: add noise to the input and train the model to recover the clean signal.
+- Benefit: latent representations that are more robust to perturbations.
+
 
 ``` r
 # Denoising Autoencoder transformation (encode)
@@ -17,15 +18,14 @@ Pré‑requisitos
 
 # The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. 
 
-# installing packages
-
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing packages
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -34,8 +34,7 @@ library(ggplot2)
 
 
 ``` r
-# Dataset de exemplo (série -> janelas) 
-
+# Example dataset (series -> windows) 
 data(tsd)
 
 sw_size <- 5
@@ -56,8 +55,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
-
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -77,8 +75,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão treino/teste
-
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
@@ -86,10 +83,8 @@ test <- as.data.frame(samp$test)
 
 
 ``` r
-# Treinando autoencoder (reduz 5 -> 3)
-
+# Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
-
 auto <- fit(auto, train)
 ```
 
@@ -105,14 +100,13 @@ plot(grf)
  
 
 ``` r
-# A convergência deve ser estável; ruído em excesso pode dificultar o ajuste.
+# Convergence should be stable; too much noise can hinder fitting.
 ```
 
 
 ``` r
-# Testando autoencoder
-# Apresentando o conjunto de teste e exibindo codificação
-
+# Testing the autoencoder
+# Show test samples and display encoding
 print(head(test))
 ```
 
@@ -133,11 +127,11 @@ print(head(result))
 
 ```
 ##           [,1]       [,2]      [,3]
-## [1,] 0.9756731 -0.5861361 0.7299481
-## [2,] 0.9892359 -0.7131050 0.7412537
-## [3,] 0.9668233 -0.8284920 0.7290662
-## [4,] 0.9183574 -0.9070378 0.6973485
-## [5,] 0.8438716 -0.9509255 0.6469927
-## [6,] 0.7479969 -0.9574272 0.5811294
+## [1,] 0.6218290 -0.6104861 -1.572079
+## [2,] 0.6878349 -0.7333791 -1.551713
+## [3,] 0.7324258 -0.8239039 -1.494257
+## [4,] 0.7550798 -0.8811594 -1.399413
+## [5,] 0.7554013 -0.9037133 -1.271335
+## [6,] 0.7332290 -0.8913724 -1.117049
 ```
 

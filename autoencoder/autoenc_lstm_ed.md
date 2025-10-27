@@ -1,21 +1,21 @@
-## Autoencoder LSTM (encode-decode)
+## LSTM Autoencoder (encode-decode)
 
-Este exemplo demonstra o uso de um Autoencoder baseado em LSTM para codificar janelas de série temporal (p -> k) e reconstruí‑las (k -> p). Assim, é possível avaliar a qualidade da reconstrução.
+This example demonstrates the use of an LSTM-based Autoencoder to encode windows of a time series (p -> k) and reconstruct them (k -> p). This allows evaluation of reconstruction quality.
 
-Pré‑requisitos
-- Python com PyTorch acessível via reticulate
-- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+Prerequisites
+- Python with PyTorch accessible via reticulate
+- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
 
 
 ``` r
-# Instalando dependências do exemplo (se necessário)
-install.packages("tspredit")
-install.packages("daltoolboxdp")
+# Installing example dependencies (if needed)
+#install.packages("tspredit")
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes necessários
+# Loading required packages
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -24,11 +24,11 @@ library(ggplot2)
 
 
 ``` r
-# Conjunto de dados de exemplo (série -> janelas)
+# Example dataset (series -> windows)
 data(tsd)
 
-sw_size <- 5                      # tamanho da janela deslizante (p)
-ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
+sw_size <- 5                      # sliding window size (p)
+ts <- ts_data(tsd$y, sw_size)     # convert series into windows with p columns
 
 ts_head(ts)
 ```
@@ -45,7 +45,7 @@ ts_head(ts)
 
 
 ``` r
-# Normalização (min-max por grupo)
+# Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -65,7 +65,7 @@ ts_head(ts)
 
 
 ``` r
-# Divisão em treino e teste
+# Train/test split
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
@@ -73,16 +73,16 @@ test  <- as.data.frame(samp$test)
 
 
 ``` r
-# Criando o autoencoder LSTM (encode-decode): 5 -> 3 -> 5 dimensões
+# Creating the LSTM autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
 auto <- autoenc_lstm_ed(5, 3, num_epochs = 1500)
 
-# Treinando o modelo
+# Training the model
 auto <- fit(auto, train)
 ```
 
 
 ``` r
-# Curvas de aprendizado (perda de treino e validação por época)
+# Learning curves (train and validation loss per epoch)
 fit_loss <- data.frame(
   x = 1:length(auto$train_loss),
   train_loss = auto$train_loss,
@@ -96,8 +96,8 @@ plot(grf)
 
 
 ``` r
-# Testando o autoencoder (reconstrução)
-# Mostra amostras do conjunto de teste e a reconstrução (p colunas)
+# Testing the autoencoder (reconstruction)
+# Show samples from the test set and the reconstruction (p columns)
 print(head(test))
 ```
 
@@ -120,57 +120,57 @@ print(head(result))
 ## , , 1
 ## 
 ##           [,1]
-## [1,] 0.7976671
-## [2,] 0.8587617
-## [3,] 0.8917737
-## [4,] 0.9054338
-## [5,] 0.9049847
-## [6,] 0.8927370
+## [1,] 0.7485248
+## [2,] 0.8581859
+## [3,] 0.9274671
+## [4,] 0.9620541
+## [5,] 0.9702259
+## [6,] 0.9559007
 ## 
 ## , , 2
 ## 
 ##           [,1]
-## [1,] 0.9066344
-## [2,] 0.9565270
-## [3,] 0.9782443
-## [4,] 0.9772234
-## [5,] 0.9551523
-## [6,] 0.9108632
+## [1,] 0.8407933
+## [2,] 0.9188651
+## [3,] 0.9654550
+## [4,] 0.9835023
+## [5,] 0.9763614
+## [6,] 0.9424056
 ## 
 ## , , 3
 ## 
 ##           [,1]
-## [1,] 0.8929862
-## [2,] 0.9308009
-## [3,] 0.9444313
-## [4,] 0.9374407
-## [5,] 0.9096528
-## [6,] 0.8581094
+## [1,] 0.8835868
+## [2,] 0.9472674
+## [3,] 0.9834314
+## [4,] 0.9933804
+## [5,] 0.9778427
+## [6,] 0.9323699
 ## 
 ## , , 4
 ## 
 ##           [,1]
-## [1,] 0.9102679
-## [2,] 0.9378524
-## [3,] 0.9445603
-## [4,] 0.9319301
-## [5,] 0.8982355
-## [6,] 0.8394521
+## [1,] 0.9246727
+## [2,] 0.9524632
+## [3,] 0.9635752
+## [4,] 0.9570796
+## [5,] 0.9292934
+## [6,] 0.8709049
 ## 
 ## , , 5
 ## 
 ##           [,1]
-## [1,] 0.9106256
-## [2,] 0.9355988
-## [3,] 0.9395129
-## [4,] 0.9232450
-## [5,] 0.8841358
-## [6,] 0.8170673
+## [1,] 0.9305776
+## [2,] 0.9229832
+## [3,] 0.9109414
+## [4,] 0.8899791
+## [5,] 0.8518168
+## [6,] 0.7839838
 ```
 
 
 ``` r
-# Métricas de reconstrução por coluna: R² e MAPE
+# Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
@@ -180,23 +180,23 @@ for (col in names(test)){
   r2 <- append(r2, r2_col)
   mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
   mape <- append(mape, mape_col)
-  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
 }
 ```
 
 ```
-## [1] "t4 R2 teste: 0.7440820337429 MAPE: 0.0719812940780948"
-## [1] "t3 R2 teste: 0.907830980259654 MAPE: 0.0662596681695922"
-## [1] "t2 R2 teste: 0.9964201279753 MAPE: 0.0494247735683323"
-## [1] "t1 R2 teste: 0.984646872253407 MAPE: 0.0631973823187948"
-## [1] "t0 R2 teste: 0.949772742823873 MAPE: 0.163904768626404"
+## [1] "t4 R2 test: 0.944052487418342 MAPE: 0.0285631902970953"
+## [1] "t3 R2 test: 0.987329593261218 MAPE: 0.0314470891686524"
+## [1] "t2 R2 test: 0.984967136944749 MAPE: 0.0259620879022903"
+## [1] "t1 R2 test: 0.967389433476063 MAPE: 0.0581087615042887"
+## [1] "t0 R2 test: 0.954342677554651 MAPE: 0.0917552357306856"
 ```
 
 ``` r
-print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Médias R2 teste: 0.916550551411027 MAPE: 0.0829535773522435"
+## [1] "Means R2 test: 0.967616265731005 MAPE: 0.0471672729206024"
 ```
 

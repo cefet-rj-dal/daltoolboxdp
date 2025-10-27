@@ -1,19 +1,19 @@
-## Seleção de Atributos com Relief
+## Feature Selection with Relief
 
-Este exemplo usa o método Relief para estimar a relevância de atributos considerando vizinhos próximos e diferenças entre classes, ranqueando e selecionando atributos mais informativos para o alvo.
+This example uses the Relief method to estimate feature relevance by considering nearest neighbors and differences across classes, ranking and selecting the most informative features for the target.
 
-Pré‑requisitos
-- pacotes R: daltoolbox, daltoolboxdp
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
 
 
 ``` r
-# Instalação (se necessário)
-install.packages("daltoolboxdp")
+# Installation (if needed)
+#install.packages("daltoolboxdp")
 ```
 
 
 ``` r
-# Carregando pacotes
+# Loading packages
 library(daltoolbox)
 library(daltoolboxdp)
 ```
@@ -21,38 +21,38 @@ library(daltoolboxdp)
 
 
 ``` r
-# Dados de exemplo
+# Example data
 iris <- datasets::iris
 ```
 
 
 ``` r
-# Relief — passo a passo
+# Relief - step by step
 
-# 1) Ajustar o seletor com alvo "Species"
+# 1) Fit the selector with target "Species"
 myfeature <- fit(fs_relief("Species"), iris)
 
-# 2) Ver os atributos selecionados
+# 2) View selected features
 print(myfeature$features)
 ```
 
 ```
-## [1] "Petal.Width"  "Petal.Length"
+## [1] "Petal.Length" "Petal.Width"
 ```
 
 ``` r
-# 3) Transformar os dados para manter selecionados + alvo
+# 3) Transform data to keep selected features + target
 data <- transform(myfeature, iris)
 print(head(data))
 ```
 
 ```
-##   Petal.Width Petal.Length Species
-## 1         0.2          1.4  setosa
-## 2         0.2          1.4  setosa
-## 3         0.2          1.3  setosa
-## 4         0.2          1.5  setosa
-## 5         0.2          1.4  setosa
-## 6         0.4          1.7  setosa
+##   Petal.Length Petal.Width Species
+## 1          1.4         0.2  setosa
+## 2          1.4         0.2  setosa
+## 3          1.3         0.2  setosa
+## 4          1.5         0.2  setosa
+## 5          1.4         0.2  setosa
+## 6          1.7         0.4  setosa
 ```
 
