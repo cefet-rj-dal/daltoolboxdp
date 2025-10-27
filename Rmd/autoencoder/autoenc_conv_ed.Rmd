@@ -1,3 +1,14 @@
+## Autoencoder Convolucional (encode-decode)
+
+Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar e reconstruir janelas de uma série temporal. Após reduzir de p para k dimensões, o modelo reconstrói de volta para p, permitindo avaliar o erro de reconstrução.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - Reconstrução: compare entrada e saída para verificar se os padrões locais foram preservados.
+ - Métricas: R² e MAPE por coluna ajudam a medir a qualidade por passo da janela.
 ```{r}
 # Convolutional Autoencoder transformation (encode-decode)
 
@@ -12,7 +23,7 @@ install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -20,7 +31,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -31,7 +42,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -41,7 +52,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -49,7 +60,7 @@ test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_conv_ed(5, 3)
 
@@ -64,8 +75,8 @@ plot(grf)
 ```
 
 ```{r}
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo reconstrução
 
 print(head(test))
 result <- transform(auto, test)
@@ -78,12 +89,16 @@ names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
 }
-print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
+```
+ 
+```{r}
+# Observação: cuidado com divisões por valores muito próximos de zero ao calcular o MAPE.
 ```
 

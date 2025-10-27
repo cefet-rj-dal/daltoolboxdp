@@ -1,3 +1,14 @@
+## Autoencoder Convolucional (encode)
+
+Este exemplo demonstra como usar um autoencoder convolucional 1D para codificar janelas de uma série temporal, reduzindo de p para k dimensões e preservando informação relevante.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+ 
+ Notas rápidas
+ - Arquitetura: camadas Conv1D no encoder/decoder para capturar padrões locais na janela.
+ - Indicado quando há estruturas locais (tendências curtas, padrões repetitivos) na janela.
 ```{r}
 # Convolutional Autoencoder transformation (encode)
 
@@ -12,7 +23,7 @@ install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -20,7 +31,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# dataset for example 
+# Dataset de exemplo (série -> janelas) 
 
 data(tsd)
 
@@ -31,7 +42,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -41,7 +52,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# spliting into training and test
+# Divisão treino/teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -49,7 +60,7 @@ test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (reduz 5 -> 3)
 
 auto <- autoenc_conv_e(5, 3)
 
@@ -62,10 +73,14 @@ fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,v
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
+ 
+```{r}
+# As curvas mostram a evolução da perda; quedas estáveis indicam bom aprendizado
+``` 
 
 ```{r}
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando autoencoder
+# Apresentando o conjunto de teste e exibindo codificação
 
 print(head(test))
 result <- transform(auto, test)

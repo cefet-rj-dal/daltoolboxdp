@@ -1,3 +1,18 @@
+## Autoencoder (Encode-Decode) — Visão Geral
+
+Este exemplo mostra um autoencoder que codifica e reconstrói a entrada. Após treinar a redução de p → k dimensões, o modelo decodifica de volta para p. Quanto melhor o treino, mais próximo o reconstruído fica do original (erro de reconstrução baixo).
+
+Pré‑requisitos
+- Reticulate configurado e Python com PyTorch instalado
+- pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
+Passo a passo
+1) Construir janelas da série temporal
+2) Normalizar dados
+3) Separar treino e teste
+4) Treinar o AE (5 → 3) e acompanhar perdas
+5) Reconstruir e calcular métricas (R2, MAPE)
+
 ```{r}
 # Vanilla autoencoder transformation (encode-decode)
 
@@ -12,7 +27,7 @@ install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# loading DAL
+# Carregando pacotes
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -20,7 +35,7 @@ library(ggplot2)
 ```
 
 ```{r}
-# dataset for example
+# Dataset de exemplo (série → janelas)
 
 data(tsd)
 
@@ -31,7 +46,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# applying data normalization
+# Normalização (min-max por grupo)
 
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
@@ -41,7 +56,7 @@ ts_head(ts)
 ```
 
 ```{r}
-# spliting into training and test
+# Divisão treino / teste
 
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
@@ -49,7 +64,7 @@ test <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Treinando autoencoder (redução 5 → 3)
 
 auto <- autoenc_ed(5, 3)
 
@@ -57,15 +72,15 @@ auto <- fit(auto, train)
 ```
 
 ```{r}
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
+# Curvas de perda de treino e validação
+fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss, val_loss=auto$val_loss)
 
 grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
 plot(grf)
 ```
 
 ```{r}
-# testing autoencoder
-# presenting the original test set and display encoding
+# Testando: reconstrução do conjunto de teste
 
 print(head(test))
 result <- transform(auto, test)
@@ -73,6 +88,7 @@ print(head(result))
 ```
 
 ```{r}
+# Avaliando qualidade da reconstrução: R² e MAPE por atributo
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()

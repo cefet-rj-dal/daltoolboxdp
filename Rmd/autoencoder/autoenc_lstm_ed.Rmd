@@ -1,18 +1,19 @@
+## Autoencoder LSTM (encode-decode)
+
+Este exemplo demonstra o uso de um Autoencoder baseado em LSTM para codificar janelas de série temporal (p -> k) e reconstruí‑las (k -> p). Assim, é possível avaliar a qualidade da reconstrução.
+
+Pré‑requisitos
+- Python com PyTorch acessível via reticulate
+- Pacotes R: daltoolbox, tspredit, daltoolboxdp, ggplot2
+
 ```{r}
-# LSTM Autoencoder transformation (encode-decode)
-
-# Considering a dataset with $p$ numerical attributes. 
- 
-# The goal of the autoencoder is to reduce the dimension of $p$ to $k$, such that these $k$ attributes are enough to recompose the original $p$ attributes. However from the $k$ dimensionals the data is returned back to $p$ dimensions. The higher the quality of autoencoder the similiar is the output from the input. 
-
-# installing packages
-
+# Instalando dependências do exemplo (se necessário)
 install.packages("tspredit")
 install.packages("daltoolboxdp")
 ```
 
 ```{r}
-# loading DAL
+# Carregando pacotes necessários
 library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
@@ -20,19 +21,17 @@ library(ggplot2)
 ```
 
 ```{r}
-# dataset for example 
-
+# Conjunto de dados de exemplo (série -> janelas)
 data(tsd)
 
-sw_size <- 5
-ts <- ts_data(tsd$y, sw_size)
+sw_size <- 5                      # tamanho da janela deslizante (p)
+ts <- ts_data(tsd$y, sw_size)     # converte série em janelas com p colunas
 
 ts_head(ts)
 ```
 
 ```{r}
-# applying data normalization
-
+# Normalização (min-max por grupo)
 preproc <- ts_norm_gminmax()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
@@ -41,51 +40,52 @@ ts_head(ts)
 ```
 
 ```{r}
-# spliting into training and test
-
+# Divisão em treino e teste
 samp <- ts_sample(ts, test_size = 10)
 train <- as.data.frame(samp$train)
-test <- as.data.frame(samp$test)
+test  <- as.data.frame(samp$test)
 ```
 
 ```{r}
-# creating autoencoder - reduce from 5 to 3 dimensions
+# Criando o autoencoder LSTM (encode-decode): 5 -> 3 -> 5 dimensões
+auto <- autoenc_lstm_ed(5, 3, num_epochs = 1500)
 
-auto <- autoenc_lstm_ed(5, 3, num_epochs=1500)
-
+# Treinando o modelo
 auto <- fit(auto, train)
 ```
 
 ```{r}
-# learning curves
-
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
-
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+# Curvas de aprendizado (perda de treino e validação por época)
+fit_loss <- data.frame(
+  x = 1:length(auto$train_loss),
+  train_loss = auto$train_loss,
+  val_loss = auto$val_loss
+)
+grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
 plot(grf)
 ```
 
 ```{r}
-# testing autoencoder
-# presenting the original test set and display encoding
-
+# Testando o autoencoder (reconstrução)
+# Mostra amostras do conjunto de teste e a reconstrução (p colunas)
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
 
 ```{r}
+# Métricas de reconstrução por coluna: R² e MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
 r2 <- c()
 mape <- c()
 for (col in names(test)){
-r2_col <- cor(test[col], result[col])^2
-r2 <- append(r2, r2_col)
-mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
-mape <- append(mape, mape_col)
-print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 teste:', r2_col, 'MAPE:', mape_col))
 }
-print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+print(paste('Médias R2 teste:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
