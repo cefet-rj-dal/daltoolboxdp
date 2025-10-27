@@ -84,18 +84,32 @@ skcla_mlp(
 \item{max_fun}{Maximum number of loss function calls}
 }
 \value{
-A Multi-layer Perceptron classifier object
-
-\code{skcla_mlp} object
+A \code{skcla_mlp} classifier object.
 }
 \description{
-Implements classification using Multi-layer Perceptron algorithm.
-This function wraps the MLPClassifier from Python's scikit-learn library.
+Implements classification using a multi-layer perceptron (MLP).
+Wraps scikit-learn's \code{MLPClassifier} through \code{reticulate}.
 }
 \details{
 Neural Network Classifier
 }
 \examples{
-#See an example of using `skcla_mlp` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_mlp.md
+\dontrun{
+data(iris)
+
+# 1) Define MLP architecture (two hidden layers)
+clf <- skcla_mlp(attribute = 'Species', slevels = levels(iris$Species), 
+                hidden_layer_sizes = c(32, 16))
+
+# 2) Fit and predict
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_mlp.md
+}
+\references{
+Bishop, C. M. (1995). Neural Networks for Pattern Recognition.
 }

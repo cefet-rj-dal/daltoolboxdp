@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_denoise_ed.R
 \name{autoenc_denoise_ed}
 \alias{autoenc_denoise_ed}
-\title{Denoising Autoencoder - Encode}
+\title{Denoising Autoencoder - Encode-Decode}
 \usage{
 autoenc_denoise_ed(
   input_size,
@@ -24,16 +24,32 @@ autoenc_denoise_ed(
 
 \item{learning_rate}{learning rate}
 
-\item{noise_factor}{level of noise to be added to the data}
+\item{noise_factor}{Numeric. Standard deviation (scale) of the noise added during training.}
 }
 \value{
-a \code{autoenc_denoise_ed} object.
+A \code{autoenc_denoise_ed} object.
 }
 \description{
-Creates an deep learning denoising autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning denoising autoencoder (DAE) that encodes and decodes sequences,
+learning robustness to input noise. Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_denoise_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_ed.md
+\dontrun{
+# 1) Prepare data
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+
+# 2) Fit denoising autoencoder (encode-decode)
+ae <- autoenc_denoise_ed(input_size = 20, encoding_size = 5, noise_factor = 0.2, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+
+# 3) Reconstruct inputs and compute error
+X_hat <- daltoolbox::transform(ae, X)
+mean((X - X_hat)^2)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_ed.md
+}
+\references{
+Vincent, P. et al. (2008). Extracting and Composing Robust Features with Denoising Autoencoders.
 }

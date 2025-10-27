@@ -60,18 +60,31 @@ skcla_svc(
 \item{random_state}{Seed for random number generation}
 }
 \value{
-An SVM classifier object
-
-\code{skcla_svc} object
+A \code{skcla_svc} classifier object.
 }
 \description{
-Implements classification using Support Vector Machine (SVM) algorithm.
-This function wraps the SVC classifier from Python's scikit-learn library.
+Implements classification using support vector machines.
+Wraps scikit-learn's \code{SVC} through \code{reticulate}.
 }
 \details{
 SVM Classifier
 }
 \examples{
-#See an example of using `skcla_svc` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
+\dontrun{
+data(iris)
+
+# 1) Create SVM classifier (RBF kernel)
+clf <- skcla_svc(attribute = 'Species', slevels = levels(iris$Species), kernel = 'rbf', C = 1)
+
+# 2) Fit and predict
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
+}
+\references{
+Cortes, C., & Vapnik, V. (1995). Support-Vector Networks.
 }

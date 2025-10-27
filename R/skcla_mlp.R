@@ -36,7 +36,8 @@
 #'data(iris)
 #'
 #'# 1) Define MLP architecture (two hidden layers)
-#'clf <- skcla_mlp(attribute = 'Species', slevels = levels(iris$Species), hidden_layer_sizes = c(32, 16))
+#'clf <- skcla_mlp(attribute = 'Species', slevels = levels(iris$Species), 
+#'                 hidden_layer_sizes = c(32, 16))
 #'
 #'# 2) Fit and predict
 #'clf <- daltoolbox::fit(clf, iris)

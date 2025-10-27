@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_adv_ed.R
 \name{autoenc_adv_ed}
 \alias{autoenc_adv_ed}
-\title{Adversarial Autoencoder - Encode}
+\title{Adversarial Autoencoder - Encode-Decode}
 \usage{
 autoenc_adv_ed(
   input_size,
@@ -24,13 +24,28 @@ autoenc_adv_ed(
 \item{learning_rate}{learning rate}
 }
 \value{
-a \code{autoenc_adv_ed} object.
+A \code{autoenc_adv_ed} object.
 }
 \description{
-Creates an deep learning adversarial autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning adversarial autoencoder (AAE) that encodes and decodes
+sequences of observations. Wraps a PyTorch implementation.
+}
+\details{
+The adversarial loss constrains the latent distribution, improving sampling
+and reconstruction quality in some setups compared to a vanilla AE.
 }
 \examples{
-#See an example of using `autoenc_adv_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_ed.md
+\dontrun{
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_adv_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+X_hat <- daltoolbox::transform(ae, X)  # reconstructions
+mean((X - X_hat)^2)
+}
+
+# More details:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_ed.md
+}
+\references{
+Makhzani, A. et al. (2016). Adversarial Autoencoders.
 }

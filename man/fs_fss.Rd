@@ -7,18 +7,28 @@
 fs_fss(attribute)
 }
 \arguments{
-\item{attribute}{The target variable.}
+\item{attribute}{Character. Name of the target variable.}
 }
 \value{
 A \code{fs_fss} object.
 }
 \description{
-Forward stepwise selection is a technique for feature selection in which attributes are added to a model one at a time based on their ability to improve the model's performance. It stops adding once the candidate addition does not significantly improve model adjustment.
-It wraps the leaps library.
+Greedy feature selection that iteratively adds the feature which most improves the
+model according to an adjustment metric (e.g., adjusted R^2). Wraps \code{leaps::regsubsets}.
 }
 \examples{
+\dontrun{
 data(iris)
-myfeature <- daltoolbox::fit(fs_fss("Species"), iris)
-data <- daltoolbox::transform(myfeature, iris)
-head(data)
+
+# 1) Forward stepwise for numeric response (adjusted R^2 criterion)
+fs <- daltoolbox::fit(fs_fss("Sepal.Length"), iris)
+fs$features
+
+# 2) Subset to selected features + target
+data_fss <- daltoolbox::transform(fs, iris)
+head(data_fss)
+}
+}
+\references{
+Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.
 }

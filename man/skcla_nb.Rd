@@ -16,18 +16,29 @@ skcla_nb(attribute, slevels, var_smoothing = 1e-09, priors = NULL)
 \item{priors}{Prior probabilities of the classes. If specified must be a list of length n_classes}
 }
 \value{
-A Naive Bayes classifier object
-
-\code{skcla_nb} object
+A \code{skcla_nb} classifier object.
 }
 \description{
-Implements classification using the Gaussian Naive Bayes algorithm.
-This function wraps the GaussianNB from Python's scikit-learn library.
+Implements classification using Gaussian Naive Bayes.
+Wraps scikit-learn's \code{GaussianNB} through \code{reticulate}.
 }
 \details{
 Naive Bayes Classifier
 }
 \examples{
-#See an example of using `skcla_nb` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_nb.md
+\dontrun{
+data(iris)
+
+# Gaussian Naive Bayes for multi-class iris
+clf <- skcla_nb(attribute = 'Species', slevels = levels(iris$Species))
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_nb.md
+}
+\references{
+Murphy, K. P. (2012). Machine Learning: A Probabilistic Perspective. (Gaussian Naive Bayes)
 }

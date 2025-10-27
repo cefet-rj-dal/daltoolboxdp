@@ -24,11 +24,30 @@ autoenc_adv_e(
 \item{learning_rate}{learning rate}
 }
 \value{
-a \code{autoenc_adv_e} object.
-#See an example of using \code{autoenc_adv_e} at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
+A \code{autoenc_adv_e} object.
 }
 \description{
-Creates an deep learning adversarial autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning adversarial autoencoder (AAE) to encode sequences
+of observations. Wraps a PyTorch implementation.
+}
+\details{
+Adversarial autoencoders regularize the latent space using an adversarial
+training objective, encouraging the aggregated posterior to match a prior distribution.
+This can lead to more structured latent representations.
+}
+\examples{
+\dontrun{
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_adv_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)       # adversarially-regularized encoder
+Z  <- daltoolbox::transform(ae, X) # encodings
+dim(Z)
+}
+
+# See a complete example:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
+}
+\references{
+Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2016).
+Adversarial Autoencoders.
 }

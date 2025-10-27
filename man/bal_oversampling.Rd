@@ -7,21 +7,34 @@
 bal_oversampling(attribute)
 }
 \arguments{
-\item{attribute}{The class attribute to target balancing using oversampling.}
+\item{attribute}{Character. Name of the target class attribute to balance.}
 }
 \value{
 A \code{bal_oversampling} object.
 }
 \description{
-Oversampling balances the class distribution of a dataset by increasing the representation of the minority class in the dataset.
-It wraps the smotefamily library.
+Oversampling balances class distributions by increasing the representation
+of minority classes using synthetic samples. This implementation leverages \code{smotefamily}
+(SMOTE and variants).
 }
 \examples{
+\dontrun{
 data(iris)
-mod_iris <- iris[c(1:50,51:71,101:111),]
 
+# 1) Induce imbalance by subsetting species
+mod_iris <- iris[c(1:50, 51:71, 101:111), ]
+table(mod_iris$Species)
+
+# 2) Oversample minority classes using SMOTE
 bal <- bal_oversampling('Species')
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)
-table(adjust_iris$Species)
+
+# 3) Inspect new class distribution
+table(adjust_iris$Species)  # more balanced counts
+}
+}
+\references{
+Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P. (2002).
+SMOTE: Synthetic Minority Over-sampling Technique.
 }

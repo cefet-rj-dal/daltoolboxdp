@@ -72,18 +72,31 @@ skcla_rf(
 \item{monotonic_cst}{Monotonicity constraints for features}
 }
 \value{
-A Random Forest classifier object
-
-\code{skcla_rf} object
+A \code{skcla_rf} classifier object.
 }
 \description{
-Implements classification using Random Forest algorithm.
-This function wraps the RandomForestClassifier from Python's scikit-learn library.
+Implements classification using the Random Forest algorithm.
+Wraps scikit-learn's \code{RandomForestClassifier} through \code{reticulate}.
 }
 \details{
 Tree Ensemble
 }
 \examples{
-#See an example of using `skcla_rf` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
+\dontrun{
+data(iris)
+
+# 1) Define classifier with target attribute and its levels
+clf <- skcla_rf(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 200)
+
+# 2) Fit and predict
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)   # wrapper drops target column internally
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
+}
+\references{
+Breiman, L. (2001). Random Forests. Machine Learning.
 }

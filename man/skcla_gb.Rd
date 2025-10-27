@@ -75,18 +75,27 @@ skcla_gb(
 \item{ccp_alpha}{Complexity parameter for cost-complexity pruning}
 }
 \value{
-A Gradient Boosting classifier object
-
-\code{skcla_gb} object
+A \code{skcla_gb} classifier object.
 }
 \description{
 Implements a classifier using the Gradient Boosting algorithm.
-This function wraps the GradientBoostingClassifier from Python's scikit-learn library.
+Wraps scikit-learn's \code{GradientBoostingClassifier} through \code{reticulate}.
 }
 \details{
 Tree Boosting
 }
 \examples{
-#See an example of using `skcla_gb` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_gb.md
+\dontrun{
+data(iris)
+clf <- skcla_gb(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 150)
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_gb.md
+}
+\references{
+Friedman, J. H. (2001). Greedy Function Approximation: A Gradient Boosting Machine.
 }

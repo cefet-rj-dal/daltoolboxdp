@@ -7,20 +7,32 @@
 ts_conv1d(preprocess = NA, input_size = NA, epochs = 10000L)
 }
 \arguments{
-\item{preprocess}{normalization}
+\item{preprocess}{Optional preprocessing/normalization object.}
 
-\item{input_size}{input size for machine learning model}
+\item{input_size}{Integer. Number of lagged inputs per training example.}
 
-\item{epochs}{maximum number of epochs}
+\item{epochs}{Integer. Maximum number of training epochs.}
 }
 \value{
-returns a \code{ts_conv1d} object.
+A \code{ts_conv1d} object.
 }
 \description{
-Creates a time series prediction object that uses the Conv1D.
-It wraps the pytorch library.
+Time series forecaster using a 1D convolutional neural network.
+Wraps a PyTorch implementation via \code{reticulate}.
 }
 \examples{
-#See an example of using `ts_conv1d` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_conv1d.md
+\dontrun{
+# Conv1D forecaster expects features + 't0' target internally; the R wrapper
+# builds the required data frame when you call do_fit/do_predict via tspredit.
+
+tsf <- ts_conv1d(input_size = 12, epochs = 1000L)
+# model <- daltoolbox::fit(tsf, your_data)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_conv1d.md
+}
+\references{
+LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P. (1998). Gradient-Based Learning Applied to Document Recognition.
+Bai, S., Kolter, J. Z., & Koltun, V. (2018). An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling.
 }

@@ -24,13 +24,25 @@ autoenc_lstm_e(
 \item{learning_rate}{learning rate}
 }
 \value{
-returns a \code{autoenc_lstm_e} object.
+A \code{autoenc_lstm_e} object.
 }
 \description{
-Creates an deep learning LSTM autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning LSTM-based autoencoder to encode sequences of observations.
+Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_lstm_e` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_lstm_e.md
+\dontrun{
+# LSTM-based encoder over sequences stored as rows
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_lstm_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+Z  <- daltoolbox::transform(ae, X)  # 50 x 5
+dim(Z)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_lstm_e.md
+}
+\references{
+Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory.
 }

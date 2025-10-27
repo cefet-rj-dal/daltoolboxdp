@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_stacked_ed.R
 \name{autoenc_stacked_ed}
 \alias{autoenc_stacked_ed}
-\title{Stacked Autoencoder - Encode}
+\title{Stacked Autoencoder - Encode-Decode}
 \usage{
 autoenc_stacked_ed(
   input_size,
@@ -24,17 +24,26 @@ autoenc_stacked_ed(
 
 \item{learning_rate}{learning rate}
 
-\item{k}{number of AE layers in the stack}
+\item{k}{Integer. Number of autoencoder layers in the stack.}
 }
 \value{
-a \code{autoenc_stacked_ed} object.
+A \code{autoenc_stacked_ed} object.
 }
 \description{
-Creates an deep learning stacked autoencoder to encode a sequence of observations.
-The autoencoder layers are based on DAL Toolbox Vanilla Autoencoder
-It wraps the pytorch library.
+Creates a deep learning stacked autoencoder to encode and decode sequences of observations.
+The layers are based on DAL Toolbox vanilla autoencoder and wrap a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_stacked_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
+\dontrun{
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_stacked_ed(input_size = 20, encoding_size = 5, k = 3, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+X_hat <- daltoolbox::transform(ae, X)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
+}
+\references{
+Vincent, P. et al. (2010). Stacked Denoising Autoencoders.
 }

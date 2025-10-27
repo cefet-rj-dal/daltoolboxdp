@@ -24,16 +24,32 @@ autoenc_denoise_e(
 
 \item{learning_rate}{learning rate}
 
-\item{noise_factor}{level of noise to be added to the data}
+\item{noise_factor}{Numeric. Standard deviation (scale) of the noise added during training.}
 }
 \value{
-a \code{autoenc_denoise_e_decode} object.
+A \code{autoenc_denoise_e} object.
 }
 \description{
-Creates an deep learning denoising autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning denoising autoencoder (DAE) to encode sequences
+while learning robustness to noise. Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_denoise_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_e.md
+\dontrun{
+# 1) Prepare data
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+
+# 2) Fit denoising encoder (higher noise_factor = stronger noise during training)
+ae <- autoenc_denoise_e(input_size = 20, encoding_size = 5, noise_factor = 0.2, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+
+# 3) Obtain latent encodings
+Z <- daltoolbox::transform(ae, X)
+dim(Z)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_denoise_e.md
+}
+\references{
+Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and Composing Robust Features with Denoising Autoencoders.
 }

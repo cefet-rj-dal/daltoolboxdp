@@ -7,20 +7,32 @@
 ts_lstm(preprocess = NA, input_size = NA, epochs = 10000L)
 }
 \arguments{
-\item{preprocess}{normalization}
+\item{preprocess}{Optional preprocessing/normalization object.}
 
-\item{input_size}{input size for machine learning model}
+\item{input_size}{Integer. Number of lagged inputs per training example.}
 
-\item{epochs}{maximum number of epochs}
+\item{epochs}{Integer. Maximum number of training epochs.}
 }
 \value{
-returns a \code{ts_lstm} object.
+A \code{ts_lstm} object.
 }
 \description{
-Creates a time series prediction object that uses the LSTM.
-It wraps the pytorch library.
+Time series forecaster using an LSTM neural network.
+Wraps a PyTorch implementation via \code{reticulate}.
 }
 \examples{
-#See an example of using `ts_ts_lstmconv1d` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_lstm.md
+\dontrun{
+# LSTM forecaster expects a frame where 't0' is the target during fitting.
+# The R wrapper constructs it from (x, y), so you usually call do_fit via tspredit.
+
+# Minimal construction (see vignette for full workflow)
+tsf <- ts_lstm(input_size = 12, epochs = 1000L)
+# model <- daltoolbox::fit(tsf, your_data)  # delegated to tspredit
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_lstm.md
+}
+\references{
+Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory.
 }

@@ -13,24 +13,50 @@ autoenc_e(
 )
 }
 \arguments{
-\item{input_size}{input size}
+\item{input_size}{Integer. Number of input features per observation.}
 
-\item{encoding_size}{encoding size}
+\item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
-\item{batch_size}{size for batch learning}
+\item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{number of epochs for training}
+\item{num_epochs}{Integer. Maximum number of training epochs. Default is 1000.}
 
-\item{learning_rate}{learning rate}
+\item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 }
 \value{
-returns a \code{autoenc_e} object.
+A \code{autoenc_e} object.
 }
 \description{
-Creates an deep learning autoencoder to encode a sequence of observations.
-It wraps the pytorch and reticulate libraries.
+Creates a deep learning autoencoder that learns a latent representation (encoding)
+for a sequence of observations. Wraps a PyTorch implementation via the \code{reticulate} bridge.
+}
+\details{
+This encoder provides dimensionality reduction by training a neural network to
+compress inputs into a lower-dimensional bottleneck. The learned encoding can be used
+for downstream tasks such as clustering, visualization, or as features for predictive models.
 }
 \examples{
-#See an example of using `autoenc_e` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_e.md
+\dontrun{
+# Requirements: Python with torch installed and reticulate configured.
+set.seed(123)
+
+# 1) Create a toy dataset with 100 samples and 20 features
+X <- matrix(rnorm(2000), nrow = 100, ncol = 20)
+
+# 2) Create and fit an encoder (5-D bottleneck)
+ae <- autoenc_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+
+# 3) Transform data to latent space
+Z <- daltoolbox::transform(ae, X)   # matrix with dimensions 100 x 5
+dim(Z)                              # c(100, 5)
+}
+
+# See a more complete example at:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_e.md
+
+}
+\references{
+Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the Dimensionality of Data with Neural Networks.
+Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library.
 }

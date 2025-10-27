@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_ed.R
 \name{autoenc_ed}
 \alias{autoenc_ed}
-\title{Autoencoder - Encode-decode}
+\title{Autoencoder - Encode-Decode}
 \usage{
 autoenc_ed(
   input_size,
@@ -13,24 +13,49 @@ autoenc_ed(
 )
 }
 \arguments{
-\item{input_size}{input size}
+\item{input_size}{Integer. Number of input features per observation.}
 
-\item{encoding_size}{encoding size}
+\item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
-\item{batch_size}{size for batch learning}
+\item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{number of epochs for training}
+\item{num_epochs}{Integer. Maximum number of training epochs. Default is 1000.}
 
-\item{learning_rate}{learning rate}
+\item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 }
 \value{
-returns a \code{autoenc_ed} object.
+A \code{autoenc_ed} object.
 }
 \description{
-Creates an deep learning autoencoder to encode-decode a sequence of observations.
-It wraps the pytorch and reticulate libraries.
+Creates a deep learning autoencoder that encodes and decodes sequences
+of observations. Wraps a PyTorch implementation via \code{reticulate}.
+}
+\details{
+This variant both compresses inputs into a latent representation and
+reconstructs them back to input space, allowing the reconstruction error to be used
+as a quality metric or for anomaly detection.
 }
 \examples{
-#See an example of using `autoenc_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_ed.md
+\dontrun{
+# Requirements: Python with torch installed and reticulate configured.
+
+# 1) Create sample data (50 x 20)
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+
+# 2) Fit encode-decode autoencoder (5-D bottleneck)
+ae <- autoenc_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+
+# 3) Reconstruct inputs and inspect reconstruction error
+X_hat <- daltoolbox::transform(ae, X)  # same dimensions as X
+mean((X - X_hat)^2)                    # simple MSE across all entries
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_ed.md
+
+}
+\references{
+Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the Dimensionality of Data with Neural Networks.
+Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library.
 }

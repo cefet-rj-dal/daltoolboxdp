@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_variational_ed.R
 \name{autoenc_variational_ed}
 \alias{autoenc_variational_ed}
-\title{Variational Autoencoder - Encode}
+\title{Variational Autoencoder - Encode-Decode}
 \usage{
 autoenc_variational_ed(
   input_size,
@@ -24,13 +24,31 @@ autoenc_variational_ed(
 \item{learning_rate}{learning rate}
 }
 \value{
-returns a \code{autoenc_variational_ed} object.
+A \code{autoenc_variational_ed} object.
 }
 \description{
-Creates an deep learning variational autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning variational autoencoder (VAE) that encodes and decodes sequences
+of observations. Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_variational_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_variational_ed.md
+\dontrun{
+# Requirements: Python with torch installed and reticulate configured.
+
+# 1) Sample data
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+
+# 2) Fit VAE encode-decode
+ae <- autoenc_variational_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+
+# 3) Reconstruct inputs
+X_hat <- daltoolbox::transform(ae, X)
+mean((X - X_hat)^2)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_variational_ed.md
+}
+\references{
+Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes.
 }

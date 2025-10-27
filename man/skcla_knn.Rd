@@ -39,18 +39,31 @@ skcla_knn(
 \item{n_jobs}{Number of parallel jobs for neighbor searches}
 }
 \value{
-A K-Nearest Neighbors classifier object
-
-\code{skcla_knn} object
+A \code{skcla_knn} classifier object.
 }
 \description{
-Implements classification using the K-Nearest Neighbors algorithm.
-This function wraps the KNeighborsClassifier from Python's scikit-learn library.
+Implements classification using the k-Nearest Neighbors algorithm.
+Wraps scikit-learn's \code{KNeighborsClassifier} through \code{reticulate}.
 }
 \details{
 K-Nearest Neighbors Classifier
 }
 \examples{
-#See an example of using `skcla_knn` at this
-#https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_knn.md
+\dontrun{
+data(iris)
+
+# 1) Initialize KNN (k=7) with target attribute + levels
+clf <- skcla_knn(attribute = 'Species', slevels = levels(iris$Species), n_neighbors = 7)
+
+# 2) Fit and predict; factors are handled internally
+clf <- daltoolbox::fit(clf, iris)
+pred <- predict(clf, iris)
+table(pred, iris$Species)
+}
+
+# More examples:
+# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_knn.md
+}
+\references{
+Cover, T., & Hart, P. (1967). Nearest neighbor pattern classification.
 }

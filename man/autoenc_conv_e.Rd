@@ -24,13 +24,24 @@ autoenc_conv_e(
 \item{learning_rate}{learning rate}
 }
 \value{
-a \code{autoenc_conv_e} object.
+A \code{autoenc_conv_e} object.
 }
 \description{
-Creates an deep learning convolutional autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning convolutional autoencoder (ConvAE) to encode sequences
+of observations. Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_conv_e` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_e.md
+\dontrun{
+# Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+Z  <- daltoolbox::transform(ae, X)   # 50 x 5 encodings
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_e.md
+}
+\references{
+Masci, J., Meier, U., Cireşan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 }

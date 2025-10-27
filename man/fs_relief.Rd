@@ -7,18 +7,33 @@
 fs_relief(attribute)
 }
 \arguments{
-\item{attribute}{The target variable.}
+\item{attribute}{Character. Name of the (categorical) target variable.}
 }
 \value{
 A \code{fs_relief} object.
 }
 \description{
-Feature selection using Relief is a technique for selecting a subset of relevant features. It calculates the relevance of a feature by considering the difference in feature values between nearest neighbors of the same and different classes.
-It wraps the FSelector library.
+Relief ranks features by how well they differentiate between instances of
+different classes in local neighborhoods. Wraps \code{FSelector}'s Relief.
 }
 \examples{
+\dontrun{
 data(iris)
-myfeature <- daltoolbox::fit(fs_relief("Species"), iris)
-data <- daltoolbox::transform(myfeature, iris)
-head(data)
+
+# 1) Relief expects a categorical target
+iris2 <- iris
+iris2$Species <- as.factor(iris2$Species)
+
+# 2) Fit Relief and check which features were kept
+fs <- daltoolbox::fit(fs_relief("Species"), iris2)
+fs$features
+
+# 3) Transform data to only selected features + target
+data_relief <- daltoolbox::transform(fs, iris2)
+head(data_relief)
+}
+}
+\references{
+Kira, K., & Rendell, L. A. (1992). The Feature Selection Problem: Traditional Methods and a New Algorithm.
+Kononenko, I. (1994). Estimating attributes: analysis and extensions of Relief.
 }

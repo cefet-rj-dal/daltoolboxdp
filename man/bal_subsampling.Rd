@@ -7,20 +7,29 @@
 bal_subsampling(attribute)
 }
 \arguments{
-\item{attribute}{The class attribute to target balancing using subsampling}
+\item{attribute}{Character. Name of the target class attribute to balance.}
 }
 \value{
 A \code{bal_subsampling} object.
 }
 \description{
-Subsampling balances the class distribution of a dataset by reducing the representation of the majority class in the dataset.
+Subsampling balances class distributions by reducing the representation
+of majority classes through random under-sampling.
 }
 \examples{
+\dontrun{
+set.seed(123)
 data(iris)
-mod_iris <- iris[c(1:50,51:71,101:111),]
+mod_iris <- iris[c(1:50, 51:71, 101:111), ]   # induce imbalance
+table(mod_iris$Species)
 
-bal <- bal_subsampling('Species')
+bal <- bal_subsampling('Species')              # random under-sampling
 bal <- daltoolbox::fit(bal, mod_iris)
 adjust_iris <- daltoolbox::transform(bal, mod_iris)
-table(adjust_iris$Species)
+table(adjust_iris$Species)                     # all classes at minority count
+}
+}
+\references{
+Kubat, M., & Matwin, S. (1997). Addressing the Curse of Imbalanced Training Sets: One-Sided Selection.
+Drummond, C., & Holte, R. (2003). C4.5, Class Imbalance, and Cost Sensitivity.
 }

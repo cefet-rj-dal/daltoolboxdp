@@ -2,23 +2,33 @@
 % Please edit documentation in R/fs_lasso.R
 \name{fs_lasso}
 \alias{fs_lasso}
-\title{Feature Selection using Lasso}
+\title{LASSO Feature Selection}
 \usage{
 fs_lasso(attribute)
 }
 \arguments{
-\item{attribute}{The target variable.}
+\item{attribute}{Character. Name of the target variable.}
 }
 \value{
 A \code{fs_lasso} object.
 }
 \description{
-Feature selection using Lasso regression is a technique for selecting a subset of relevant features.
-It wraps the glmnet library.
+Performs feature selection using L1-regularized regression (LASSO),
+implemented with \code{glmnet}.
 }
 \examples{
+\dontrun{
 data(iris)
-myfeature <- daltoolbox::fit(fs_lasso("Species"), iris)
-data <- daltoolbox::transform(myfeature, iris)
-head(data)
+
+# 1) LASSO requires a numeric response
+fs <- daltoolbox::fit(fs_lasso("Sepal.Length"), iris)
+fs$features                 # selected predictors with non-zero coefficients
+
+# 2) Subset data to selected features + target
+data_lasso <- daltoolbox::transform(fs, iris)
+head(data_lasso)
+}
+}
+\references{
+Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso.
 }

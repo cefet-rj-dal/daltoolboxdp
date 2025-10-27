@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoenc_conv_ed.R
 \name{autoenc_conv_ed}
 \alias{autoenc_conv_ed}
-\title{Convolutional Autoencoder - Encode}
+\title{Convolutional Autoencoder - Encode-Decode}
 \usage{
 autoenc_conv_ed(
   input_size,
@@ -24,13 +24,21 @@ autoenc_conv_ed(
 \item{learning_rate}{learning rate}
 }
 \value{
-a \code{autoenc_conv_ed} object.
+A \code{autoenc_conv_ed} object.
 }
 \description{
-Creates an deep learning convolutional autoencoder to encode a sequence of observations.
-It wraps the pytorch library.
+Creates a deep learning convolutional autoencoder (ConvAE) to encode and decode
+sequences of observations. Wraps a PyTorch implementation.
 }
 \examples{
-#See an example of using `autoenc_conv_ed` at this
-#https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_ed.md
+\dontrun{
+X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
+ae <- autoenc_conv_ed(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- daltoolbox::fit(ae, X)
+X_hat <- daltoolbox::transform(ae, X)  # same dims as X
+mean((X - X_hat)^2)
+}
+
+# See:
+# https://github.com/cefet-rj-dal/daltoolbox/blob/main/transf/autoenc_conv_ed.md
 }
