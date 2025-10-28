@@ -37,10 +37,10 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
 Example scripts are available at:
 
-- [Examples](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples)
-- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/autoencoder)
+- [General](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/general)
+- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
 - [Time
-  Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/timeseries)
+  Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries)
 
 ------------------------------------------------------------------------
 

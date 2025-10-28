@@ -38,9 +38,9 @@ More information on Experiment Lines is available in [Ogasawara et al. (2009)](h
 
 Example scripts are available at:
 
-- [Examples](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples)
-- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/autoencoder)
-- [Time Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/timeseries)
+- [General](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/general)
+- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
+- [Time Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries)
 
 ---
 
