@@ -61,3 +61,10 @@ test_eval <- evaluate(model, iris_test_predictand, test_prediction)
 print(test_eval$metrics)
 ```
 
+### Method
+
+Gradient Boosting builds an additive ensemble of shallow trees by sequentially fitting each tree to the negative gradient (residuals) of a differentiable loss. Learning rate and tree depth control model complexity and generalization.
+
+### References
+- Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. Annals of Statistics, 29(5), 1189–1232.
+

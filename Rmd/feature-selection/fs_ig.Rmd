@@ -36,3 +36,10 @@ data <- transform(myfeature, iris)
 print(head(data))
 ```
 
+### Method
+
+Information Gain measures the reduction in class label entropy achieved by splitting on a feature. Features that yield larger entropy reduction are considered more informative for predicting the target.
+
+### References
+- Quinlan, J. R. (1993). C4.5: Programs for Machine Learning. Morgan Kaufmann.
+

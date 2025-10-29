@@ -36,3 +36,10 @@ data <- transform(myfeature, iris)
 print(head(data))
 ```
 
+### Method
+
+Lasso performs linear modeling with an L1 penalty on coefficients, which drives some coefficients exactly to zero. This induces sparsity and acts as embedded feature selection by retaining only the most predictive features under the penalized objective.
+
+### References
+- Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso. Journal of the Royal Statistical Society: Series B, 58(1), 267–288.
+

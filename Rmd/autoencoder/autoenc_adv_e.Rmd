@@ -81,3 +81,9 @@ result <- transform(auto, test)
 print(head(result))
 ```
 
+### Method
+
+Adversarial Autoencoders augment the autoencoder objective with an adversarial discriminator in latent space. The encoder is trained to both reconstruct inputs (via the decoder) and produce latent codes whose distribution matches a desired prior, improving latent structure.
+
+### References
+- Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.

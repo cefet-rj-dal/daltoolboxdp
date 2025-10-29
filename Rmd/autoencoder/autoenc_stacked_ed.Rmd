@@ -89,3 +89,9 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
+### Method
+
+Multiple dense layers compress inputs to a bottleneck and then decode to reconstruct. Layer depth increases representational capacity, while the bottleneck enforces compactness, with reconstruction loss guiding learning.
+
+### References
+- Bengio, Y., Lamblin, P., Popovici, D., & Larochelle, H. (2007). Greedy layer-wise training of deep networks. NIPS.

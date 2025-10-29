@@ -53,6 +53,13 @@ result <- transform(auto, train)      # encodings (k columns)
 print(head(result))
 ```
 
+### Method
+
+We use a sliding-window embedding to convert a univariate series into fixed-length vectors of length p. A feed-forward autoencoder is trained to minimize reconstruction error, and its bottleneck (k < p) provides a compact encoding that preserves salient information for downstream tasks.
+
+### References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
+
 ## Encoding of the test set
 
 ```{r}
@@ -60,4 +67,3 @@ print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
-

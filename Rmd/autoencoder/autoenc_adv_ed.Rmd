@@ -94,3 +94,9 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
+### Method
+
+An AAE couples reconstruction loss with an adversarial game in latent space. A discriminator distinguishes samples from the encoder vs. the prior, while the encoder seeks to fool it, aligning the aggregate posterior with the chosen prior distribution.
+
+### References
+- Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.

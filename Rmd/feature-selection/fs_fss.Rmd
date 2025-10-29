@@ -38,3 +38,10 @@ data <- transform(myfeature, iris)
 print(head(data))
 ```
 
+### Method
+
+Forward Sequential Selection starts from an empty set and iteratively adds the feature that most improves a chosen criterion (e.g., validation accuracy), stopping by a rule or when performance no longer improves.
+
+### References
+- Whitney, A. W. (1971). A direct method of nonparametric measurement selection. IEEE Trans. Computers, 20(9), 1100–1103.
+

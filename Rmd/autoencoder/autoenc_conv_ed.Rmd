@@ -92,8 +92,14 @@ for (col in names(test)){
 }
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
- 
+
 ```{r}
 # Note: beware of divisions by values near zero when computing MAPE.
 ```
 
+### Method
+
+1D convolutional layers learn filters that respond to short-term structures in the window, yielding a compressed representation that the decoder expands back to the original dimensionality. Reconstruction error evaluates how well local patterns are preserved.
+
+### References
+- Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction. ICANN.

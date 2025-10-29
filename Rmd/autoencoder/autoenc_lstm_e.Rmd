@@ -78,3 +78,9 @@ result <- transform(auto, test)
 print(head(result))
 ```
 
+### Method
+
+LSTM autoencoders use recurrent units to encode temporal dependencies in a sequence (window) into a fixed-sized latent vector. The memory cell and gating mechanisms help capture long- and short-term patterns before decoding or downstream use of the latent code.
+
+### References
+- Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.

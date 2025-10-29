@@ -53,6 +53,13 @@ result <- transform(auto, train)      # reconstructed windows (p columns)
 print(head(result))
 ```
 
+### Method
+
+Time series windows of size p are encoded into k-dimensional latent vectors and then decoded back to p dimensions. Training minimizes reconstruction loss so that latent codes capture the essential structure of windows, enabling quality assessment via reconstruction error.
+
+### References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
+
 ## Reconstruction of the test set
 
 ```{r}
@@ -60,4 +67,3 @@ print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
-

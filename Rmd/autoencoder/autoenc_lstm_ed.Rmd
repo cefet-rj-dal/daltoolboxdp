@@ -89,3 +89,9 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
+### Method
+
+An LSTM encoder summarizes each window into a compact state that a decoder uses to reconstruct the original sequence. Training minimizes reconstruction loss, encouraging the latent state to retain information about temporal dynamics in the window.
+
+### References
+- Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.

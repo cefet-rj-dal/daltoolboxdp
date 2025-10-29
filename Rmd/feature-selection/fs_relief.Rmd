@@ -36,3 +36,10 @@ data <- transform(myfeature, iris)
 print(head(data))
 ```
 
+### Method
+
+Relief estimates feature relevance by comparing each instance to its nearest neighbors: the nearest hit (same class) and nearest miss (different class). Features that better differentiate classes receive higher weights, guiding ranking and selection.
+
+### References
+- Kononenko, I. (1994). Estimating attributes: Analysis and extensions of Relief. ECML.
+

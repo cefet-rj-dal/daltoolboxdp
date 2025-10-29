@@ -89,3 +89,9 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
+### Method
+
+The VAE uses an encoder to parameterize a latent distribution and a decoder to reconstruct inputs from latent samples. Training optimizes an evidence lower bound with reconstruction and KL divergence terms, shaping a smooth, regularized latent space.
+
+### References
+- Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.

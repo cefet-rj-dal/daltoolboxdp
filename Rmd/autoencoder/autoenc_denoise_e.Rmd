@@ -81,3 +81,9 @@ result <- transform(auto, test)
 print(head(result))
 ```
 
+### Method
+
+Denoising autoencoders corrupt inputs with noise and train the network to reconstruct the original clean input. This objective encourages the model to learn robust features that capture underlying structure instead of noise.
+
+### References
+- Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and composing robust features with denoising autoencoders. ICML.
