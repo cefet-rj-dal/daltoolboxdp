@@ -1,5 +1,7 @@
 ## Variational Autoencoder (encode-decode)
 
+The VAE uses an encoder to parameterize a latent distribution and a decoder to reconstruct inputs from latent samples. Training optimizes an evidence lower bound with reconstruction and KL divergence terms, shaping a smooth, regularized latent space.
+
 This example uses a Variational Autoencoder (VAE) to encode windows of a time series (p -> k) and reconstruct them (k -> p). We evaluate reconstruction quality at the end.
 
 Prerequisites
@@ -118,12 +120,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7987136 0.8886904 0.9329569 0.9533430 0.9557687
-## [2,] 0.8872102 0.9334091 0.9533048 0.9600593 0.9523709
-## [3,] 0.9304351 0.9574774 0.9673153 0.9682792 0.9552850
-## [4,] 0.9581329 0.9662969 0.9640543 0.9520753 0.9124810
-## [5,] 0.9485480 0.9537578 0.9472564 0.9260617 0.8684091
-## [6,] 0.9403769 0.9344739 0.9123943 0.8613111 0.7543257
+## [1,] 0.8414052 0.8891169 0.9106891 0.8990390 0.8576968
+## [2,] 0.8887694 0.9303297 0.9474978 0.9379277 0.9026142
+## [3,] 0.9383168 0.9674091 0.9778287 0.9719437 0.9481031
+## [4,] 0.9163961 0.9517742 0.9652794 0.9576252 0.9283331
+## [5,] 0.8808686 0.9237590 0.9417608 0.9317869 0.8952995
+## [6,] 0.8269662 0.8758041 0.8984620 0.8863586 0.8436459
 ```
 
 
@@ -143,11 +145,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.894654024517769 MAPE: 0.0428800367634521"
-## [1] "t3 R2 test: 0.956118844740113 MAPE: 0.0293676029574939"
-## [1] "t2 R2 test: 0.986180228561135 MAPE: 0.0253225783757073"
-## [1] "t1 R2 test: 0.984782473639031 MAPE: 0.0459545522123982"
-## [1] "t0 R2 test: 0.982122943816554 MAPE: 0.0702409030888555"
+## [1] "t4 R2 test: 0.282215670004566 MAPE: 0.18666399665966"
+## [1] "t3 R2 test: 0.876917713230656 MAPE: 0.11181540084033"
+## [1] "t2 R2 test: 0.995811431972881 MAPE: 0.0303168316926207"
+## [1] "t1 R2 test: 0.960424877703778 MAPE: 0.0992162699906343"
+## [1] "t0 R2 test: 0.908655205624077 MAPE: 0.275171293857195"
 ```
 
 ``` r
@@ -155,6 +157,8 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.96077170305492 MAPE: 0.0427531346795814"
+## [1] "Means R2 test: 0.804804979707192 MAPE: 0.140636758608088"
 ```
 
+References
+- Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.

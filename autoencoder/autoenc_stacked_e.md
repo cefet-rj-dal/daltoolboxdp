@@ -1,5 +1,7 @@
 ## Stacked Autoencoder (encode)
 
+Stacked autoencoders compose multiple nonlinear layers to gradually compress inputs into a low-dimensional code. Depth allows the model to learn hierarchical features before exposing the compact representation for downstream use.
+
 This example demonstrates a Stacked Autoencoder for encoding time-series windows, reducing from p to k dimensions with successive dense layers.
 
 Prerequisites
@@ -117,12 +119,14 @@ print(head(result))
 ```
 
 ```
-##           [,1]     [,2]      [,3]
-## [1,] 0.3379881 1.706060 1.4081891
-## [2,] 0.3798830 1.819173 1.4078604
-## [3,] 0.4180354 1.887251 1.3618232
-## [4,] 0.4500733 1.906060 1.2729404
-## [5,] 0.4744907 1.875879 1.1442902
-## [6,] 0.4897180 1.798432 0.9841311
+##            [,1]      [,2]      [,3]
+## [1,] -0.6551223 0.8824128 1.1177342
+## [2,] -0.6965113 1.0185657 1.0982277
+## [3,] -0.7203783 1.1111805 1.0490794
+## [4,] -0.7223862 1.1509830 0.9640742
+## [5,] -0.7038162 1.1413635 0.8572744
+## [6,] -0.6658226 1.0829202 0.7353199
 ```
 
+References
+- Bengio, Y., Lamblin, P., Popovici, D., & Larochelle, H. (2007). Greedy layer-wise training of deep networks. NIPS.

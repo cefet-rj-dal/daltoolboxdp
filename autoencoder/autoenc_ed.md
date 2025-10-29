@@ -1,5 +1,7 @@
 ## Autoencoder (Encode-Decode) - Overview
 
+The autoencoder jointly learns an encoder (p → k) and decoder (k → p) by minimizing reconstruction error. With sufficient capacity and regularization, the bottleneck enforces information compression so that reconstructions approximate inputs with low error.
+
 This example shows an autoencoder that encodes and reconstructs the input. After training the reduction from p -> k dimensions, the model decodes back to p. The better the training, the closer the reconstruction is to the original (low reconstruction error).
 
 Prerequisites
@@ -125,12 +127,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7230024 0.8285496 0.9135784 0.9709814 0.9982510
-## [2,] 0.8306528 0.9136955 0.9724215 0.9974953 0.9950930
-## [3,] 0.9142257 0.9725662 0.9997137 0.9960051 0.9619067
-## [4,] 0.9702885 1.0002333 0.9936227 0.9649107 0.9018639
-## [5,] 1.0018028 0.9978268 0.9574768 0.9036293 0.8152333
-## [6,] 0.9954829 0.9613281 0.9016737 0.8165442 0.7089778
+## [1,] 0.7259853 0.8308019 0.9114071 0.9661807 0.9999775
+## [2,] 0.8313768 0.9145951 0.9702075 0.9933737 0.9990699
+## [3,] 0.9137215 0.9694232 0.9973009 0.9961826 0.9641477
+## [4,] 0.9720100 0.9978362 0.9953753 0.9655535 0.8998030
+## [5,] 0.9982826 0.9950637 0.9641145 0.9011313 0.8102569
+## [6,] 0.9946634 0.9617828 0.9011544 0.8141635 0.7055624
 ```
 
 
@@ -150,11 +152,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.999717628848367 MAPE: 0.00165737981449667"
-## [1] "t3 R2 test: 0.999884648320448 MAPE: 0.00159793528471859"
-## [1] "t2 R2 test: 0.99964888617042 MAPE: 0.00468588526024897"
-## [1] "t1 R2 test: 0.999913998279363 MAPE: 0.00321281934422679"
-## [1] "t0 R2 test: 0.999972264590904 MAPE: 0.00187463339080967"
+## [1] "t4 R2 test: 0.999599015922236 MAPE: 0.00202799690885967"
+## [1] "t3 R2 test: 0.999908506906589 MAPE: 0.00141072317651112"
+## [1] "t2 R2 test: 0.999967665789098 MAPE: 0.00124933186058793"
+## [1] "t1 R2 test: 0.99988855840473 MAPE: 0.00239797488003842"
+## [1] "t0 R2 test: 0.999942854216582 MAPE: 0.00322857921698372"
 ```
 
 ``` r
@@ -162,6 +164,8 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.9998274852419 MAPE: 0.00260573061890014"
+## [1] "Means R2 test: 0.999861320247847 MAPE: 0.00206292120859617"
 ```
 
+References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)

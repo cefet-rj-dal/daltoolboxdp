@@ -1,5 +1,7 @@
 ## Stacked Autoencoder (encode-decode)
 
+Multiple dense layers compress inputs to a bottleneck and then decode to reconstruct. Layer depth increases representational capacity, while the bottleneck enforces compactness, with reconstruction loss guiding learning.
+
 This example demonstrates a Stacked Autoencoder to encode time-series windows (p -> k) and reconstruct them (k -> p), enabling evaluation of reconstruction quality.
 
 Prerequisites
@@ -118,12 +120,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7260794 0.8288990 0.9127500 0.9699163 0.9983885
-## [2,] 0.8278872 0.9124767 0.9711289 0.9987084 0.9976344
-## [3,] 0.9103234 0.9722115 0.9975937 0.9948781 0.9600648
-## [4,] 0.9694829 1.0003972 0.9957926 0.9625811 0.8984017
-## [5,] 0.9983066 0.9970360 0.9620579 0.8998305 0.8123058
-## [6,] 0.9960436 0.9631370 0.9000041 0.8122368 0.7066228
+## [1,] 0.7248846 0.8297480 0.9137045 0.9699753 0.9996271
+## [2,] 0.8284734 0.9133889 0.9703791 0.9989500 0.9967988
+## [3,] 0.9128501 0.9719369 0.9996712 0.9975358 0.9639713
+## [4,] 0.9711578 0.9989601 0.9972034 0.9628450 0.8999789
+## [5,] 0.9978620 0.9957063 0.9638655 0.9007798 0.8145353
+## [6,] 0.9964899 0.9638082 0.9011168 0.8138801 0.7087312
 ```
 
 
@@ -143,11 +145,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.999935603269328 MAPE: 0.000715105607067624"
-## [1] "t3 R2 test: 0.99997179673414 MAPE: 0.000751606831289366"
-## [1] "t2 R2 test: 0.999986073595076 MAPE: 0.000769983453759387"
-## [1] "t1 R2 test: 0.999992735430267 MAPE: 0.00105526147628156"
-## [1] "t0 R2 test: 0.99998228144594 MAPE: 0.00132006539930698"
+## [1] "t4 R2 test: 0.999935340019934 MAPE: 0.00103558881596313"
+## [1] "t3 R2 test: 0.999961288030101 MAPE: 0.00100931349503225"
+## [1] "t2 R2 test: 0.999988635058459 MAPE: 0.00142265080491561"
+## [1] "t1 R2 test: 0.999995893082469 MAPE: 0.000703798037411547"
+## [1] "t0 R2 test: 0.999976467254811 MAPE: 0.00242144425564104"
 ```
 
 ``` r
@@ -155,6 +157,8 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.99997369809495 MAPE: 0.000922404553540983"
+## [1] "Means R2 test: 0.999971524689155 MAPE: 0.00131855908179272"
 ```
 
+References
+- Bengio, Y., Lamblin, P., Popovici, D., & Larochelle, H. (2007). Greedy layer-wise training of deep networks. NIPS.

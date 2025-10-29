@@ -1,5 +1,7 @@
 ## Convolutional Autoencoder (encode-decode)
 
+1D convolutional layers learn filters that respond to short-term structures in the window, yielding a compressed representation that the decoder expands back to the original dimensionality. Reconstruction error evaluates how well local patterns are preserved.
+
 This example demonstrates how to use a 1D convolutional autoencoder to encode and reconstruct windows from a time series. After reducing from p to k dimensions, the model reconstructs back to p, enabling evaluation of reconstruction error.
 
 Prerequisites
@@ -124,12 +126,12 @@ print(head(result))
 ## , , 1
 ## 
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.7372409 0.8403004 0.9169574 0.9475093 0.9605477
-## [2,] 0.8524565 0.9117986 0.9507064 0.9559878 0.9585148
-## [3,] 0.9222489 0.9451454 0.9607049 0.9535189 0.9396356
-## [4,] 0.9536644 0.9581279 0.9596072 0.9402247 0.8997511
-## [5,] 0.9646096 0.9590759 0.9458622 0.9068383 0.8281026
-## [6,] 0.9632307 0.9479400 0.9095864 0.8358452 0.7201958
+## [1,] 0.7334642 0.8408689 0.9145816 0.9568089 0.9650518
+## [2,] 0.8581707 0.9116910 0.9487690 0.9663285 0.9649099
+## [3,] 0.9278414 0.9456143 0.9609504 0.9625773 0.9514777
+## [4,] 0.9569373 0.9586428 0.9607149 0.9469449 0.9163862
+## [5,] 0.9686388 0.9609426 0.9475586 0.9051914 0.8374947
+## [6,] 0.9667427 0.9498994 0.9071499 0.8136827 0.7078207
 ```
 
 
@@ -149,11 +151,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.980776692349086 MAPE: 0.017222690270282"
-## [1] "t3 R2 test: 0.981881013023193 MAPE: 0.0184134057970992"
-## [1] "t2 R2 test: 0.98939855688938 MAPE: 0.0179452563311743"
-## [1] "t1 R2 test: 0.991838337444727 MAPE: 0.0235474020856277"
-## [1] "t0 R2 test: 0.99583589231356 MAPE: 0.0232460239907908"
+## [1] "t4 R2 test: 0.976681116396325 MAPE: 0.0173680730474672"
+## [1] "t3 R2 test: 0.977572454693609 MAPE: 0.0195460859731611"
+## [1] "t2 R2 test: 0.99136569117527 MAPE: 0.0173074410024689"
+## [1] "t1 R2 test: 0.996572732722355 MAPE: 0.0167260624486408"
+## [1] "t0 R2 test: 0.995970840372475 MAPE: 0.0198943016332324"
 ```
 
 ``` r
@@ -161,11 +163,13 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.987946098403989 MAPE: 0.0200749556949948"
+## [1] "Means R2 test: 0.987632567072007 MAPE: 0.0181683928209941"
 ```
- 
+
 
 ``` r
 # Note: beware of divisions by values near zero when computing MAPE.
 ```
 
+References
+- Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction. ICANN.

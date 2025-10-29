@@ -1,5 +1,7 @@
 ## Autoencoder (Encode) - Overview
 
+A vanilla autoencoder consists of an encoder that maps p-dimensional inputs to a k-dimensional latent code (k < p) and a decoder that reconstructs the input from the code. Training minimizes reconstruction loss (e.g., MSE), and the learned latent codes serve as compact representations.
+
 This example demonstrates how to train a vanilla autoencoder to learn a latent representation (encoding) of a sliding window from a time series. The idea is to reduce the dimensionality from p attributes to k, preserving relevant information. You can use the encoded vectors as input to other tasks (such as clustering or prediction).
 
 Prerequisites
@@ -124,12 +126,14 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]     [,3]
-## [1,] 2.011396 0.2588778 1.403596
-## [2,] 2.110755 0.3669979 1.409943
-## [3,] 2.159090 0.4713396 1.379695
-## [4,] 2.153396 0.5654156 1.314733
-## [5,] 2.094027 0.6433767 1.219095
-## [6,] 1.984381 0.7001306 1.098126
+##          [,1]       [,2]      [,3]
+## [1,] 1.500470 -0.9598289 -1.117477
+## [2,] 1.550019 -1.0386579 -1.277772
+## [3,] 1.550100 -1.0926130 -1.402068
+## [4,] 1.500707 -1.1183393 -1.482637
+## [5,] 1.404912 -1.1142373 -1.514471
+## [6,] 1.261799 -1.0787356 -1.496429
 ```
 
+References
+- Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the dimensionality of data with neural networks. Science, 313(5786), 504–507.

@@ -1,5 +1,7 @@
 ## LSTM Autoencoder (encode)
 
+LSTM autoencoders use recurrent units to encode temporal dependencies in a sequence (window) into a fixed-sized latent vector. The memory cell and gating mechanisms help capture long- and short-term patterns before decoding or downstream use of the latent code.
+
 This example demonstrates the use of an LSTM-based Autoencoder to encode windows of a time series. The LSTM encoder learns sequence representations, reducing from p to k dimensions.
 
 Prerequisites
@@ -122,12 +124,14 @@ print(head(result))
 ```
 
 ```
-##            [,1]       [,2]       [,3]
-## [1,] -0.3479043 -0.6824905 -0.5433463
-## [2,] -0.4355167 -0.6932887 -0.5470400
-## [3,] -0.4915374 -0.6974526 -0.5269975
-## [4,] -0.5218865 -0.6958049 -0.4774391
-## [5,] -0.5311725 -0.6878982 -0.3873469
-## [6,] -0.5212508 -0.6718977 -0.2455782
+##            [,1]      [,2]       [,3]
+## [1,] -0.6733038 0.2366234 -0.5982347
+## [2,] -0.6862113 0.2922058 -0.6135996
+## [3,] -0.6922628 0.3234309 -0.6174148
+## [4,] -0.6924844 0.3308101 -0.6101969
+## [5,] -0.6868824 0.3146505 -0.5907896
+## [6,] -0.6744319 0.2746604 -0.5563869
 ```
 
+References
+- Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.

@@ -1,5 +1,7 @@
 ## Denoising Autoencoder (encode)
 
+Denoising autoencoders corrupt inputs with noise and train the network to reconstruct the original clean input. This objective encourages the model to learn robust features that capture underlying structure instead of noise.
+
 This example demonstrates how to use a denoising autoencoder to learn a robust encoding of time-series windows. During training, noise is added to the input.
 
 Prerequisites
@@ -126,12 +128,14 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] 0.6218290 -0.6104861 -1.572079
-## [2,] 0.6878349 -0.7333791 -1.551713
-## [3,] 0.7324258 -0.8239039 -1.494257
-## [4,] 0.7550798 -0.8811594 -1.399413
-## [5,] 0.7554013 -0.9037133 -1.271335
-## [6,] 0.7332290 -0.8913724 -1.117049
+##           [,1]      [,2]       [,3]
+## [1,] -1.104898 1.0843810 -0.5227159
+## [2,] -1.177622 1.1390337 -0.6420999
+## [3,] -1.212824 1.1559684 -0.7435797
+## [4,] -1.203917 1.1268480 -0.8262982
+## [5,] -1.150228 1.0557327 -0.8853056
+## [6,] -1.058597 0.9513633 -0.9112086
 ```
 
+References
+- Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and composing robust features with denoising autoencoders. ICML.

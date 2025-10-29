@@ -1,5 +1,7 @@
 ## Denoising Autoencoder (encode-decode)
 
+Inputs are stochastically corrupted during training, and the model learns to reconstruct clean windows. The bottleneck captures noise-invariant structure, and reconstruction metrics quantify how well essential patterns are preserved.
+
 This example demonstrates how to use a denoising autoencoder to encode and reconstruct time-series windows, enabling evaluation of reconstruction quality under noise.
 
 Prerequisites
@@ -122,12 +124,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.6855003 0.8456150 0.9357637 0.9451463 0.9889353
-## [2,] 0.7893239 0.9274697 0.9936857 0.9732525 0.9855437
-## [3,] 0.8713157 0.9845887 1.0217549 0.9703760 0.9522556
-## [4,] 0.9281576 1.0144819 1.0194381 0.9376965 0.8902011
-## [5,] 0.9548859 1.0144384 0.9859064 0.8764417 0.8039929
-## [6,] 0.9490853 0.9840112 0.9227308 0.7899968 0.6993889
+## [1,] 0.7421494 0.7940041 0.8988097 1.0069060 1.0120474
+## [2,] 0.8484765 0.8694037 0.9619568 1.0366646 1.0073988
+## [3,] 0.9337792 0.9239068 0.9984652 1.0349959 0.9726958
+## [4,] 0.9911134 0.9506966 1.0014677 1.0009410 0.9109496
+## [5,] 1.0189170 0.9473886 0.9705387 0.9363100 0.8256448
+## [6,] 1.0135775 0.9152052 0.9045588 0.8484448 0.7231854
 ```
 
 
@@ -147,11 +149,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.996201333572511 MAPE: 0.0533217142550058"
-## [1] "t3 R2 test: 0.99664311410949 MAPE: 0.0337438662566005"
-## [1] "t2 R2 test: 0.999464741546821 MAPE: 0.0378528190957933"
-## [1] "t1 R2 test: 0.999989604388237 MAPE: 0.0313245803492813"
-## [1] "t0 R2 test: 0.999328160899293 MAPE: 0.0185792637312314"
+## [1] "t4 R2 test: 0.999541345741806 MAPE: 0.0202453666504451"
+## [1] "t3 R2 test: 0.999741113289404 MAPE: 0.048913315293903"
+## [1] "t2 R2 test: 0.99816791514197 MAPE: 0.0106492516064566"
+## [1] "t1 R2 test: 0.999969872385752 MAPE: 0.0511252171956021"
+## [1] "t0 R2 test: 0.998962833354686 MAPE: 0.0254285379552459"
 ```
 
 ``` r
@@ -159,7 +161,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.99832539090327 MAPE: 0.0349644487375824"
+## [1] "Means R2 test: 0.999276615982724 MAPE: 0.0312723377403305"
 ```
  
 
@@ -167,3 +169,5 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 # Note: the noise level impacts reconstruction capacity.
 ```
 
+References
+- Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and composing robust features with denoising autoencoders. ICML.
