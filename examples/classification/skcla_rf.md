@@ -1,0 +1,77 @@
+## Random Forest Classifier - Overview
+
+This example uses Random Forest (scikit-learn via reticulate) to classify the Iris dataset.
+Workflow: split train/test, train, predict, and evaluate (classification metrics).
+
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
+- Python accessible via reticulate (scikit-learn installed)
+
+
+``` r
+# Install required packages (if not already installed)
+#install.packages("daltoolboxdp")
+```
+
+
+``` r
+# Loading packages
+library(daltoolbox)
+library(daltoolboxdp)
+```
+
+
+
+``` r
+# Loading Iris dataset
+iris <- datasets::iris
+```
+
+
+``` r
+# Training and evaluation with Random Forest
+
+slevels <- levels(iris$Species)                 # target variable levels
+
+set.seed(1)
+sr <- sample_random()                           # stratified random sampling
+sr <- train_test(sr, iris)                      # split data
+iris_train <- sr$train
+iris_test <- sr$test
+
+# Create numeric label for scikit-learn (keeping "Species" as original target)
+iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
+iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
+
+# 1) Train
+model <- skcla_rf("species_encoded", slevels)
+model <- fit(model, iris_train_label)
+
+# 2) Evaluate on train
+train_prediction <- predict(model, iris_train_label)
+iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # original labels
+train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+print(train_eval$metrics)
+```
+
+```
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1        1 39 81  0  0         1      1           1           1  1
+```
+
+``` r
+# 3) Evaluate on test
+iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
+iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
+test_prediction <- predict(model, iris_test_label)
+
+iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
+test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+print(test_eval$metrics)
+```
+
+```
+##    accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1 0.9333333 11 19  0  0         1      1           1           1  1
+```
+
