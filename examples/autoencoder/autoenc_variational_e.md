@@ -1,5 +1,7 @@
 ## Variational Autoencoder (encode)
 
+Variational Autoencoders learn a probabilistic encoder that outputs parameters of a latent distribution (e.g., mean and variance) and a decoder that reconstructs from latent samples. The loss combines reconstruction error and a KL divergence that regularizes the latent distribution toward a prior.
+
 This example uses a Variational Autoencoder (VAE) to learn latent representations of time-series windows. The VAE reduces from p to k dimensions and regularizes the latent space to approximate a target distribution (e.g., standard normal) via a KL term.
 
 Prerequisites
@@ -122,12 +124,14 @@ print(head(result))
 ```
 
 ```
-##             [,1]      [,2]       [,3]        [,4]        [,5]        [,6]
-## [1,] -0.06953792 0.1280905 0.09218250 0.005395666 0.007131264 0.001857404
-## [2,] -0.09148652 0.1589494 0.10964283 0.007107645 0.008844446 0.002092749
-## [3,] -0.10519356 0.1755732 0.11749020 0.007375665 0.010160726 0.001682632
-## [4,] -0.10733759 0.1739595 0.11412117 0.006546870 0.009631075 0.001871161
-## [5,] -0.09942860 0.1561732 0.10040008 0.004469812 0.008032463 0.002157357
-## [6,] -0.08271810 0.1242397 0.07756911 0.001141086 0.005971819 0.001980092
+##            [,1]        [,2]        [,3]        [,4]        [,5]        [,6]
+## [1,] 0.09563006 -0.08406974 -0.20252025 0.007192686 -0.01273163 0.012905894
+## [2,] 0.13504529 -0.03213522 -0.21980235 0.007717811 -0.01337375 0.011788517
+## [3,] 0.16515028  0.03197703 -0.21417874 0.006009266 -0.01507257 0.011009218
+## [4,] 0.17642504  0.09829776 -0.18024564 0.003366388 -0.01479770 0.009636659
+## [5,] 0.16407233  0.14606121 -0.13054705 0.001773089 -0.01295045 0.006309848
+## [6,] 0.13657573  0.16959272 -0.07463908 0.001738429 -0.01300437 0.005048607
 ```
 
+References
+- Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.

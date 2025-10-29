@@ -1,5 +1,7 @@
 ## Random Forest Classifier - Overview
 
+Random Forest is an ensemble of decision trees trained on bootstrap samples, where each split considers a random subset of features. This decorrelates trees and reduces variance. For classification, predictions are obtained by majority vote across trees.
+
 This example uses Random Forest (scikit-learn via reticulate) to classify the Iris dataset.
 Workflow: split train/test, train, predict, and evaluate (classification metrics).
 
@@ -74,4 +76,7 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Breiman, L. (2001). Random Forests. Machine Learning, 45(1), 5–32.
 

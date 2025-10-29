@@ -1,5 +1,7 @@
 ## Naive Bayes Classifier
 
+Naive Bayes applies Bayes’ theorem under a conditional independence assumption: features are assumed independent given the class. Class-conditional likelihoods (e.g., Gaussian) are estimated per class, then combined with class priors to compute posterior probabilities used for classification.
+
 This example uses Naive Bayes (scikit-learn via reticulate) to classify the Iris dataset.
 Workflow: split train/test, train, predict, and evaluate.
 
@@ -71,4 +73,7 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9666667 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Murphy, K. P. (2012). Machine Learning: A Probabilistic Perspective. MIT Press.
 

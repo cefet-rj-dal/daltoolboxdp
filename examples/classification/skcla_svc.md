@@ -1,5 +1,7 @@
 ## SVM (Support Vector Machine) Classifier
 
+Support Vector Machines find a maximum-margin hyperplane separating classes in a (possibly) high-dimensional feature space. Using kernels, SVMs implicitly map inputs to a feature space where linear separation is easier. The margin is controlled by a regularization parameter that trades off margin width and classification errors.
+
 This example uses SVM (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
 
 Prerequisites
@@ -70,4 +72,7 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Cortes, C., & Vapnik, V. (1995). Support-Vector Networks. Machine Learning, 20, 273–297.
 

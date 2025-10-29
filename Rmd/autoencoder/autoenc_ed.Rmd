@@ -1,5 +1,7 @@
 ## Autoencoder (Encode-Decode) - Overview
 
+The autoencoder jointly learns an encoder (p → k) and decoder (k → p) by minimizing reconstruction error. With sufficient capacity and regularization, the bottleneck enforces information compression so that reconstructions approximate inputs with low error.
+
 This example shows an autoencoder that encodes and reconstructs the input. After training the reduction from p -> k dimensions, the model decodes back to p. The better the training, the closer the reconstruction is to the original (low reconstruction error).
 
 Prerequisites
@@ -96,9 +98,5 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
-### Method
-
-The autoencoder jointly learns an encoder (p → k) and decoder (k → p) by minimizing reconstruction error. With sufficient capacity and regularization, the bottleneck enforces information compression so that reconstructions approximate inputs with low error.
-
-### References
+References
 - Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)

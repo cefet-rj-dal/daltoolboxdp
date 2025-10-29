@@ -1,5 +1,7 @@
 ## Denoising Autoencoder (encode-decode)
 
+Inputs are stochastically corrupted during training, and the model learns to reconstruct clean windows. The bottleneck captures noise-invariant structure, and reconstruction metrics quantify how well essential patterns are preserved.
+
 This example demonstrates how to use a denoising autoencoder to encode and reconstruct time-series windows, enabling evaluation of reconstruction quality under noise.
 
 Prerequisites
@@ -97,9 +99,5 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 # Note: the noise level impacts reconstruction capacity.
 ```
 
-### Method
-
-Inputs are stochastically corrupted during training, and the model learns to reconstruct clean windows. The bottleneck captures noise-invariant structure, and reconstruction metrics quantify how well essential patterns are preserved.
-
-### References
+References
 - Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and composing robust features with denoising autoencoders. ICML.

@@ -1,5 +1,7 @@
 ## Multi-Layer Perceptron (MLP) Classifier
 
+A Multi-Layer Perceptron is a feed-forward neural network with one or more hidden layers. Neurons apply an affine transformation followed by a nonlinearity. The network is trained to minimize a loss via backpropagation and gradient-based optimization, enabling nonlinear decision boundaries.
+
 This example uses MLP (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
 
 Prerequisites
@@ -70,4 +72,7 @@ print(test_eval$metrics)
 ##   accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1        1 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533–536.
 

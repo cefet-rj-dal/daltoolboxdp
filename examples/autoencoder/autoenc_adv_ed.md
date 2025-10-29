@@ -1,5 +1,7 @@
 ## Adversarial Autoencoder (encode-decode)
 
+An AAE couples reconstruction loss with an adversarial game in latent space. A discriminator distinguishes samples from the encoder vs. the prior, while the encoder seeks to fool it, aligning the aggregate posterior with the chosen prior distribution.
+
 This example shows how to train and use an Adversarial Autoencoder (AAE) in encode-decode mode: the model compresses windows from p to k dimensions and then reconstructs back to p, enabling evaluation of reconstruction error.
 
 Prerequisites
@@ -122,12 +124,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8574938 0.9097413 0.9355534 0.9376464 0.8932450
-## [2,] 0.8843769 0.9324329 0.9543950 0.9567116 0.9172468
-## [3,] 0.8956631 0.9413828 0.9614758 0.9638525 0.9270380
-## [4,] 0.8934240 0.9396408 0.9600500 0.9624438 0.9250727
-## [5,] 0.8773618 0.9267331 0.9496683 0.9519014 0.9110340
-## [6,] 0.8448245 0.8981494 0.9253392 0.9271518 0.8810369
+## [1,] 0.8579839 0.9114883 0.9284261 0.9281716 0.8909234
+## [2,] 0.8847016 0.9342683 0.9488245 0.9492772 0.9154712
+## [3,] 0.8959171 0.9431753 0.9566994 0.9571368 0.9255056
+## [4,] 0.8938900 0.9416050 0.9552651 0.9557211 0.9236839
+## [5,] 0.8776290 0.9284415 0.9435576 0.9438289 0.9090118
+## [6,] 0.8443620 0.8990029 0.9166719 0.9158451 0.8777670
 ```
 
 
@@ -148,11 +150,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.330412449831855 MAPE: 0.164541736478543"
-## [1] "t3 R2 test: 0.888291878904282 MAPE: 0.088569206430928"
-## [1] "t2 R2 test: 0.954490884385285 MAPE: 0.0459521497194143"
-## [1] "t1 R2 test: 0.89884936582842 MAPE: 0.141929190231187"
-## [1] "t0 R2 test: 0.845949690822771 MAPE: 0.323693607093233"
+## [1] "t4 R2 test: 0.330960854114464 MAPE: 0.167195006977231"
+## [1] "t3 R2 test: 0.887865190409977 MAPE: 0.0912943588498622"
+## [1] "t2 R2 test: 0.959587115214294 MAPE: 0.0433179991400212"
+## [1] "t1 R2 test: 0.90851785647224 MAPE: 0.130205357076658"
+## [1] "t0 R2 test: 0.84702400102264 MAPE: 0.315813229912159"
 ```
 
 ``` r
@@ -160,6 +162,8 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.783598853954522 MAPE: 0.152937177990661"
+## [1] "Means R2 test: 0.786791003446723 MAPE: 0.149565190391186"
 ```
 
+References
+- Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.

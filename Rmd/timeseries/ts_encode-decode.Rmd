@@ -1,5 +1,7 @@
 ## Time Series Encoding and Reconstruction (encode-decode)
 
+Time series windows of size p are encoded into k-dimensional latent vectors and then decoded back to p dimensions. Training minimizes reconstruction loss so that latent codes capture the essential structure of windows, enabling quality assessment via reconstruction error.
+
 This example shows how to transform a time series into windows (p) and train an autoencoder to encode (p -> k) and reconstruct (k -> p) these windows, allowing evaluation of reconstruction quality.
 
 Prerequisites
@@ -11,7 +13,7 @@ Prerequisites
 library(daltoolbox)
 ```
 
-## Series for study
+Series for study
 
 ```{r}
 data(tsd)
@@ -30,7 +32,7 @@ plot_ts(x = tsd$x, y = tsd$y) +
   theme(text = element_text(size = 16))
 ```
 
-## Data sampling
+Data sampling
 
 ```{r}
 samp <- ts_sample(ts, test_size = 5)
@@ -38,14 +40,14 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Train the model (encode-decode)
+Train the model (encode-decode)
 
 ```{r}
 auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
 auto <- fit(auto, train)
 ```
 
-## Reconstruction evaluation (train)
+Reconstruction evaluation (train)
 
 ```{r}
 print(head(train))                    # original windows (p columns)
@@ -53,17 +55,14 @@ result <- transform(auto, train)      # reconstructed windows (p columns)
 print(head(result))
 ```
 
-### Method
-
-Time series windows of size p are encoded into k-dimensional latent vectors and then decoded back to p dimensions. Training minimizes reconstruction loss so that latent codes capture the essential structure of windows, enabling quality assessment via reconstruction error.
-
-### References
-- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
-
-## Reconstruction of the test set
+Reconstruction of the test set
 
 ```{r}
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
+
+References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
+

@@ -1,5 +1,7 @@
 ## Time Series Encoding and Reconstruction (encode-decode)
 
+Time series windows of size p are encoded into k-dimensional latent vectors and then decoded back to p dimensions. Training minimizes reconstruction loss so that latent codes capture the essential structure of windows, enabling quality assessment via reconstruction error.
+
 This example shows how to transform a time series into windows (p) and train an autoencoder to encode (p -> k) and reconstruct (k -> p) these windows, allowing evaluation of reconstruction quality.
 
 Prerequisites
@@ -12,7 +14,7 @@ Prerequisites
 library(daltoolbox)
 ```
 
-## Series for study
+Series for study
 
 
 ``` r
@@ -43,7 +45,7 @@ plot_ts(x = tsd$x, y = tsd$y) +
 
 ![plot of chunk unnamed-chunk-4](fig/ts_encode-decode/unnamed-chunk-4-1.png)
 
-## Data sampling
+Data sampling
 
 
 ``` r
@@ -52,7 +54,7 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Train the model (encode-decode)
+Train the model (encode-decode)
 
 
 ``` r
@@ -60,7 +62,7 @@ auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
 auto <- fit(auto, train)
 ```
 
-## Reconstruction evaluation (train)
+Reconstruction evaluation (train)
 
 
 ``` r
@@ -84,15 +86,15 @@ print(head(result))
 
 ```
 ##              [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] -0.002028763 0.2446182 0.4773594 0.6852269 0.8452542
-## [2,]  0.250791043 0.4758109 0.6785014 0.8416755 0.9462146
-## [3,]  0.478107423 0.6851213 0.8447245 0.9451679 0.9961835
-## [4,]  0.680636644 0.8467084 0.9585245 0.9923128 0.9800930
-## [5,]  0.837896228 0.9471413 0.9992149 0.9869664 0.9112258
-## [6,]  0.949147105 0.9945054 0.9800070 0.9105040 0.7772799
+## [1,] -0.001756802 0.2403132 0.4743070 0.6863737 0.8420742
+## [2,]  0.247005612 0.4766553 0.6841266 0.8416262 0.9513816
+## [3,]  0.482724309 0.6863498 0.8385784 0.9499559 0.9976891
+## [4,]  0.680037320 0.8403476 0.9440212 0.9966206 0.9828066
+## [5,]  0.838024735 0.9480274 1.0003297 0.9849531 0.9089788
+## [6,]  0.951677203 0.9996073 0.9878144 0.9090745 0.7779489
 ```
 
-## Reconstruction of the test set
+Reconstruction of the test set
 
 
 ``` r
@@ -114,11 +116,14 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]       [,3]       [,4]       [,5]
-## [1,] 0.9958886 0.93035495  0.8007355  0.6230706  0.4152292
-## [2,] 0.9218130 0.80082417  0.6366375  0.4088493  0.1698258
-## [3,] 0.8357360 0.59689564  0.3334810  0.0835620 -0.2308053
-## [4,] 0.6007730 0.38617086  0.1296347 -0.1176755 -0.3725463
-## [5,] 0.3019921 0.03179558 -0.2175494 -0.4502071 -0.6406337
+##           [,1]       [,2]       [,3]        [,4]       [,5]
+## [1,] 0.9959044 0.92088747  0.7923869  0.62658113  0.4109711
+## [2,] 0.9238115 0.79371905  0.6198038  0.41496652  0.1757277
+## [3,] 0.8355204 0.54976618  0.2996781 -0.03351785 -0.2990537
+## [4,] 0.6759248 0.38636974  0.1239219 -0.18921468 -0.4408846
+## [5,] 0.2726430 0.08078305 -0.1540620 -0.34752294 -0.5395663
 ```
+
+References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
 

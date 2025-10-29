@@ -1,5 +1,7 @@
 ## Class Balance: Subsampling
 
+Random undersampling reduces the majority class by removing examples until the classes are balanced. It can mitigate bias toward the majority class but may discard useful information if too aggressive.
+
 This example shows how to handle class imbalance by applying subsampling (reduce the majority class) on an imbalanced subset of the Iris dataset.
 
 Prerequisites
@@ -47,4 +49,7 @@ table(adjust_iris$Species)                    # distribution after subsampling
 ##     setosa versicolor  virginica 
 ##         11         11         11
 ```
+
+References
+- He, H., & Garcia, E. A. (2009). Learning from imbalanced data. IEEE Transactions on Knowledge and Data Engineering, 21(9), 1263–1284.
 

@@ -1,5 +1,7 @@
 ## Feature Selection with Lasso
 
+Lasso performs linear modeling with an L1 penalty on coefficients, which drives some coefficients exactly to zero. This induces sparsity and acts as embedded feature selection by retaining only the most predictive features under the penalized objective.
+
 This example uses Lasso (L1 regularization) to select relevant features based on their relationship to the target variable. L1 induces sparsity in coefficients, removing less important features.
 
 Prerequisites
@@ -55,4 +57,7 @@ print(head(data))
 ## 5         3.6          1.4         0.2  setosa
 ## 6         3.9          1.7         0.4  setosa
 ```
+
+References
+- Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso. Journal of the Royal Statistical Society: Series B, 58(1), 267–288.
 

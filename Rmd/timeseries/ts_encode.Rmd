@@ -1,5 +1,7 @@
 ## Time Series Encoding (encode)
 
+We use a sliding-window embedding to convert a univariate series into fixed-length vectors of length p. A feed-forward autoencoder is trained to minimize reconstruction error, and its bottleneck (k < p) provides a compact encoding that preserves salient information for downstream tasks.
+
 This example shows how to transform a time series into fixed-size windows and train an autoencoder to learn a compact latent representation (p -> k) of these windows.
 
 Prerequisites
@@ -11,7 +13,7 @@ Prerequisites
 library(daltoolbox)
 ```
 
-## Series for study
+Series for study
 
 ```{r}
 data(tsd)
@@ -30,7 +32,7 @@ plot_ts(x = tsd$x, y = tsd$y) +      # series plot with the outlier peak
   theme(text = element_text(size = 16))
 ```
 
-## Data sampling
+Data sampling
 
 ```{r}
 samp <- ts_sample(ts, test_size = 5) # hold out the last 5 windows for test
@@ -38,14 +40,14 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Train the model
+Train the model
 
 ```{r}
 auto <- autoenc_e(5, 3)              # reduce from 5 -> 3 dimensions (p -> k)
 auto <- fit(auto, train)
 ```
 
-## Encoding evaluation (train)
+Encoding evaluation (train)
 
 ```{r}
 print(head(train))                    # original windows (p columns)
@@ -53,17 +55,13 @@ result <- transform(auto, train)      # encodings (k columns)
 print(head(result))
 ```
 
-### Method
-
-We use a sliding-window embedding to convert a univariate series into fixed-length vectors of length p. A feed-forward autoencoder is trained to minimize reconstruction error, and its bottleneck (k < p) provides a compact encoding that preserves salient information for downstream tasks.
-
-### References
-- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
-
-## Encoding of the test set
+Encoding of the test set
 
 ```{r}
 print(head(test))
 result <- transform(auto, test)
 print(head(result))
 ```
+
+References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)

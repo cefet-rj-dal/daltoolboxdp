@@ -1,5 +1,7 @@
 ## Class Balance: Oversampling
 
+Random oversampling increases the representation of the minority class by replicating existing minority samples until a desired class balance is reached. It is simple and effective but may increase overfitting by duplicating examples.
+
 This example shows how to handle class imbalance by applying oversampling (increase the minority class) on an imbalanced subset of the Iris dataset.
 
 Prerequisites
@@ -48,4 +50,7 @@ table(adjust_iris$Species)                   # distribution after oversampling
 ##     setosa versicolor  virginica 
 ##         50         42         44
 ```
+
+References
+- He, H., & Garcia, E. A. (2009). Learning from imbalanced data. IEEE Transactions on Knowledge and Data Engineering, 21(9), 1263–1284.
 

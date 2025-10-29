@@ -1,5 +1,7 @@
 ## Adversarial Autoencoder (encode)
 
+Adversarial Autoencoders augment the autoencoder objective with an adversarial discriminator in latent space. The encoder is trained to both reconstruct inputs (via the decoder) and produce latent codes whose distribution matches a desired prior, improving latent structure.
+
 This example shows how to train and use an Adversarial Autoencoder (AAE) to encode windows of a time series, reducing from p to k dimensions while imposing a desired distribution in the latent space via an adversarial discriminator.
 
 Prerequisites
@@ -22,7 +24,37 @@ Quick notes
 ``` r
 # Loading required packages
 library(daltoolbox)
+```
+
+```
+## 
+## Attaching package: 'daltoolbox'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     transform
+```
+
+``` r
 library(tspredit)
+```
+
+```
+## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo
+```
+
+```
+## Registered S3 methods overwritten by 'forecast':
+##   method  from 
+##   head.ts stats
+##   tail.ts stats
+```
+
+``` r
 library(daltoolboxdp)
 library(ggplot2)
 ```
@@ -126,11 +158,13 @@ print(head(result))
 
 ```
 ##          [,1]      [,2]       [,3]
-## [1,] 3.443070 -3.223510 -0.1417844
-## [2,] 2.728544 -2.269895 -1.0196624
-## [3,] 5.161405 -5.343653  1.0087751
-## [4,] 3.269723 -3.891940  0.3520791
-## [5,] 2.840159 -3.249566  0.7028705
-## [6,] 2.088416 -1.153962 -1.0455382
+## [1,] 2.217695 -2.436698  0.1619378
+## [2,] 4.288276 -2.937522 -0.0940082
+## [3,] 4.819034 -5.108434  1.2926179
+## [4,] 2.791841 -1.892246 -0.1139431
+## [5,] 2.006887 -2.679060 -0.5738264
+## [6,] 3.089844 -2.863084  0.4861073
 ```
 
+References
+- Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.

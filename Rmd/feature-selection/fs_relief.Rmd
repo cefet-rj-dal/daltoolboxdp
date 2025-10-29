@@ -1,5 +1,7 @@
 ## Feature Selection with Relief
 
+Relief estimates feature relevance by comparing each instance to its nearest neighbors: the nearest hit (same class) and nearest miss (different class). Features that better differentiate classes receive higher weights, guiding ranking and selection.
+
 This example uses the Relief method to estimate feature relevance by considering nearest neighbors and differences across classes, ranking and selecting the most informative features for the target.
 
 Prerequisites
@@ -36,10 +38,6 @@ data <- transform(myfeature, iris)
 print(head(data))
 ```
 
-### Method
-
-Relief estimates feature relevance by comparing each instance to its nearest neighbors: the nearest hit (same class) and nearest miss (different class). Features that better differentiate classes receive higher weights, guiding ranking and selection.
-
-### References
+References
 - Kononenko, I. (1994). Estimating attributes: Analysis and extensions of Relief. ECML.
 

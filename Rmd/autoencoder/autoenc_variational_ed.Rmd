@@ -1,5 +1,7 @@
 ## Variational Autoencoder (encode-decode)
 
+The VAE uses an encoder to parameterize a latent distribution and a decoder to reconstruct inputs from latent samples. Training optimizes an evidence lower bound with reconstruction and KL divergence terms, shaping a smooth, regularized latent space.
+
 This example uses a Variational Autoencoder (VAE) to encode windows of a time series (p -> k) and reconstruct them (k -> p). We evaluate reconstruction quality at the end.
 
 Prerequisites
@@ -89,9 +91,5 @@ for (col in names(test)){
 print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
-### Method
-
-The VAE uses an encoder to parameterize a latent distribution and a decoder to reconstruct inputs from latent samples. Training optimizes an evidence lower bound with reconstruction and KL divergence terms, shaping a smooth, regularized latent space.
-
-### References
+References
 - Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.

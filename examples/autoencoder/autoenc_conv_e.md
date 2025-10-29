@@ -1,5 +1,7 @@
 ## Convolutional Autoencoder (encode)
 
+Convolutional autoencoders apply 1D convolutions to capture local patterns within windows. The encoder compresses the input via learned filters and pooling (if used), while the decoder reconstructs from the compact code. This inductive bias suits structured temporal neighborhoods.
+
 This example demonstrates how to use a 1D convolutional autoencoder to encode windows from a time series, reducing from p to k dimensions while preserving relevant information.
 
 Prerequisites
@@ -126,12 +128,14 @@ print(head(result))
 ```
 
 ```
-##             [,1]     [,2]         [,3]
-## [1,] -0.81407362 1.646189  0.081177279
-## [2,] -0.71899563 1.812768  0.004605517
-## [3,] -0.57965887 1.897908 -0.043004766
-## [4,] -0.41365477 1.902929 -0.061284199
-## [5,] -0.23347160 1.827859 -0.049158111
-## [6,] -0.06225879 1.663001  0.003039643
+##             [,1]       [,2]     [,3]
+## [1,] -1.23863137 -0.9830283 1.187886
+## [2,] -1.03357279 -1.1463363 1.349517
+## [3,] -0.81651050 -1.2577111 1.441838
+## [4,] -0.55527109 -1.3044586 1.400279
+## [5,] -0.29762441 -1.2852060 1.263184
+## [6,] -0.08268346 -1.1916593 1.034874
 ```
 
+References
+- Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction. ICANN.

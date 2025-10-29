@@ -1,5 +1,7 @@
 ## Variational Autoencoder (encode)
 
+Variational Autoencoders learn a probabilistic encoder that outputs parameters of a latent distribution (e.g., mean and variance) and a decoder that reconstructs from latent samples. The loss combines reconstruction error and a KL divergence that regularizes the latent distribution toward a prior.
+
 This example uses a Variational Autoencoder (VAE) to learn latent representations of time-series windows. The VAE reduces from p to k dimensions and regularizes the latent space to approximate a target distribution (e.g., standard normal) via a KL term.
 
 Prerequisites
@@ -78,9 +80,5 @@ result <- transform(auto, test)
 print(head(result))
 ```
 
-### Method
-
-Variational Autoencoders learn a probabilistic encoder that outputs parameters of a latent distribution (e.g., mean and variance) and a decoder that reconstructs from latent samples. The loss combines reconstruction error and a KL divergence that regularizes the latent distribution toward a prior.
-
-### References
+References
 - Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.

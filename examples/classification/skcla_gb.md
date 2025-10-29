@@ -1,5 +1,7 @@
 ## Gradient Boosting Classifier - Overview
 
+Gradient Boosting builds an additive ensemble of shallow trees by sequentially fitting each tree to the negative gradient (residuals) of a differentiable loss. Learning rate and tree depth control model complexity and generalization.
+
 This example uses Gradient Boosting (scikit-learn via reticulate) to classify the Iris dataset.
 Workflow: split train/test, train, predict, and evaluate (classification metrics).
 
@@ -76,4 +78,7 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. Annals of Statistics, 29(5), 1189–1232.
 

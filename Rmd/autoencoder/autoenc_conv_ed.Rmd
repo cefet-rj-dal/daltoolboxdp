@@ -1,5 +1,7 @@
 ## Convolutional Autoencoder (encode-decode)
 
+1D convolutional layers learn filters that respond to short-term structures in the window, yielding a compressed representation that the decoder expands back to the original dimensionality. Reconstruction error evaluates how well local patterns are preserved.
+
 This example demonstrates how to use a 1D convolutional autoencoder to encode and reconstruct windows from a time series. After reducing from p to k dimensions, the model reconstructs back to p, enabling evaluation of reconstruction error.
 
 Prerequisites
@@ -97,9 +99,5 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 # Note: beware of divisions by values near zero when computing MAPE.
 ```
 
-### Method
-
-1D convolutional layers learn filters that respond to short-term structures in the window, yielding a compressed representation that the decoder expands back to the original dimensionality. Reconstruction error evaluates how well local patterns are preserved.
-
-### References
+References
 - Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction. ICANN.

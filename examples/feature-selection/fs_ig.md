@@ -1,5 +1,7 @@
 ## Feature Selection with Information Gain (IG)
 
+Information Gain measures the reduction in class label entropy achieved by splitting on a feature. Features that yield larger entropy reduction are considered more informative for predicting the target.
+
 This example shows how to use the Information Gain method to rank attributes and select a relevant subset for the target. Then, we apply the transformation to keep only the chosen attributes along with the target.
 
 Prerequisites
@@ -55,4 +57,7 @@ print(head(data))
 ## 5         0.2          1.4  setosa
 ## 6         0.4          1.7  setosa
 ```
+
+References
+- Quinlan, J. R. (1993). C4.5: Programs for Machine Learning. Morgan Kaufmann.
 

@@ -1,5 +1,7 @@
 ## K-Nearest Neighbors (KNN) Classifier
 
+k-Nearest Neighbors is an instance-based classifier that assigns a class based on the majority label among the k closest training examples under a chosen distance metric. It is non-parametric and relies on local neighborhoods to infer class membership.
+
 This example uses KNN (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
 
 Prerequisites
@@ -70,4 +72,7 @@ print(test_eval$metrics)
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
 ## 1 0.9333333 11 19  0  0         1      1           1           1  1
 ```
+
+References
+- Cover, T., & Hart, P. (1967). Nearest neighbor pattern classification. IEEE Transactions on Information Theory, 13(1), 21–27.
 

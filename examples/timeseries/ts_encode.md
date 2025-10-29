@@ -1,5 +1,7 @@
 ## Time Series Encoding (encode)
 
+We use a sliding-window embedding to convert a univariate series into fixed-length vectors of length p. A feed-forward autoencoder is trained to minimize reconstruction error, and its bottleneck (k < p) provides a compact encoding that preserves salient information for downstream tasks.
+
 This example shows how to transform a time series into fixed-size windows and train an autoencoder to learn a compact latent representation (p -> k) of these windows.
 
 Prerequisites
@@ -12,7 +14,7 @@ Prerequisites
 library(daltoolbox)
 ```
 
-## Series for study
+Series for study
 
 
 ``` r
@@ -43,7 +45,7 @@ plot_ts(x = tsd$x, y = tsd$y) +      # series plot with the outlier peak
 
 ![plot of chunk unnamed-chunk-4](fig/ts_encode/unnamed-chunk-4-1.png)
 
-## Data sampling
+Data sampling
 
 
 ``` r
@@ -52,7 +54,7 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 ```
 
-## Train the model
+Train the model
 
 
 ``` r
@@ -60,7 +62,7 @@ auto <- autoenc_e(5, 3)              # reduce from 5 -> 3 dimensions (p -> k)
 auto <- fit(auto, train)
 ```
 
-## Encoding evaluation (train)
+Encoding evaluation (train)
 
 
 ``` r
@@ -83,16 +85,16 @@ print(head(result))
 ```
 
 ```
-##            [,1]     [,2]      [,3]
-## [1,] 0.76990867 1.109171 0.6273736
-## [2,] 0.66193235 1.261302 0.9309859
-## [3,] 0.53301376 1.353560 1.1873007
-## [4,] 0.38436234 1.370801 1.3799736
-## [5,] 0.22634558 1.329923 1.4937432
-## [6,] 0.06387644 1.225594 1.5271868
+##           [,1]       [,2]      [,3]
+## [1,] 0.2795950 -0.7417191 -1.022133
+## [2,] 0.6224524 -0.9036327 -1.254119
+## [3,] 0.9344380 -1.0103003 -1.430671
+## [4,] 1.1814177 -1.0467048 -1.525883
+## [5,] 1.3597012 -1.0049314 -1.531249
+## [6,] 1.4649724 -0.9028794 -1.456295
 ```
 
-## Encoding of the test set
+Encoding of the test set
 
 
 ``` r
@@ -114,11 +116,13 @@ print(head(result))
 ```
 
 ```
-##            [,1]        [,2]       [,3]
-## [1,] -0.1914023  0.90170926 1.35843456
-## [2,] -0.2944037  0.66750491 1.14481783
-## [3,] -0.5024073  0.14849173 0.85079527
-## [4,] -0.4123658 -0.07982549 0.58546245
-## [5,] -0.1792537 -0.41744471 0.06043897
+##           [,1]        [,2]        [,3]
+## [1,] 1.4472004 -0.57537431 -1.12094009
+## [2,] 1.3211761 -0.35078946 -0.85330904
+## [3,] 1.1107997  0.02935538 -0.31218180
+## [4,] 0.8174326  0.24761176  0.02247674
+## [5,] 0.4723179  0.37613583  0.39211157
 ```
 
+References
+- Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press. (Chapter on Autoencoders)
