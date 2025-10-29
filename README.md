@@ -37,10 +37,13 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
 Example scripts are available at:
 
-- [General](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/general)
+- [Classification](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/classification)
 - [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
+- [Feature
+  Selection](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/feature-selection)
 - [Time
   Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries)
+- [Sampling](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/sampling)
 
 ------------------------------------------------------------------------
 
