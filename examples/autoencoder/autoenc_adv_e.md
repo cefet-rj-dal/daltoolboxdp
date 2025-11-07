@@ -24,36 +24,9 @@ Quick notes
 ``` r
 # Loading required packages
 library(daltoolbox)
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-``` r
 library(tspredit)
-```
-
-```
-## Registered S3 method overwritten by 'quantmod':
-##   method            from
-##   as.zoo.data.frame zoo
-```
-
-``` r
 library(daltoolboxdp)
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 4.5.1
 ```
 
 
@@ -154,13 +127,13 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]       [,3]
-## [1,] 3.409832 -3.159393 -0.0866213
-## [2,] 2.698893 -2.206323 -1.0565240
-## [3,] 5.121046 -5.309365  1.0882862
-## [4,] 3.232659 -3.884903  0.4291858
-## [5,] 2.881776 -3.207508  0.7850465
-## [6,] 2.018048 -1.047079 -0.9860797
+##          [,1]      [,2]        [,3]
+## [1,] 2.099235 -2.807595  0.31620473
+## [2,] 3.997524 -3.265734 -0.02431409
+## [3,] 4.643614 -5.590407  1.52241600
+## [4,] 2.682509 -2.245610 -0.01715497
+## [5,] 1.808509 -2.875828 -0.47491151
+## [6,] 2.979405 -3.244744  0.71261388
 ```
 
 References
