@@ -1,0 +1,19 @@
+# Autoencoders — Exemplos
+
+Coleção de exemplos de autoencoders aplicados a janelas de séries temporais. Cada link aponta para o arquivo `.Rmd` correspondente e inclui uma breve descrição.
+
+- [autoenc_e.Rmd](autoenc_e.Rmd) — Autoencoder simples (encode) para aprender uma representação latente (p→k) minimizando o erro de reconstrução.
+- [autoenc_ed.Rmd](autoenc_ed.Rmd) — Autoencoder simples (encode-decode) treinado ponta a ponta para reconstruir (p↔k) e avaliar erro de reconstrução.
+- [autoenc_adv_e.Rmd](autoenc_adv_e.Rmd) — Autoencoder Adversarial (encode) com regularização do espaço latente via discriminador para alinhar com um prior.
+- [autoenc_adv_ed.Rmd](autoenc_adv_ed.Rmd) — Autoencoder Adversarial (encode-decode) combinando perda de reconstrução e jogo adversarial no latente.
+- [autoenc_conv_e.Rmd](autoenc_conv_e.Rmd) — Autoencoder Convolucional 1D (encode) para capturar padrões locais nas janelas.
+- [autoenc_conv_ed.Rmd](autoenc_conv_ed.Rmd) — Autoencoder Convolucional 1D (encode-decode) com reconstrução a partir do código comprimido.
+- [autoenc_denoise_e.Rmd](autoenc_denoise_e.Rmd) — Denoising Autoencoder (encode) treinado para recuperar entrada limpa a partir de dados corrompidos.
+- [autoenc_denoise_ed.Rmd](autoenc_denoise_ed.Rmd) — Denoising Autoencoder (encode-decode) com ruído estocástico na entrada e reconstrução limpa.
+- [autoenc_lstm_e.Rmd](autoenc_lstm_e.Rmd) — LSTM Autoencoder (encode) para codificar dependências temporais em um vetor fixo.
+- [autoenc_lstm_ed.Rmd](autoenc_lstm_ed.Rmd) — LSTM Autoencoder (encode-decode) para codificar (p→k) e reconstruir (k→p) janelas temporais.
+- [autoenc_stacked_e.Rmd](autoenc_stacked_e.Rmd) — Autoencoder Empilhado (stacked, encode) com múltiplas camadas não lineares para compressão gradual.
+- [autoenc_stacked_ed.Rmd](autoenc_stacked_ed.Rmd) — Autoencoder Empilhado (encode-decode) com gargalo e reconstrução guiada por perda de reconstrução.
+- [autoenc_variational_e.Rmd](autoenc_variational_e.Rmd) — Autoencoder Variacional (VAE, encode) com regularização via termo KL para um latente probabilístico.
+- [autoenc_variational_ed.Rmd](autoenc_variational_ed.Rmd) — Autoencoder Variacional (encode-decode) otimizando ELBO (reconstrução + KL) para espaço latente suave.
+

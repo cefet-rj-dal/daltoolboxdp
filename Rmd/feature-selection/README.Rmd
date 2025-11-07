@@ -1,0 +1,9 @@
+# Seleção de Atributos — Exemplos
+
+Exemplos de métodos de seleção de atributos (filter, wrapper e embedded). Cada link inclui uma breve descrição.
+
+- [fs_fss.Rmd](fs_fss.Rmd) — Forward Sequential Selection (FSS): adiciona iterativamente o atributo que mais melhora o critério.
+- [fs_ig.Rmd](fs_ig.Rmd) — Information Gain (IG): mede a redução de entropia do rótulo ao particionar por um atributo.
+- [fs_lasso.Rmd](fs_lasso.Rmd) — Lasso (L1): induz esparsidade no modelo e seleciona atributos relevantes.
+- [fs_relief.Rmd](fs_relief.Rmd) — Relief: pondera atributos pela capacidade de diferenciar vizinhos de mesma/diferente classe.
+

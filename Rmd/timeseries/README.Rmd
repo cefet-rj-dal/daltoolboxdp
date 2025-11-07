@@ -1,0 +1,7 @@
+# Séries Temporais — Exemplos
+
+Exemplos de codificação (encode) e reconstrução (encode-decode) de janelas de séries temporais via autoencoder. Cada link inclui uma breve descrição.
+
+- [ts_encode.Rmd](ts_encode.Rmd) — Codifica janelas (p→k) usando um autoencoder; o gargalo fornece uma representação compacta para uso posterior.
+- [ts_encode-decode.Rmd](ts_encode-decode.Rmd) — Codifica e reconstrói (p↔k) para avaliar a qualidade via erro de reconstrução.
+
