@@ -1,9 +1,8 @@
-# Seleção de Atributos — Exemplos
+# Feature Selection — Examples
 
-Exemplos de métodos de seleção de atributos (filter, wrapper e embedded). Cada link inclui uma breve descrição.
+Examples of feature selection methods (filter, wrapper, and embedded). Each link includes a short description.
 
-- [fs_fss.Rmd](fs_fss.Rmd) — Forward Sequential Selection (FSS): adiciona iterativamente o atributo que mais melhora o critério.
-- [fs_ig.Rmd](fs_ig.Rmd) — Information Gain (IG): mede a redução de entropia do rótulo ao particionar por um atributo.
-- [fs_lasso.Rmd](fs_lasso.Rmd) — Lasso (L1): induz esparsidade no modelo e seleciona atributos relevantes.
-- [fs_relief.Rmd](fs_relief.Rmd) — Relief: pondera atributos pela capacidade de diferenciar vizinhos de mesma/diferente classe.
-
+- [fs_fss.Rmd](fs_fss.Rmd) — Forward Sequential Selection (FSS): iteratively adds the feature that most improves the chosen criterion.
+- [fs_ig.Rmd](fs_ig.Rmd) — Information Gain (IG): measures label entropy reduction when splitting by a feature.
+- [fs_lasso.Rmd](fs_lasso.Rmd) — Lasso (L1): induces sparsity in coefficients and selects relevant features.
+- [fs_relief.Rmd](fs_relief.Rmd) — Relief: weights features by how well they distinguish nearest hits from nearest misses.

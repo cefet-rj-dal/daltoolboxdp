@@ -1,7 +1,6 @@
-# Séries Temporais — Exemplos
+# Time Series — Examples
 
-Exemplos de codificação (encode) e reconstrução (encode-decode) de janelas de séries temporais via autoencoder. Cada link inclui uma breve descrição.
+Examples of encoding (encode) and reconstruction (encode-decode) of time-series windows using autoencoders. Each link includes a short description.
 
-- [ts_encode.Rmd](ts_encode.Rmd) — Codifica janelas (p→k) usando um autoencoder; o gargalo fornece uma representação compacta para uso posterior.
-- [ts_encode-decode.Rmd](ts_encode-decode.Rmd) — Codifica e reconstrói (p↔k) para avaliar a qualidade via erro de reconstrução.
-
+- [ts_encode.Rmd](ts_encode.Rmd) — Encodes windows (p->k) using an autoencoder; the bottleneck provides a compact representation for downstream use.
+- [ts_encode-decode.Rmd](ts_encode-decode.Rmd) — Encodes and reconstructs (p<->k) to evaluate quality via reconstruction error.

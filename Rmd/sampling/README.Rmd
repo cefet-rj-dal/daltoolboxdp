@@ -1,7 +1,6 @@
-# Balanceamento de Classes — Exemplos
+# Class Imbalance — Examples
 
-Exemplos de técnicas para lidar com desbalanceamento de classes. Cada link inclui uma breve descrição.
+Examples of techniques to handle class imbalance. Each link includes a short description.
 
-- [bal_oversampling.Rmd](bal_oversampling.Rmd) — Oversampling: aumenta a classe minoritária por replicação até atingir o balanceamento desejado.
-- [bal_subsampling.Rmd](bal_subsampling.Rmd) — Subsampling (undersampling): reduz a classe majoritária removendo exemplos para balancear as classes.
-
+- [bal_oversampling.Rmd](bal_oversampling.Rmd) — Oversampling: increases the minority class by replicating samples until the desired balance is reached.
+- [bal_subsampling.Rmd](bal_subsampling.Rmd) — Subsampling (undersampling): reduces the majority class by removing samples to balance the classes.

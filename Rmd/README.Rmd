@@ -1,10 +1,9 @@
-# Exemplos — Diretório Rmd
+# Examples — Rmd Directory
 
-Este diretório reúne exemplos organizados por tema. Cada item abaixo aponta para o respectivo `README.Rmd` da subpasta, que por sua vez lista os exemplos com descrições curtas.
+This directory groups examples by topic. Each item links to the subfolder’s `README.Rmd`, which lists the contained examples with short descriptions.
 
-- [autoencoder/README.Rmd](autoencoder/README.Rmd) — Autoencoders para janelas de séries temporais: variantes simples, convolucional, denoising, LSTM, empilhado e variacional, em versões de codificação (encode) e codificação+reconstrução (encode-decode).
-- [classification/README.Rmd](classification/README.Rmd) — Classificação com algoritmos clássicos (KNN, Naive Bayes, SVM, Random Forest, Gradient Boosting, MLP), incluindo fluxo de treino, predição e avaliação.
-- [feature-selection/README.Rmd](feature-selection/README.Rmd) — Seleção de atributos por FSS (wrapper), Information Gain (filter), Lasso (embedded) e Relief (filter) para identificar variáveis mais relevantes.
-- [sampling/README.Rmd](sampling/README.Rmd) — Balanceamento de classes por oversampling e undersampling para lidar com desbalanceamento em classificações.
-- [timeseries/README.Rmd](timeseries/README.Rmd) — Séries temporais: codificação (p→k) e reconstrução (k→p) com autoencoders para avaliar erro de reconstrução e extrair representações compactas.
-
+- [autoencoder/README.Rmd](autoencoder/README.Rmd) — Autoencoders for time-series windows: simple, convolutional, denoising, LSTM, stacked, and variational variants, in both encode and encode-decode forms.
+- [classification/README.Rmd](classification/README.Rmd) — Classification with classic algorithms (KNN, Naive Bayes, SVM, Random Forest, Gradient Boosting, MLP), covering training, prediction, and evaluation flows.
+- [feature-selection/README.Rmd](feature-selection/README.Rmd) — Feature selection via FSS (wrapper), Information Gain (filter), Lasso (embedded), and Relief (filter) to identify relevant variables.
+- [sampling/README.Rmd](sampling/README.Rmd) — Class balancing via oversampling and undersampling to address imbalance in classification tasks.
+- [timeseries/README.Rmd](timeseries/README.Rmd) — Time series: encoding (p->k) and reconstruction (k->p) with autoencoders to assess reconstruction error and extract compact representations.

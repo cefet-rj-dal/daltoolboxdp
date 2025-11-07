@@ -1,11 +1,10 @@
-# Classificação — Exemplos
+# Classification — Examples
 
-Exemplos de algoritmos de classificação (via scikit-learn/reticulate quando aplicável) usando conjuntos de dados como o Iris. Cada link inclui uma breve descrição.
+Examples of classification algorithms (via scikit-learn/reticulate when applicable) using datasets such as Iris. Each link includes a short description.
 
-- [skcla_knn.Rmd](skcla_knn.Rmd) — K-Nearest Neighbors: classifica por maioria entre os k vizinhos mais próximos.
-- [skcla_nb.Rmd](skcla_nb.Rmd) — Naive Bayes: aplica Bayes com suposição de independência condicional entre atributos.
-- [skcla_svc.Rmd](skcla_svc.Rmd) — SVM (Support Vector Machine): separação por margem máxima; kernels para fronteiras não lineares.
-- [skcla_rf.Rmd](skcla_rf.Rmd) — Random Forest: comitê de árvores com voto majoritário; exemplo no Iris.
-- [skcla_gb.Rmd](skcla_gb.Rmd) — Gradient Boosting: ensemble aditivo de árvores ajustadas a resíduos/gradientes.
-- [skcla_mlp.Rmd](skcla_mlp.Rmd) — MLP (rede neural feed-forward): fronteiras de decisão não lineares via retropropagação.
-
+- [skcla_knn.Rmd](skcla_knn.Rmd) — K-Nearest Neighbors: predicts by majority vote among the k closest neighbors.
+- [skcla_nb.Rmd](skcla_nb.Rmd) — Naive Bayes: applies Bayes’ rule with a conditional independence assumption among features.
+- [skcla_svc.Rmd](skcla_svc.Rmd) — SVM (Support Vector Machine): maximum-margin separation; kernels for nonlinear decision boundaries.
+- [skcla_rf.Rmd](skcla_rf.Rmd) — Random Forest: ensemble of trees with majority voting; Iris example included.
+- [skcla_gb.Rmd](skcla_gb.Rmd) — Gradient Boosting: additive ensemble of trees fitted to residuals/gradients.
+- [skcla_mlp.Rmd](skcla_mlp.Rmd) — MLP (feed-forward neural network): nonlinear decision boundaries via backpropagation.
