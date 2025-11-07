@@ -1,10 +1,10 @@
 # Classification — Examples
 
-Examples of classification algorithms (via scikit-learn/reticulate when applicable) using datasets such as Iris. Each link includes a short description.
+Examples of classification algorithms (via scikit-learn/reticulate when applicable). Each link includes a short description.
 
-- [skcla_knn.Rmd](skcla_knn.Rmd) — K-Nearest Neighbors: predicts by majority vote among the k closest neighbors.
+- [skcla_knn.Rmd](skcla_knn.Rmd) — K-Nearest Neighbors: predicts by majority vote among the k nearest neighbors.
 - [skcla_nb.Rmd](skcla_nb.Rmd) — Naive Bayes: applies Bayes’ rule with a conditional independence assumption among features.
-- [skcla_svc.Rmd](skcla_svc.Rmd) — SVM (Support Vector Machine): maximum-margin separation; kernels for nonlinear decision boundaries.
-- [skcla_rf.Rmd](skcla_rf.Rmd) — Random Forest: ensemble of trees with majority voting; Iris example included.
-- [skcla_gb.Rmd](skcla_gb.Rmd) — Gradient Boosting: additive ensemble of trees fitted to residuals/gradients.
-- [skcla_mlp.Rmd](skcla_mlp.Rmd) — MLP (feed-forward neural network): nonlinear decision boundaries via backpropagation.
+- [skcla_svc.Rmd](skcla_svc.Rmd) — SVM (Support Vector Machine): maximizes margin; kernels enable nonlinear decision boundaries.
+- [skcla_rf.Rmd](skcla_rf.Rmd) — Random Forest: ensemble of decision trees with majority voting; robust via bagging and feature randomness.
+- [skcla_gb.Rmd](skcla_gb.Rmd) — Gradient Boosting: additive ensemble of trees fit to gradients of the loss.
+- [skcla_mlp.Rmd](skcla_mlp.Rmd) — MLP (feedforward neural network): learns nonlinear decision boundaries via backpropagation.

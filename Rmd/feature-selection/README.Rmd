@@ -4,5 +4,5 @@ Examples of feature selection methods (filter, wrapper, and embedded). Each link
 
 - [fs_fss.Rmd](fs_fss.Rmd) — Forward Sequential Selection (FSS): iteratively adds the feature that most improves the chosen criterion.
 - [fs_ig.Rmd](fs_ig.Rmd) — Information Gain (IG): measures label entropy reduction when splitting by a feature.
-- [fs_lasso.Rmd](fs_lasso.Rmd) — Lasso (L1): induces sparsity in coefficients and selects relevant features.
+- [fs_lasso.Rmd](fs_lasso.Rmd) — Lasso (L1): induces sparsity via L1 regularization and selects relevant features.
 - [fs_relief.Rmd](fs_relief.Rmd) — Relief: weights features by how well they distinguish nearest hits from nearest misses.

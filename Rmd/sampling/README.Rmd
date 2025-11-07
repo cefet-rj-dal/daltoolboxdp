@@ -2,5 +2,5 @@
 
 Examples of techniques to handle class imbalance. Each link includes a short description.
 
-- [bal_oversampling.Rmd](bal_oversampling.Rmd) — Oversampling: increases the minority class by replicating samples until the desired balance is reached.
+- [bal_oversampling.Rmd](bal_oversampling.Rmd) — Oversampling: increases the minority class by replicating or synthesizing samples until the desired balance is reached.
 - [bal_subsampling.Rmd](bal_subsampling.Rmd) — Subsampling (undersampling): reduces the majority class by removing samples to balance the classes.
