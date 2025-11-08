@@ -10,13 +10,14 @@ Stars](https://img.shields.io/github/stars/cefet-rj-dal/daltoolboxdp?logo=Github
 ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/daltoolboxdp)
 <!-- badges: end -->
 
-Python-Based Extensions for Data Analytics Workflows provides
-Python-based extensions to enhance data analytics workflows,
-particularly for tasks involving data preprocessing and predictive
-modeling. It includes tools for:
+daltoolboxdp: Deep Python Extensions for Data Analytics Workflows. 
+It provides Python extensions to enhance data analytics workflows, 
+especially deep learning. It includes tools for:
 
 - Data sampling and transformation  
-- Feature selection  
+- Feature selection 
+- Machine learning
+- Deep learning
 - Balancing strategies (e.g., SMOTE)  
 - Model construction and tuning
 

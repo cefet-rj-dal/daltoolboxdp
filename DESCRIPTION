@@ -1,5 +1,5 @@
 Package: daltoolboxdp
-Title: Python-Based Extensions for Data Analytics Workflows
+Title: Deep Python Extensions for Data Analytics Workflows 
 Version: 1.2.737
 Authors@R: 
   c(    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), 
