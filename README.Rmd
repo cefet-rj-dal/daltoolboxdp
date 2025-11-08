@@ -13,15 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' alt='Logo do pacote daltoolboxdp' align='centre' height='150' width='139'/> Python-Based Extensions for Data Analytics Workflows
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' alt='Logo do pacote daltoolboxdp' align='centre' height='150' width='139'/> Deep Python Extensions for Data Analytics Workflows
 
 <!-- badges: start -->
 ![GitHub Stars](https://img.shields.io/github/stars/cefet-rj-dal/daltoolboxdp?logo=Github)
 ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/daltoolboxdp)
 <!-- badges: end -->
 
-daltoolboxdp: Deep Python Extensions for Data Analytics Workflows. 
-It provides Python extensions to enhance data analytics workflows, 
+daltoolboxdp provides Python extensions to enhance data analytics workflows, 
 especially deep learning. It includes tools for:
 
 - Data sampling and transformation  
