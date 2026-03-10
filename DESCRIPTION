@@ -29,8 +29,7 @@ Depends: R (>= 4.1.0)
 Imports: 
   tspredit,
   daltoolbox,
-  reticulate,
-  stats
+  reticulate
 Config/reticulate:
   list(
     packages = list(
