@@ -13,24 +13,23 @@ knitr::opts_chunk$set(
 )
 ```
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' alt='Logo do pacote daltoolboxdp' align='centre' height='150' width='139'/> Deep Python Extensions for Data Analytics Workflows
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/master/inst/logo.png' alt='Logo do pacote daltoolboxdp' align='centre' height='150' width='139'/> DAL Toolbox Deep Python
 
 <!-- badges: start -->
 ![GitHub Stars](https://img.shields.io/github/stars/cefet-rj-dal/daltoolboxdp?logo=Github)
 ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/daltoolboxdp)
 <!-- badges: end -->
 
-daltoolboxdp provides Python extensions to enhance data analytics workflows, 
-especially deep learning. It includes tools for:
+daltoolboxdp extends `daltoolbox` with Python-backed components, with emphasis on deep learning and Python-native modeling. In the package name, `dp` stands for **Deep Python**.
 
-- Data sampling and transformation  
-- Feature selection 
-- Machine learning
-- Deep learning
-- Balancing strategies (e.g., SMOTE)  
-- Model construction and tuning
+It currently focuses on:
 
-These capabilities leverage Python libraries via the `reticulate` interface, enabling seamless integration with the broader Python machine learning ecosystem. The package supports instance selection and hybrid workflows that combine R and Python functionalities for flexible and reproducible analytical pipelines.
+- Deep learning models backed by `torch`
+- Scikit-learn classifiers exposed through the `daltoolbox` API
+- Time-series forecasting models backed by Python
+- Integration of Python model objects into the `daltoolbox` architecture
+
+These capabilities rely on the `reticulate` bridge, so the package can keep the object and workflow conventions of `daltoolbox` while delegating training, encoding, and prediction to Python libraries such as `torch` and `scikit-learn`.
 
 The architecture is inspired by the **Experiment Lines** approach, which promotes modularity, extensibility, and interoperability across tools.  
 More information on Experiment Lines is available in [Ogasawara et al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
@@ -42,10 +41,8 @@ More information on Experiment Lines is available in [Ogasawara et al. (2009)](h
 Example scripts are available at:
 
 - [Classification](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/classification)
-- [Autoenconders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
-- [Feature Selection](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/feature-selection)
+- [Autoencoders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
 - [Time Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries)
-- [Sampling](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/sampling)
 
 ---
 

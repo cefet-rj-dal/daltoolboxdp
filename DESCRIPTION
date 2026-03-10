@@ -1,5 +1,5 @@
 Package: daltoolboxdp
-Title: Deep Python Extensions for Data Analytics Workflows 
+Title: Deep Python Extensions for 'daltoolbox'
 Version: 1.2.737
 Authors@R: 
   c(    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), 
@@ -11,18 +11,14 @@ Authors@R:
         person(given = "CEFET/RJ", role = "cph")        
   )
 Description: 
-  Provides Python-based extensions to enhance data analytics workflows, 
-  particularly for tasks involving data preprocessing and predictive modeling. 
-  Includes tools for data sampling, transformation, feature selection, 
-  balancing strategies (e.g., SMOTE), and model construction. 
-  These capabilities leverage Python libraries via the reticulate interface, 
-  enabling seamless integration with a broader machine learning ecosystem. 
-  Supports instance selection and hybrid workflows that combine R and Python 
-  functionalities for flexible and reproducible analytical pipelines. 
-  The architecture is inspired by the Experiment Lines approach, which promotes 
-  modularity, extensibility, and interoperability across tools. 
-  More information on Experiment Lines is available in 
-  Ogasawara et al. (2009) <doi:10.1007/978-3-642-02279-1_20>.
+  Extends 'daltoolbox' with Python-backed components for deep learning, 
+  scikit-learn classification, and time-series forecasting through 
+  'reticulate'. The package provides objects that follow the 'daltoolbox' 
+  architecture while delegating model creation, fitting, encoding, and 
+  prediction to Python libraries such as 'torch' and 'scikit-learn'. In the 
+  package name, 'dp' stands for 'Deep Python'. The overall workflow is 
+  inspired by the Experiment Lines approach described in Ogasawara et al. 
+  (2009) <doi:10.1007/978-3-642-02279-1_20>.
 License: MIT + file LICENSE
 URL: https://cefet-rj-dal.github.io/daltoolboxdp/, https://github.com/cefet-rj-dal/daltoolboxdp
 BugReports: https://github.com/cefet-rj-dal/daltoolboxdp/issues
@@ -33,11 +29,6 @@ Depends: R (>= 4.1.0)
 Imports: 
   tspredit,
   daltoolbox,
-  leaps,
-  FSelector,
-  doBy,  
-  glmnet,
-  smotefamily,
   reticulate,
   stats
 Config/reticulate:

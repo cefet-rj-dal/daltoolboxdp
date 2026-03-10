@@ -18,19 +18,5 @@ utils::globalVariables(c(
   "skcla_rf_create", "skcla_rf_fit", "skcla_rf_predict",
   "skcla_mlp_create", "skcla_mlp_fit", "skcla_mlp_predict",
   "skcla_nb_create", "skcla_nb_fit", "skcla_nb_predict",
-  "skcla_svc_create", "skcla_svc_fit", "skcla_svc_predict",
-  # recém-adicionados para suprimir NOTES
-  "create_lg_model", "create_rf_model", "fs_create", "fit_transform", "inbalanced_create_model",
-  # IMB
-  "create_imb_smote_model", "fit_imb_resample_smote",
-  "create_imb_smotetomek_model", "fit_imb_resample_smotetomek",
-  "create_imb_tomek_model", "fit_imb_resample_tomek",
-  # FE
-  "create_fe_variance_threshold_model", "fit_transform_fe_variance_threshold",
-  "create_fe_selectkbest_model", "fit_transform_fe_selectkbest",
-  "create_fe_rf_model", "create_fe_selectfrommodel_rf", "fit_transform_fe_selectfrommodel_rf",
-  "create_fe_lg_model", "create_fe_selectfrommodel_lg", "fit_transform_fe_selectfrommodel_lg",
-  "create_fe_smote_model", "fit_transform_fe_smote",
-  "create_fe_sequential_fs_model", "fit_transform_fe_sequential_fs",
-  "create_fe_rfe_model", "fit_transform_fe_rfe"
+  "skcla_svc_create", "skcla_svc_fit", "skcla_svc_predict"
 ))
