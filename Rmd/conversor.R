@@ -63,6 +63,67 @@ build_output_paths <- function(input) {
   )
 }
 
+# Convert a target path under 'examples/' to a path relative to the
+# generated Markdown directory.
+relative_examples_link <- function(from_dir, target) {
+  norm <- function(path) {
+    path <- gsub("\\\\", "/", path)
+    parts <- strsplit(path, "/", fixed = TRUE)[[1]]
+    parts[parts != ""]
+  }
+
+  from_parts <- norm(from_dir)
+  target_parts <- norm(target)
+
+  common <- 0L
+  max_common <- min(length(from_parts), length(target_parts))
+  while (common < max_common &&
+         identical(from_parts[common + 1L], target_parts[common + 1L])) {
+    common <- common + 1L
+  }
+
+  up <- rep("..", length(from_parts) - common)
+  down <- if (common < length(target_parts)) {
+    target_parts[(common + 1L):length(target_parts)]
+  } else {
+    character(0)
+  }
+  rel <- c(up, down)
+
+  if (length(rel) == 0) "." else paste(rel, collapse = "/")
+}
+
+# Rewrite links that explicitly start with 'examples/' so the generated
+# Markdown keeps valid links from its own output directory.
+rewrite_examples_links <- function(lines, mdfile) {
+  md_dir <- dirname(mdfile)
+  pattern <- "\\((examples/[^)#?]+\\.md)\\)"
+
+  vapply(
+    lines,
+    FUN.VALUE = character(1),
+    FUN = function(line) {
+      m <- gregexpr(pattern, line, perl = TRUE)
+      hits <- regmatches(line, m)[[1]]
+      if (length(hits) == 0 || identical(hits, character(0))) {
+        return(line)
+      }
+
+      replacements <- vapply(
+        hits,
+        FUN.VALUE = character(1),
+        FUN = function(hit) {
+          target <- sub("^\\((.*)\\)$", "\\1", hit)
+          sprintf("(%s)", relative_examples_link(md_dir, target))
+        }
+      )
+
+      regmatches(line, m) <- list(replacements)
+      line
+    }
+  )
+}
+
 # Knit an .Rmd to .md under 'examples/' and relocate figures to
 # '<examples-subdir>/fig/<doc-basename>/'.
 convert_rmd_md <- function(input) {
@@ -121,6 +182,7 @@ convert_rmd_md <- function(input) {
 
   # Replace knitr's 'figure/' prefix with our final folder
   data <- gsub("figure/", sprintf("fig/%s/", basename(figdir)), data)
+  data <- rewrite_examples_links(data, mdfile)
 
   con_out <- file(mdfile, encoding = "UTF-8")
   on.exit(close(con_out), add = TRUE)

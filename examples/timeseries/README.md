@@ -8,5 +8,5 @@ Use this section when you want to see:
 - how an autoencoder compresses those windows into `k` latent dimensions
 - how reconstruction error helps evaluate the quality of the learned representation
 
-- [ts_encode.md](examples/timeseries/ts_encode.md) — Encodes windows (p->k) using an autoencoder; the bottleneck provides a compact representation for downstream use.
-- [ts_encode-decode.md](examples/timeseries/ts_encode-decode.md) — Encodes and reconstructs (p<->k) to evaluate quality via reconstruction error.
+- [ts_encode.md](ts_encode.md) — Encodes windows (p->k) using an autoencoder; the bottleneck provides a compact representation for downstream use.
+- [ts_encode-decode.md](ts_encode-decode.md) — Encodes and reconstructs (p<->k) to evaluate quality via reconstruction error.

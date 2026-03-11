@@ -8,6 +8,6 @@ The topics are organized to answer different questions:
 - Which scikit-learn classifier wrappers are available in the `daltoolbox` architecture?
 - How do the time-series examples use these components for encoding and reconstruction?
 
-- [autoencoder](examples/autoencoder/README.md) — Autoencoders for time-series windows: simple, convolutional, denoising, LSTM, stacked, and variational variants, in both encode and encode-decode forms.
-- [classification](examples/classification/README.md) — Classification wrappers backed by Python libraries, covering model creation, training, prediction, and evaluation.
-- [timeseries](examples/timeseries/README.md) — Time-series examples focused on encoding (p->k) and reconstruction (k->p) with autoencoders.
+- [autoencoder](autoencoder/README.md) — Autoencoders for time-series windows: simple, convolutional, denoising, LSTM, stacked, and variational variants, in both encode and encode-decode forms.
+- [classification](classification/README.md) — Classification wrappers backed by Python libraries, covering model creation, training, prediction, and evaluation.
+- [timeseries](timeseries/README.md) — Time-series examples focused on encoding (p->k) and reconstruction (k->p) with autoencoders.
