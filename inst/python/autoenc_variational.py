@@ -1,219 +1,187 @@
 """
-Variational autoencoder used by daltoolboxdp via reticulate.
-
-R entry points (see R/autoenc_variational_e.R and R/autoenc_variational_ed.R):
-  - autoenc_variational_create(input_size, encoding_size)
-  - autoenc_variational_fit(model, data, ...)
-  - autoenc_variational_encode(model, data, batch_size)
-  - autoenc_variational_encode_decode(model, data, batch_size)
-
-Data expectations: pandas.DataFrame of shape (n_samples, input_size).
-Encode returns concatenated mean and var vectors per sample.
+Unified variational autoencoder used by daltoolboxdp via reticulate.
 """
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from random import sample
+from typing import List, Optional
+
 import numpy as np
 import pandas as pd
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
 
-torch.set_grad_enabled(True)
-
-
-class Autoencoder_Variational_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
 
 
-class Autoencoder_Variational(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(Autoencoder_Variational, self).__init__()
-
+class VariationalAutoencoder(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(input_size, 64),
+            nn.Linear(int(input_size), 64),
             nn.LeakyReLU(0.2),
             nn.Linear(64, 32),
-            nn.LeakyReLU(0.2))
-            
-        self.mean_layer = nn.Linear(32, encoding_size)
-        self.var_layer = nn.Linear(32, encoding_size)
-
+            nn.LeakyReLU(0.2),
+        )
+        self.mean_layer = nn.Linear(32, int(encoding_size))
+        self.var_layer = nn.Linear(32, int(encoding_size))
         self.decoder = nn.Sequential(
-            nn.Linear(encoding_size, 32),
+            nn.Linear(int(encoding_size), 32),
             nn.LeakyReLU(0.2),
             nn.Linear(32, 64),
             nn.LeakyReLU(0.2),
-            nn.Linear(64, input_size),
-            nn.Sigmoid())
-    
-    def encode(self, x):
-        x = self.encoder(x)
-        mean, var = self.mean_layer(x), self.var_layer(x)
-        return mean, var
-      
-    def decode(self, x):
-        return self.decoder(x)
-            
-    def reparameterization(self, mean, var):
-        epsilon = torch.randn_like(var)
-        z = mean + var*epsilon
-        return z
+            nn.Linear(64, int(input_size)),
+            nn.Sigmoid(),
+        )
 
-    def forward(self, x):
+    def encode(self, x: torch.Tensor):
+        hidden = self.encoder(x)
+        return self.mean_layer(hidden), self.var_layer(hidden)
+
+    def decode(self, z: torch.Tensor):
+        return self.decoder(z)
+
+    def reparameterization(self, mean: torch.Tensor, var: torch.Tensor):
+        epsilon = torch.randn_like(var)
+        return mean + var * epsilon
+
+    def forward(self, x: torch.Tensor):
         mean, var = self.encode(x)
         z = self.reparameterization(mean, var)
-        x = self.decode(z)
-        return x, mean, var
-
-    
-# Create the vae
-def autoenc_variational_create(input_size, encoding_size):
-  """Create VAE model (called from R)."""
-  input_size = int(input_size)
-  encoding_size = int(encoding_size)
-  
-  vae = Autoencoder_Variational(input_size, encoding_size)
-  vae = vae.float()
-  return vae  
+        return self.decode(z), mean, var
 
 
-# Define specific Autoencoder_Variational Loss Function
-def criterion(outputs, inputs, mean, var):
-    reproduction_loss = nn.functional.binary_cross_entropy(outputs, inputs, reduction='sum')
-    KLD = - 0.5 * torch.sum(1+ var - mean.pow(2) - var.exp())
-
-    return reproduction_loss + KLD
+def _vae_loss(outputs, inputs, mean, var):
+    reproduction_loss = nn.functional.binary_cross_entropy(outputs, inputs, reduction="sum")
+    kld = -0.5 * torch.sum(1 + var - mean.pow(2) - var.exp())
+    return reproduction_loss + kld
 
 
-# Train the vae
-def autoenc_variational_train(vae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
-  """Internal training loop; returns (model, train_loss_np, val_loss_np)."""
-  optimizer = optim.Adam(vae.parameters(), lr=learning_rate)
+class VariationalAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.model = VariationalAutoencoder(input_size, encoding_size).float()
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
 
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-      # Train Test Split
-      array = data.to_numpy()
-      array = array[:, :]
-      
-      val_sample = sample(range(1, array.shape[0], 1), k=int(array.shape[0]*0.3))
-      train_sample = [v for v in range(1, array.shape[0], 1) if v not in val_sample]
-      
-      train_data = array[train_sample, :]
-      val_data = array[val_sample, :]
-      
-      ds_train = Autoencoder_Variational_TS(train_data)
-      ds_val = Autoencoder_Variational_TS(val_data)
-      train_loader = DataLoader(ds_train, batch_size=batch_size)
-      val_loader = DataLoader(ds_val, batch_size=batch_size)
-               
-      # Train
-      train_epoch_loss = []
-      val_epoch_loss = []
-      
-      vae.train()
-      for train_data in train_loader:
-          train_input, _ = train_data
-          train_input = train_input.float()
-          optimizer.zero_grad()
-          train_output, train_mean, train_var = vae(train_input)
-          train_batch_loss = criterion(train_output, train_input, train_mean, train_var)
-          train_batch_loss.backward()
-          optimizer.step()
-          train_epoch_loss.append(train_batch_loss.item())
-          
-          
-      # Validation
-      vae.eval()
-      for val_data in val_loader:
-          val_input, _ = val_data
-          val_input = val_input.float()
-          val_output = vae(val_input)
-          val_output, val_mean, val_var = vae(val_input)
-          val_batch_loss = criterion(val_output, val_input, val_mean, val_var)
-          val_epoch_loss.append(val_batch_loss.item())
-          
-      train_loss.append(np.mean(train_epoch_loss))
-      val_loss.append(np.mean(val_epoch_loss))
+    @staticmethod
+    def _array(data):
+        if isinstance(data, pd.DataFrame):
+            return data.to_numpy().astype(np.float32)
+        return np.asarray(data, dtype=np.float32)
 
-  return vae, np.array(train_loss), np.array(val_loss)  
+    def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool):
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
 
+    def _run_epoch(self, loader, optimizer: Optional[torch.optim.Optimizer]) -> float:
+        losses: List[float] = []
+        if optimizer is None:
+            self.model.eval()
+            with torch.no_grad():
+                for xb, yb in loader:
+                    out, mean, var = self.model(xb.float())
+                    losses.append(float(_vae_loss(out, yb.float(), mean, var).item()))
+        else:
+            self.model.train()
+            for xb, yb in loader:
+                optimizer.zero_grad()
+                out, mean, var = self.model(xb.float())
+                loss = _vae_loss(out, yb.float(), mean, var)
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
 
-def autoenc_variational_fit(vae, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
-  """Entry from R to fit the VAE; returns (model, train_loss, val_loss)."""
-  batch_size = int(batch_size)
-  num_epochs = int(num_epochs)
-    
-  vae = autoenc_variational_train(vae, data, batch_size = batch_size, num_epochs = num_epochs, learning_rate = learning_rate)
-  
-  return vae
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
+        array = self._array(data)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
 
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
+        else:
+            train_loader = None
+            val_loader = None
 
-def autoenc_variational_encode_data(vae, data_loader):
-  # Helper: run forward pass and return mean and var concatenated
-  encoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      output, encoded_means, encoded_vars = vae(inputs)
-      encoded_means = encoded_means.detach().numpy()
-      encoded_vars = encoded_vars.detach().numpy()
-      encoded_data.append(np.concatenate([encoded_means, encoded_vars], axis=1))
+        for epoch in range(int(config.num_epochs)):
+            self.epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
+            self.train_loss.append(self._run_epoch(train_loader, optimizer))
+            if val_loader is not None:
+                val_loss = self._run_epoch(val_loader, None)
+                self.val_loss.append(val_loss)
+                if stopper.step(self.model, val_loss):
+                    break
+        if stopper.best_state is not None:
+            self.model.load_state_dict(stopper.best_state)
+        return self
 
-  encoded_data = np.concatenate(encoded_data, axis=0)
+    def encode(self, data, batch_size=32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                _, mean, var = self.model(xb.float())
+                outs.append(np.concatenate([mean.detach().numpy(), var.detach().numpy()], axis=1))
+        return np.concatenate(outs, axis=0)
 
-  return encoded_data
-
-
-def autoenc_variational_encode(vae, data, batch_size = 32):
-  """Entry from R to return [mean | var] encodings as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :]
-  
-  ds = Autoencoder_Variational_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_data = autoenc_variational_encode_data(vae, train_loader)
-  
-  return(encoded_data)
-
-
-def autoenc_variational_encode_decode_data(vae, data_loader):
-  # Helper: reconstruction pass (decoded outputs)
-  encoded_decoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      decoded, _, _ = vae(inputs)
-
-      encoded_decoded_data.append(decoded.detach().numpy())
-
-  encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
-
-  return encoded_decoded_data
+    def encode_decode(self, data, batch_size=32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                decoded, _, _ = self.model(xb.float())
+                outs.append(decoded.detach().numpy())
+        return np.concatenate(outs, axis=0)
 
 
-def autoenc_variational_encode_decode(vae, data, batch_size = 32):
-  """Entry from R to return reconstructions as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :]
-  
-  ds = Autoencoder_Variational_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_decoded_data = autoenc_variational_encode_decode_data(vae, train_loader)
-  
-  return(encoded_decoded_data)
+def autoenc_variational_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
+    return VariationalAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+
+
+def autoenc_variational_fit(vae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+    vae.validation_strategy, vae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=vae.validation_strategy,
+        stopping_rule=vae.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    vae.fit(data, config)
+    return vae, np.array(vae.train_loss), np.array(vae.val_loss)
+
+
+def autoenc_variational_encode(vae, data, batch_size=32):
+    return vae.encode(data, batch_size=batch_size)
+
+
+def autoenc_variational_encode_decode(vae, data, batch_size=32):
+    return vae.encode_decode(data, batch_size=batch_size)

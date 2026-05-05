@@ -1,214 +1,179 @@
 """
-PyTorch autoencoder used by daltoolboxdp via reticulate.
-
-Entry points called from R (see R/autoenc_e.R and R/autoenc_ed.R):
-  - autoenc_create(input_size, encoding_size) -> nn.Module
-  - autoenc_fit(model, data, batch_size=32, num_epochs=1000, learning_rate=1e-3)
-      Returns (model, train_loss_array, val_loss_array)
-  - autoenc_encode(model, data, batch_size=32) -> np.ndarray [n_samples, encoding_size]
-  - autoenc_encode_decode(model, data, batch_size=32) -> np.ndarray [n_samples, input_size]
-
-Data expectations:
-  - data: pandas.DataFrame with shape (n_samples, input_size), numeric columns only.
-  - Encoding returns a dense NumPy array suitable to be consumed back in R.
+Unified dense autoencoder used by daltoolboxdp via reticulate.
 """
 
+from typing import List, Optional, Tuple
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-torch.set_grad_enabled(True)
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from random import sample
+from torch.utils.data import DataLoader, TensorDataset
 
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
 
-class Autoencoder_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(Autoencoder, self).__init__()
-
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(input_size, 64),
-            nn.ReLU(True),
-            nn.Linear(64, encoding_size))
-
+            nn.Linear(int(input_size), 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, int(encoding_size)),
+        )
         self.decoder = nn.Sequential(
-            nn.Linear(encoding_size, 64),
-            nn.ReLU(True),
-            nn.Linear(64, input_size))
+            nn.Linear(int(encoding_size), 64),
+            nn.ReLU(inplace=True),
+            nn.Linear(64, int(input_size)),
+        )
 
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
-    
-def autoenc_create(input_size, encoding_size):
-  """Factory called from R to create the PyTorch autoencoder model.
-
-  Parameters
-  ----------
-  input_size : int
-      Number of input features (must match columns in the R data.frame).
-  encoding_size : int
-      Size of the latent bottleneck.
-
-  Returns
-  -------
-  torch.nn.Module
-      Initialized autoencoder on CPU.
-  """
-  input_size = int(input_size)
-  encoding_size = int(encoding_size)
-  
-  autoencoder = Autoencoder(input_size, encoding_size)
-  autoencoder = autoencoder.float()
-  return autoencoder  
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.decoder(self.encoder(x))
 
 
-def autoenc_train(autoencoder, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
-  """Internal training loop. Splits data each epoch and tracks losses.
+class DenseAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.model = Autoencoder(int(input_size), int(encoding_size)).float()
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
 
-  Returns (model, train_loss_np, val_loss_np) to match R expectations.
-  """
-  criterion = nn.MSELoss()
-  optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate)
+    @staticmethod
+    def _array(data) -> np.ndarray:
+        if isinstance(data, pd.DataFrame):
+            return data.to_numpy().astype(np.float32)
+        return np.asarray(data, dtype=np.float32)
 
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-      # Train Test Split
-      array = data.to_numpy()
-      array = array[:, :]
-      
-      val_sample = sample(range(1, data.shape[0], 1), k=int(data.shape[0]*0.3))
-      train_sample = [v for v in range(1, data.shape[0], 1) if v not in val_sample]
-      
-      train_data = array[train_sample, :]
-      val_data = array[val_sample, :]
-      
-      ds_train = Autoencoder_TS(train_data)
-      ds_val = Autoencoder_TS(val_data)
-      train_loader = DataLoader(ds_train, batch_size=batch_size)
-      val_loader = DataLoader(ds_val, batch_size=batch_size)
-    
-      # Train
-      train_epoch_loss = []
-      val_epoch_loss = []
-      autoencoder.train()
-      for train_data in train_loader:
-          train_input, _ = train_data
-          train_input = train_input.float()
-          optimizer.zero_grad()
-          train_output = autoencoder(train_input)
-          train_batch_loss = criterion(train_output, train_input)
-          train_batch_loss.backward()
-          optimizer.step()
-          train_epoch_loss.append(train_batch_loss.item())
-          
-          
-      # Validation
-      autoencoder.eval()
-      for val_data in val_loader:
-          val_input, _ = val_data
-          val_input = val_input.float()
-          val_output = autoencoder(val_input)
-          val_batch_loss = criterion(val_output, val_input)
-          val_epoch_loss.append(val_batch_loss.item())
-          
-      train_loss.append(np.mean(train_epoch_loss))
-      val_loss.append(np.mean(val_epoch_loss))
-  
-  return autoencoder, np.array(train_loss), np.array(val_loss)
+    def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool) -> DataLoader:
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
 
-def autoenc_fit(autoencoder, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
-  """Entry point from R to fit the model.
+    def _run_epoch(self, loader: DataLoader, optimizer: Optional[torch.optim.Optimizer], criterion: nn.Module) -> float:
+        losses: List[float] = []
+        if optimizer is None:
+            self.model.eval()
+            with torch.no_grad():
+                for xb, yb in loader:
+                    losses.append(float(criterion(self.model(xb.float()), yb.float()).item()))
+        else:
+            self.model.train()
+            for xb, yb in loader:
+                optimizer.zero_grad()
+                loss = criterion(self.model(xb.float()), yb.float())
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
 
-  R receives a 3-tuple: (model, train_loss, val_loss) as a Python object.
-  """
-  batch_size = int(batch_size)
-  num_epochs = int(num_epochs)
-  
-  autoencoder = autoenc_train(autoencoder, data, batch_size=batch_size, num_epochs = num_epochs, learning_rate = 0.001)
-  return autoencoder
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
 
+        array = self._array(data)
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
 
-def encode_data(autoencoder, data_loader):
-  # Helper: run encoder over a DataLoader and stack numpy batches
-  encoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = autoencoder.encoder(inputs)
-      encoded_data.append(encoded.detach().numpy())
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
 
-  encoded_data = np.concatenate(encoded_data, axis=0)
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
+        else:
+            train_loader = None
+            val_loader = None
 
-  return encoded_data
+        for epoch in range(int(config.num_epochs)):
+            self.epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
 
-def autoenc_encode(autoencoder, data, batch_size = 32):
-  """Entry point from R to obtain latent encodings.
+            self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
+            if val_loader is not None:
+                val_loss = self._run_epoch(val_loader, None, criterion)
+                self.val_loss.append(val_loss)
+                if stopper.step(self.model, val_loss):
+                    break
 
-  Returns
-  -------
-  np.ndarray of shape (n_samples, encoding_size)
-  """
-  array = data.to_numpy()
-  array = array[:, :]
-  
-  ds = Autoencoder_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_data = encode_data(autoencoder, train_loader)
-  
-  return(encoded_data)
+        if stopper.best_state is not None:
+            self.model.load_state_dict(stopper.best_state)
+        return self
 
+    def encode(self, data, batch_size: int = 32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        encoded = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                encoded.append(self.model.encoder(xb.float()).detach().numpy())
+        return np.concatenate(encoded, axis=0)
 
-def encode_decode_data(autoencoder, data_loader):
-  # Helper: encode and then decode a full dataset, returning reconstructions
-  encoded_decoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = autoencoder.encoder(inputs)
-      decoded = autoencoder.decoder(encoded)
-      encoded_decoded_data.append(decoded.detach().numpy())
-
-  encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
-
-  return encoded_decoded_data
+    def encode_decode(self, data, batch_size: int = 32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        decoded = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                decoded.append(self.model(xb.float()).detach().numpy())
+        return np.concatenate(decoded, axis=0)
 
 
-def autoenc_encode_decode(autoencoder, data, batch_size = 32):
-  """Entry point from R to obtain reconstructions (decode(encode(x))).
+def autoenc_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
+    return DenseAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
 
-  Returns
-  -------
-  np.ndarray of shape (n_samples, input_size)
-  """
-  batch_size = int(batch_size)
-  
-  array = data.to_numpy()
-  array = array[:, :]
-  
-  ds = Autoencoder_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_decoded_data = encode_decode_data(autoencoder, train_loader)
-  
-  return(encoded_decoded_data)
-  
+
+def autoenc_fit(
+    autoencoder,
+    data,
+    batch_size=32,
+    num_epochs=100,
+    learning_rate=0.001,
+    validation_strategy="static",
+    stopping_rule="none",
+    val_ratio=0.3,
+    patience=100,
+    min_delta=1e-4,
+    sma_window=5,
+    ema_alpha=0.2,
+    test_window=30,
+    p_value=0.05,
+    seed=42,
+):
+    autoencoder.validation_strategy, autoencoder.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=autoencoder.validation_strategy,
+        stopping_rule=autoencoder.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    autoencoder.fit(data, config)
+    return autoencoder, np.array(autoencoder.train_loss), np.array(autoencoder.val_loss)
+
+
+def autoenc_encode(autoencoder, data, batch_size=32):
+    return autoencoder.encode(data, batch_size=batch_size)
+
+
+def autoenc_encode_decode(autoencoder, data, batch_size=32):
+    return autoencoder.encode_decode(data, batch_size=batch_size)

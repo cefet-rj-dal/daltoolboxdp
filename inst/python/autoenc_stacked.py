@@ -1,229 +1,179 @@
 """
-Stacked Autoencoder used by daltoolboxdp via reticulate.
-
-R entry points (see R/autoenc_stacked_e.R and R/autoenc_stacked_ed.R):
-  - autoenc_stacked_create(input_size, encoding_size, k)
-  - autoenc_stacked_fit(stack, data, ...)
-  - autoenc_stacked_encode(model, data, batch_size)
-  - autoenc_stacked_encode_decode(model, data, batch_size)
-
-Notes:
-  - The create function returns a Python list of k independent autoencoders.
-  - Fit performs layer-wise training, feeding reconstructions to deeper layers.
+Unified stacked autoencoder used by daltoolboxdp via reticulate.
 """
 
+from typing import List, Optional
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from random import sample
+from torch.utils.data import DataLoader, TensorDataset
 
-torch.set_grad_enabled(True)
-
-class Autoencoder_Stacked_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
 
 
-class Autoencoder_Stacked(nn.Module):
-    #NN architecture for the autoencoder
-    def __init__(self, input_size, encoding_size):
-        super(Autoencoder_Stacked, self).__init__()
-        
-        #Encode NN
-        self.encoder = nn.Sequential(
-            nn.Linear(input_size, 64), #NN Input layer
-            nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, encoding_size) #NN Output layter
-            )
-        
-        #Decode NN
-        self.decoder = nn.Sequential(
-            nn.Linear(encoding_size, 64), #NN Input layer
-            nn.ReLU(True), #NN Hidden layer
-            nn.Linear(64, input_size) #NN Output layter
-            )
-        
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        
-        return x
+class StackUnit(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.encoder = nn.Sequential(nn.Linear(int(input_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(encoding_size)))
+        self.decoder = nn.Sequential(nn.Linear(int(encoding_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(input_size)))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.decoder(self.encoder(x))
 
 
-#Create Stack of Autoencoders
-def autoenc_stacked_create(input_size, encoding_size, k=3):
-    """Create a list (stack) of k autoencoders for layer-wise training."""
-    input_size = int(input_size)
-    encoding_size = int(encoding_size)
-    k = int(k)
-    
-    #Stack of k autoencoders
-    stack = []
-    for k in range(k):
-        stack.append(Autoencoder_Stacked(input_size, encoding_size))
-        stack[k].float()
-    
-    return stack
+class StackedAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, k: int = 3, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.stack = [StackUnit(input_size, encoding_size).float() for _ in range(int(k))]
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
+
+    @staticmethod
+    def _array(data):
+        if isinstance(data, pd.DataFrame):
+            return data.to_numpy().astype(np.float32)
+        return np.asarray(data, dtype=np.float32)
+
+    @staticmethod
+    def _loader(array: np.ndarray, batch_size: int, shuffle: bool):
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
+
+    @staticmethod
+    def _run_epoch(unit: nn.Module, loader, optimizer: Optional[torch.optim.Optimizer], criterion: nn.Module):
+        losses: List[float] = []
+        if optimizer is None:
+            unit.eval()
+            with torch.no_grad():
+                for xb, yb in loader:
+                    losses.append(float(criterion(unit(xb.float()), yb.float()).item()))
+        else:
+            unit.train()
+            for xb, yb in loader:
+                optimizer.zero_grad()
+                loss = criterion(unit(xb.float()), yb.float())
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
+
+    def _fit_unit(self, unit: nn.Module, array: np.ndarray, config: AutoencTrainingConfig):
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(unit.parameters(), lr=float(config.learning_rate))
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
+        train_hist: List[float] = []
+        val_hist: List[float] = []
+        epochs_done = 0
+
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
+        else:
+            train_loader = None
+            val_loader = None
+
+        for epoch in range(int(config.num_epochs)):
+            epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
+            train_hist.append(self._run_epoch(unit, train_loader, optimizer, criterion))
+            if val_loader is not None:
+                val_loss = self._run_epoch(unit, val_loader, None, criterion)
+                val_hist.append(val_loss)
+                if stopper.step(unit, val_loss):
+                    break
+        if stopper.best_state is not None:
+            unit.load_state_dict(stopper.best_state)
+        return train_hist, val_hist, epochs_done
+
+    def _encode_decode_unit(self, unit: nn.Module, array: np.ndarray, batch_size: int):
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        unit.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(unit(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
+
+    def _encode_unit(self, unit: nn.Module, array: np.ndarray, batch_size: int):
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        unit.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(unit.encoder(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
+
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
+        current = self._array(data)
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
+        for unit in self.stack:
+            train_hist, val_hist, done = self._fit_unit(unit, current, config)
+            self.train_loss = train_hist
+            self.val_loss = val_hist
+            self.epochs_done += done
+            current = self._encode_decode_unit(unit, current, config.batch_size)
+        return self
+
+    def encode(self, data, batch_size=32):
+        array = self._array(data)
+        current = array
+        if len(self.stack) == 1:
+            return self._encode_unit(self.stack[0], current, batch_size)
+        for unit in self.stack[:-1]:
+            current = self._encode_decode_unit(unit, current, batch_size)
+        return self._encode_unit(self.stack[-1], current, batch_size)
+
+    def encode_decode(self, data, batch_size=32):
+        array = self._array(data)
+        current = array
+        for unit in self.stack:
+            current = self._encode_decode_unit(unit, current, batch_size)
+        return current
 
 
-#Train Autoencoder_Stacked
-def autoenc_stacked_train(sae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
-  """Train a single autoencoder in the stack; returns (model, train_loss, val_loss)."""
-  criterion = nn.MSELoss()
-  optimizer = optim.Adam(sae.parameters(), lr=learning_rate)
-
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-      # Train Test Split
-      array = data.to_numpy()
-      array = array[:, :]
-      
-      val_sample = sample(range(1, data.shape[0], 1), k=int(data.shape[0]*0.3))
-      train_sample = [v for v in range(1, data.shape[0], 1) if v not in val_sample]
-      
-      train_data = array[train_sample, :]
-      val_data = array[val_sample, :]
-      
-      ds_train = Autoencoder_Stacked_TS(train_data)
-      ds_val = Autoencoder_Stacked_TS(val_data)
-      train_loader = DataLoader(ds_train, batch_size=batch_size)
-      val_loader = DataLoader(ds_val, batch_size=batch_size)
-    
-      # Train
-      train_epoch_loss = []
-      val_epoch_loss = []
-      sae.train()
-      for train_data in train_loader:
-          train_input, _ = train_data
-          train_input = train_input.float()
-          optimizer.zero_grad()
-          train_output = sae(train_input)
-          train_batch_loss = criterion(train_output, train_input)
-          train_batch_loss.backward()
-          optimizer.step()
-          train_epoch_loss.append(train_batch_loss.item())
-          
-          
-      # Validation
-      sae.eval()
-      for val_data in val_loader:
-          val_input, _ = val_data
-          val_input = val_input.float()
-          val_output = sae(val_input)
-          val_batch_loss = criterion(val_output, val_input)
-          val_epoch_loss.append(val_batch_loss.item())
-          
-      train_loss.append(np.mean(train_epoch_loss))
-      val_loss.append(np.mean(val_epoch_loss))
-  
-  return sae, np.array(train_loss), np.array(val_loss)  
+def autoenc_stacked_create(input_size, encoding_size, k=3, validation_strategy="static", stopping_rule="none"):
+    return StackedAutoencoderModel(input_size, encoding_size, k=k, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
 
 
-def autoenc_stacked_fit(stack, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
-    """Layer-wise training entry point called from R.
-
-    Returns the result of training the final autoencoder as a tuple
-    (model, train_loss_np, val_loss_np) to match R side expectations.
-    """
-    batch_size = int(batch_size)
-    num_epochs = int(num_epochs)
-
-    #STEP 1 - Start fitting first k autoencoder using original input layer        
-    ae_k1 = stack[0]
-    ae_k1, _, _ = autoenc_stacked_train(ae_k1, data, num_epochs = num_epochs, learning_rate = learning_rate)
-    ae_k_out = autoenc_stacked_encode_decode(ae_k1, data)
-    
-    #STEP 2 - Fit internal layers using outputs from previous layers
-    internal = int(len(stack)-1)
-    
-    for k in range(1, internal):        
-        ae_k = stack[k]
-        ae_k, _, _ = autoenc_stacked_train(ae_k, data, num_epochs = num_epochs, learning_rate = learning_rate)
-        ae_k_out = autoenc_stacked_encode_decode(ae_k, ae_k_out)
-    
-    sae = stack[-1]
-    saelist = autoenc_stacked_train(ae_k, data, num_epochs = num_epochs, learning_rate = 0.001)
-    
-    return saelist
+def autoenc_stacked_fit(stack, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+    stack.validation_strategy, stack.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=stack.validation_strategy,
+        stopping_rule=stack.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    stack.fit(data, config)
+    return stack, np.array(stack.train_loss), np.array(stack.val_loss)
 
 
-def autoenc_stacked_encode_data(sae, data_loader):
-    # Helper: run encoder and stack numpy batches
-    encoded_data = []
-    for data in data_loader:
-        inputs, _ = data
-        inputs = inputs.float()
-        inputs = inputs.view(inputs.size(0), -1)
-        encoded = sae.encoder(inputs)
-        encoded_data.append(encoded.detach().numpy())
-        
-    encoded_data = np.concatenate(encoded_data, axis=0)
-    
-    return encoded_data
+def autoenc_stacked_encode(sae, data, batch_size=32):
+    return sae.encode(data, batch_size=batch_size)
 
 
-def autoenc_stacked_encode(sae, data, batch_size = 32):
-    """Entry from R to compute latent encodings."""
-    #Condition to check numpy array in internal stacked autoencoders
-    if not isinstance(data, np.ndarray):
-        array = data.to_numpy()
-    else:
-        array = data
-        
-    array = array[:, :]
-    
-    ds = Autoencoder_Stacked_TS(array)
-    train_loader = DataLoader(ds, batch_size=batch_size)
-    
-    encoded_data = autoenc_stacked_encode_data(sae, train_loader)
-    
-    return(encoded_data)
-
-
-def autoenc_stacked_encode_decode_data(sae, data_loader):
-    # Helper: reconstruction pass over dataset
-    encoded_decoded_data = []
-    for data in data_loader:
-        inputs, _ = data
-        inputs = inputs.float()
-        inputs = inputs.view(inputs.size(0), -1)
-        encoded = sae.encoder(inputs)
-        decoded = sae.decoder(encoded)
-        encoded_decoded_data.append(decoded.detach().numpy())
-        
-    encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
-    
-    return encoded_decoded_data
-
-
-def autoenc_stacked_encode_decode(sae, data, batch_size = 32):
-    """Entry from R to compute reconstructions."""
-    #Condition to check numpy array in internal stacked autoencoders
-    if not isinstance(data, np.ndarray):
-        array = data.to_numpy()
-    else:
-        array = data
-    
-    array = array[:, :]
-    
-    ds = Autoencoder_Stacked_TS(array)
-    train_loader = DataLoader(ds, batch_size=batch_size)
-    
-    encoded_decoded_data = autoenc_stacked_encode_decode_data(sae, train_loader)
-    
-    return(encoded_decoded_data)
+def autoenc_stacked_encode_decode(sae, data, batch_size=32):
+    return sae.encode_decode(data, batch_size=batch_size)

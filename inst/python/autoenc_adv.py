@@ -1,349 +1,267 @@
 """
-Adversarial autoencoder used by daltoolboxdp via reticulate.
-
-R entry points (see R/autoenc_adv_e.R and R/autoenc_adv_ed.R):
-  - autoenc_adv_create(input_size, encoding_size)
-  - autoenc_adv_fit(model, data, ...)
-  - autoenc_adv_encode(model, data, batch_size)
-  - autoenc_adv_encode_decode(model, data, batch_size)
-
-Notes:
-  - The returned model holds submodules Q (encoder), P (decoder) and D_gauss (discriminator).
-  - Fit returns (model, train_loss, val_loss) to match R expectations.
+Unified adversarial autoencoder used by daltoolboxdp via reticulate.
 """
 
+from typing import List, Optional
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-from torch.autograd import Variable
-from random import sample
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
+from torch.utils.data import DataLoader, TensorDataset
 
-torch.set_grad_enabled(True)
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
 
 
-#########
-# Define Networks
-#########
-# Encoder
-class Q_net(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(Q_net, self).__init__()
-        self.lin1 = nn.Linear(input_size, 60)
+class QNet(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.lin1 = nn.Linear(int(input_size), 60)
         self.lin2 = nn.Linear(60, 60)
-        # Gaussian code (z)
-        self.lin3gauss = nn.Linear(60, encoding_size)
+        self.lin3 = nn.Linear(60, int(encoding_size))
 
-    def forward(self, x):
-        x = F.dropout(self.lin1(x), p=0.4, training=self.training)
-        x = F.relu(x)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = F.relu(F.dropout(self.lin1(x), p=0.4, training=self.training))
+        x = F.relu(F.dropout(self.lin2(x), p=0.4, training=self.training))
+        return self.lin3(x)
+
+
+class PNet(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.lin1 = nn.Linear(int(encoding_size), 60)
+        self.lin2 = nn.Linear(60, 60)
+        self.lin3 = nn.Linear(60, int(input_size))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = F.relu(F.dropout(self.lin1(x), p=0.4, training=self.training))
         x = F.dropout(self.lin2(x), p=0.4, training=self.training)
-        x = F.relu(x)
-        xgauss = self.lin3gauss(x)
-
-        return xgauss
+        return torch.sigmoid(self.lin3(x))
 
 
-# Decoder
-class P_net(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(P_net, self).__init__()
-        self.lin1 = nn.Linear(encoding_size, 60)
-        self.lin2 = nn.Linear(60, 60)
-        self.lin3 = nn.Linear(60, input_size)
-
-    def forward(self, x):
-        x = self.lin1(x)
-        x = F.dropout(x, p=0.4, training=self.training)
-        x = F.relu(x)
-        x = self.lin2(x)
-        x = F.dropout(x, p=0.4, training=self.training)
-        x = self.lin3(x)
-        return F.sigmoid(x)
-
-
-class D_net_gauss(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(D_net_gauss, self).__init__()
-        self.lin1 = nn.Linear(encoding_size, 60)
+class DNetGauss(nn.Module):
+    def __init__(self, encoding_size: int):
+        super().__init__()
+        self.lin1 = nn.Linear(int(encoding_size), 60)
         self.lin2 = nn.Linear(60, 60)
         self.lin3 = nn.Linear(60, 1)
 
-    def forward(self, x):
-        x = F.dropout(self.lin1(x), p=0.4, training=self.training)
-        x = F.relu(x)
-        x = F.dropout(self.lin2(x), p=0.4, training=self.training)
-        x = F.relu(x)
-
-        return F.sigmoid(self.lin3(x))
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = F.relu(F.dropout(self.lin1(x), p=0.4, training=self.training))
+        x = F.relu(F.dropout(self.lin2(x), p=0.4, training=self.training))
+        return torch.sigmoid(self.lin3(x))
 
 
-def create_latent(Q, loader):
-    '''
-    Creates the latent representation for the samples in loader
-    return:
-        z_values: numpy array with the latent representations
-        labels: the labels corresponding to the latent representations
-    '''
-    Q.eval()
-    labels = []
+class AdversarialAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.input_size = int(input_size)
+        self.encoding_size = int(encoding_size)
+        self.Q = QNet(input_size, encoding_size)
+        self.P = PNet(input_size, encoding_size)
+        self.D_gauss = DNetGauss(encoding_size)
+        self.encoder_opt = torch.optim.Adam(self.Q.parameters(), lr=0.0001)
+        self.decoder_opt = torch.optim.Adam(self.P.parameters(), lr=0.0001)
+        self.generator_opt = torch.optim.Adam(self.Q.parameters(), lr=0.00005)
+        self.discriminator_opt = torch.optim.Adam(self.D_gauss.parameters(), lr=0.00005)
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
 
-    for batch_idx, (X, target) in enumerate(loader):
+    @staticmethod
+    def _array(data):
+        if isinstance(data, pd.DataFrame):
+            return data.to_numpy().astype(np.float32)
+        return np.asarray(data, dtype=np.float32)
 
-        X = X * 0.3081 + 0.1307
-        # X.resize_(loader.batch_size, X_dim)
-        X, target = Variable(X), Variable(target)
-        labels.extend(target.data.tolist())
-        if cuda:
-            X, target = X.cuda(), target.cuda()
-        # Reconstruction phase
-        z_sample = Q(X)
-        if batch_idx > 0:
-            z_values = np.concatenate((z_values, np.array(z_sample.data.tolist())))
+    @staticmethod
+    def _loader(array: np.ndarray, batch_size: int, shuffle: bool):
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
+
+    def _reconstruction_loss(self, x: torch.Tensor) -> torch.Tensor:
+        z = self.Q(x)
+        recon = self.P(z)
+        return nn.MSELoss()(recon, x)
+
+    def _train_epoch(self, loader):
+        tiny = 1e-15
+        losses = []
+        for xb, _ in loader:
+            xb = xb.float().view(xb.size(0), -1)
+
+            z_sample = self.Q(xb)
+            x_sample = self.P(z_sample)
+            recon_loss = nn.MSELoss()(x_sample + tiny, xb + tiny)
+            recon_loss.backward()
+            self.decoder_opt.step()
+            self.encoder_opt.step()
+            self.P.zero_grad(); self.Q.zero_grad(); self.D_gauss.zero_grad()
+
+            self.Q.eval()
+            z_real = torch.randn(len(xb), self.encoding_size) * 5.0
+            z_fake = self.Q(xb)
+            d_real = self.D_gauss(z_real)
+            d_fake = self.D_gauss(z_fake)
+            d_loss = -torch.mean(torch.log(d_real + tiny) + torch.log(1 - d_fake + tiny))
+            d_loss.backward()
+            self.discriminator_opt.step()
+            self.P.zero_grad(); self.Q.zero_grad(); self.D_gauss.zero_grad()
+
+            self.Q.train()
+            z_fake = self.Q(xb)
+            d_fake = self.D_gauss(z_fake)
+            g_loss = -torch.mean(torch.log(d_fake + tiny))
+            g_loss.backward()
+            self.generator_opt.step()
+            self.P.zero_grad(); self.Q.zero_grad(); self.D_gauss.zero_grad()
+            losses.append(float(recon_loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
+
+    def _eval_epoch(self, loader):
+        losses = []
+        self.Q.eval()
+        self.P.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                xb = xb.float().view(xb.size(0), -1)
+                z = self.Q(xb)
+                recon = self.P(z)
+                losses.append(float(nn.MSELoss()(recon, xb).item()))
+        return float(np.mean(losses)) if losses else 0.0
+
+    def _state_dict(self):
+        return {
+            "Q": {k: v.detach().clone() for k, v in self.Q.state_dict().items()},
+            "P": {k: v.detach().clone() for k, v in self.P.state_dict().items()},
+            "D": {k: v.detach().clone() for k, v in self.D_gauss.state_dict().items()},
+        }
+
+    def _load_state(self, state):
+        self.Q.load_state_dict(state["Q"])
+        self.P.load_state_dict(state["P"])
+        self.D_gauss.load_state_dict(state["D"])
+
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
+        array = self._array(data)
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
+
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
         else:
-            z_values = np.array(z_sample.data.tolist())
-    labels = np.array(labels)
+            train_loader = None
+            val_loader = None
 
-    return z_values, labels
+        for epoch in range(int(config.num_epochs)):
+            self.epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
+            self.train_loss.append(self._train_epoch(train_loader))
+            if val_loader is not None:
+                val_loss = self._eval_epoch(val_loader)
+                self.val_loss.append(val_loss)
+                if self.stopping_rule == "none":
+                    stopper.best_state = self._state_dict()
+                else:
+                    current = val_loss
+                    stopper.val_history.append(float(current))
+                    if stopper.rule == "h":
+                        improved = stopper._h_improved()
+                        if improved:
+                            stopper.best_state = self._state_dict()
+                            stopper.patience_ctr = 0
+                        else:
+                            stopper.patience_ctr += 1
+                        should_stop = stopper.patience_ctr >= stopper.patience
+                    else:
+                        if stopper.rule == "patience":
+                            monitor = current
+                        elif stopper.rule == "sma":
+                            monitor = float(np.mean(stopper.val_history[-stopper.sma_window :]))
+                        else:
+                            if stopper.ema_value is None:
+                                stopper.ema_value = current
+                            else:
+                                stopper.ema_value = stopper.ema_alpha * current + (1.0 - stopper.ema_alpha) * stopper.ema_value
+                            monitor = float(stopper.ema_value)
+                        if (stopper.best_value - monitor) > stopper.min_delta:
+                            stopper.best_value = monitor
+                            stopper.best_state = self._state_dict()
+                            stopper.patience_ctr = 0
+                        else:
+                            stopper.patience_ctr += 1
+                        should_stop = stopper.patience_ctr >= stopper.patience
+                    if should_stop:
+                        break
+        if stopper.best_state is not None:
+            self._load_state(stopper.best_state)
+        return self
 
+    def encode(self, data, batch_size=32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.Q.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(self.Q(xb.float().view(xb.size(0), -1)).detach().numpy())
+        return np.concatenate(outs, axis=0)
 
-class Autoencoder_Adv_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
-
-
-class Autoencoder_Adv(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(Autoencoder_Adv, self).__init__()
-        
-        self.input_size = input_size
-        self.encoding_size = encoding_size
-
-        self.Q = Q_net(input_size, encoding_size)
-
-        self.P = P_net(input_size, encoding_size)
-        
-        self.D_gauss = D_net_gauss(input_size, encoding_size)
-
-        
-# Create the aae
-def autoenc_adv_create(input_size, encoding_size):
-  """Create AAE model and its optimizers (called from R)."""
-  input_size = int(input_size)
-  encoding_size = int(encoding_size)
-  
-  torch.manual_seed(10)
-
-  aae = Autoencoder_Adv(input_size, encoding_size)
-
-  # Set learning rates
-  gen_lr = 0.0001
-  reg_lr = 0.00005
-
-  # Set optimizators
-  aae.encoder = optim.Adam(aae.Q.parameters(), lr=gen_lr)
-  aae.decoder = optim.Adam(aae.P.parameters(), lr=gen_lr)
-
-  aae.generator = optim.Adam(aae.Q.parameters(), lr=reg_lr)
-  aae.D_gauss_solver = optim.Adam(aae.D_gauss.parameters(), lr=reg_lr)
-
-  return aae  
-
-
-# Train the aae
-def autoenc_adv_train(aae, data, batch_size = 350, num_epochs = 1000, learning_rate = 0.001):
-  """Internal training loop with alternating reconstruction and adversarial steps."""
-  recon_criterion = nn.MSELoss()
-  
-  TINY = 1e-15
-  # Set the networks in train mode (apply dropout when needed)
-  aae.Q.train()
-  aae.P.train()
-  aae.D_gauss.train()
-  
-  # Init gradients
-  aae.P.zero_grad()
-  aae.Q.zero_grad()
-  aae.D_gauss.zero_grad()
-  
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-    array = data.to_numpy()
-    array = array[:, :, np.newaxis]
-    
-    val_sample = sample(range(1, data.shape[0], 1), k=int(data.shape[0]*0.3))
-    train_sample = [v for v in range(1, data.shape[0], 1) if v not in val_sample]
-    
-    train_data = array[train_sample, :, :]
-    val_data = array[val_sample, :, :]
-    
-    ds_train = Autoencoder_Adv_TS(train_data)
-    ds_val = Autoencoder_Adv_TS(val_data)
-    
-    train_loader = DataLoader(ds_train, batch_size=batch_size)
-    val_loader = DataLoader(ds_val, batch_size=batch_size)
-    
-    #Train
-    train_epoch_loss = []
-    val_epoch_loss = []
-    
-    for train_data in train_loader:
-        train_input, _ = train_data
-        train_input = train_input.float()
-        train_input = train_input.view(train_input.size(0), -1)
-
-        ######
-        # Reconstruction phase
-        ######
-        z_sample = aae.Q(train_input)
-        X_sample = aae.P(z_sample)
-        recon_loss = recon_criterion(X_sample + TINY, train_input + TINY)
-
-        recon_loss.backward()
-        aae.decoder.step()
-        aae.encoder.step()
-
-        aae.P.zero_grad()
-        aae.Q.zero_grad()
-        aae.D_gauss.zero_grad()
-
-        ######
-        # Regularization phase
-        ######
-        # Discriminator
-        aae.Q.eval()
-        z_real_gauss = Variable(torch.randn(len(train_input), aae.encoding_size) * 5.)
-
-        z_fake_gauss = aae.Q(train_input)
-
-        D_real_gauss = aae.D_gauss(z_real_gauss)
-        D_fake_gauss = aae.D_gauss(z_fake_gauss)
-
-        D_loss = -torch.mean(torch.log(D_real_gauss + TINY) + torch.log(1 - D_fake_gauss + TINY))
-
-        D_loss.backward()
-        aae.D_gauss_solver.step()
-
-        aae.P.zero_grad()
-        aae.Q.zero_grad()
-        aae.D_gauss.zero_grad()
-
-        # Generator
-        aae.Q.train()
-        z_fake_gauss = aae.Q(train_input)
-
-        D_fake_gauss = aae.D_gauss(z_fake_gauss)
-        G_loss = -torch.mean(torch.log(D_fake_gauss + TINY))
-
-        G_loss.backward()
-        aae.generator.step()
-
-        aae.P.zero_grad()
-        aae.Q.zero_grad()
-        aae.D_gauss.zero_grad()
-        train_epoch_loss.append(recon_loss.item())
-        
-    for val_data in val_loader:
-        val_input, _ = val_data
-        val_input = val_input.float()
-        val_input = val_input.view(val_input.size(0), -1)
-        
-        val_z = aae.Q(val_input)
-        val_output = aae.P(val_z)
-        
-        val_batch_loss = recon_criterion(val_output + TINY, val_input + TINY)
-        val_epoch_loss.append(val_batch_loss.item())
-        train_epoch_loss.append(val_batch_loss.item())
-    
-        
-    train_loss.append(np.mean(train_epoch_loss))
-    val_loss.append(np.mean(val_epoch_loss))
-    
-  return aae, np.array(train_loss), np.array(val_loss)
+    def encode_decode(self, data, batch_size=350):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.Q.eval()
+        self.P.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                flat = xb.float().view(xb.size(0), -1)
+                outs.append(self.P(self.Q(flat)).detach().numpy())
+        return np.concatenate(outs, axis=0)
 
 
-
-def autoenc_adv_fit(aae, data, batch_size = 350, num_epochs = 1000, learning_rate = 0.001):
-  """Entry from R to fit AAE; returns (model, train_loss, val_loss)."""
-  batch_size = int(batch_size)
-  num_epochs = int(num_epochs)
-  
-  aae = autoenc_adv_train(aae, data, batch_size = batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
-  
-  return aae
+def autoenc_adv_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
+    return AdversarialAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
 
 
-def autoenc_adv_encode_data(aae, data_loader):
-  # Helper: run encoder Q on dataset and stack numpy arrays
-  encoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      inputs = inputs.view(inputs.size(0), -1)
-      encoded = aae.Q(inputs)
-      encoded_data.append(encoded.detach().numpy())
-
-  encoded_data = np.concatenate(encoded_data, axis=0)
-
-  return encoded_data
-
-def autoenc_adv_encode(aae, data, batch_size = 32):
-  """Entry from R to obtain latent encodings as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :, np.newaxis]
-  
-  ds = Autoencoder_Adv_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_data = autoenc_adv_encode_data(aae, train_loader)
-  
-  return(encoded_data)
+def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+    aae.validation_strategy, aae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=aae.validation_strategy,
+        stopping_rule=aae.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    aae.fit(data, config)
+    return aae, np.array(aae.train_loss), np.array(aae.val_loss)
 
 
-def autoenc_adv_encode_decode_data(aae, data_loader):
-  aae.Q.eval()
-  aae.P.eval()
-  # Helper: reconstruction pass using Q and P
-  encoded_decoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      inputs = inputs.view(inputs.size(0), -1)
-      
-      z = aae.Q(inputs)
-      decoded = aae.P(z)
-      
-      encoded_decoded_data.append(decoded.detach().numpy())
-
-  encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
-
-  return encoded_decoded_data
+def autoenc_adv_encode(aae, data, batch_size=32):
+    return aae.encode(data, batch_size=batch_size)
 
 
-def autoenc_adv_encode_decode(aae, data, batch_size = 350):
-  """Entry from R to obtain reconstructions as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :, np.newaxis]
-  
-  ds = Autoencoder_Adv_TS(array)
-  pred_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_decoded_data = autoenc_adv_encode_decode_data(aae, pred_loader)
-  
-  return(encoded_decoded_data)
-  
+def autoenc_adv_encode_decode(aae, data, batch_size=350):
+    return aae.encode_decode(data, batch_size=batch_size)

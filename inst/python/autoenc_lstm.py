@@ -1,217 +1,174 @@
 """
-LSTM autoencoder used by daltoolboxdp via reticulate.
-
-R entry points (see R/autoenc_lstm_e.R):
-  - autoenc_lstm_create(input_size, encoding_size)
-  - autoenc_lstm_fit(model, data, batch_size=20, num_epochs=1000, learning_rate)
-  - autoenc_lstm_encode(model, data, batch_size=20)
-  - autoenc_lstm_encode_decode(model, data, batch_size=20)
-
-Data expectations:
-  - data: pandas.DataFrame with shape (n_samples, input_size) before being reshaped to (n, 1, input_size).
-  - encode returns a 2D array (n_samples, encoding_size) after squeezing the sequence dim.
+Unified LSTM autoencoder used by daltoolboxdp via reticulate.
 """
 
+from typing import List, Optional
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-torch.set_grad_enabled(True)
-from random import sample
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
+from torch.utils.data import DataLoader, TensorDataset
+
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
+
 
 class Encoder(nn.Module):
-    def __init__(self, input_size, encoding_size, n_layers=1, dropout=0):
-        super(Encoder, self).__init__()
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size=int(input_size), hidden_size=int(encoding_size), batch_first=True)
 
-        self.lstm = nn.LSTM(
-          input_size=input_size,
-          hidden_size=encoding_size,
-          dropout=dropout,
-          num_layers=n_layers,
-          batch_first=True  # True = (batch_size, seq_len, input_size)
-                            # False = (seq_len, batch_size, input_size) 
-                            #default = false
-        )
-
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         _, (h_n, _) = self.lstm(x)
-        x = h_n[-1].unsqueeze(1)
-        return x
+        return h_n[-1].unsqueeze(1)
+
 
 class Decoder(nn.Module):
-    def __init__(self, input_size, encoding_size, n_layers=1, dropout=0):
-        super(Decoder, self).__init__()
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size=int(encoding_size), hidden_size=int(encoding_size), batch_first=True)
+        self.output_layer = nn.Linear(int(encoding_size), int(input_size))
 
-        self.lstm = nn.LSTM(
-        input_size=encoding_size,
-        hidden_size=encoding_size,
-        dropout=dropout,
-        num_layers=n_layers,
-        batch_first=True
-        )
-        
-        self.output_layer = nn.Linear(encoding_size, input_size)
-
-    def forward(self, x):
-        x, _ = self.lstm(x)
-        x = self.output_layer(x)
-        x = x.view(x.size(0), 1, -1)  # Corrigido para bater com o shape do target
-        return x      
-
-class Autoencoder_LSTM_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
-
-class LSTM(nn.Module):
-    def __init__(self, input_size, encoding_size, n_layers=1, dropout=0):
-        super(LSTM, self).__init__()
-
-        self.encoder = Encoder(input_size, encoding_size, n_layers, dropout)
-        self.decoder = Decoder(input_size, encoding_size, n_layers, dropout)
-        
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
-    
-# Create the autoencoder
-def autoenc_lstm_create(input_size, encoding_size):
-  """Create LSTM-based autoencoder model (called from R)."""
-  input_size = int(input_size)
-  encoding_size = int(encoding_size)
-  
-  lae = LSTM(input_size, encoding_size)
-  lae = lae.float()
-  return lae  
-
-# Train the lae
-def autoenc_lstm_train(lae, data, batch_size=20, num_epochs = 1000, learning_rate = 0.00001):
-  """Internal training; returns (model, train_loss_np, val_loss_np)."""
-  criterion = nn.MSELoss()
-  optimizer = optim.Adam(lae.parameters(), lr=learning_rate)
-
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-      # Train Test Split
-      array = data.to_numpy()
-      array = array.reshape(array.shape[0], 1, array.shape[1])
-      
-      val_sample = sample(range(1, data.shape[0], 1), k=int(data.shape[0]*0.3))
-      train_sample = [v for v in range(1, data.shape[0], 1) if v not in val_sample]
-      
-      train_data = array[train_sample, :]
-      val_data = array[val_sample, :]
-      
-      ds_train = Autoencoder_LSTM_TS(train_data)
-      ds_val = Autoencoder_LSTM_TS(val_data)
-      train_loader = DataLoader(ds_train, batch_size=batch_size)
-      val_loader = DataLoader(ds_val, batch_size=batch_size)
-    
-      # Train
-      train_epoch_loss = []
-      val_epoch_loss = []
-      lae.train()
-      for train_data in train_loader:
-          train_input, _ = train_data
-          train_input = train_input.float()
-          optimizer.zero_grad()
-          train_output = lae(train_input)
-          train_batch_loss = criterion(train_output, train_input)
-          train_batch_loss.backward()
-          optimizer.step()
-          train_epoch_loss.append(train_batch_loss.item())
-          
-          
-      # Validation
-      lae.eval()
-      for val_data in val_loader:
-          val_input, _ = val_data
-          val_input = val_input.float()
-          val_output = lae(val_input)
-          val_batch_loss = criterion(val_output, val_input)
-          val_epoch_loss.append(val_batch_loss.item())
-          
-      train_loss.append(np.mean(train_epoch_loss))
-      val_loss.append(np.mean(val_epoch_loss))
-  
-  return lae, np.array(train_loss), np.array(val_loss)  
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out, _ = self.lstm(x)
+        return self.output_layer(out).view(out.size(0), 1, -1)
 
 
-def autoenc_lstm_fit(lae, data, batch_size = 20, num_epochs = 1000, learning_rate = 0.001, return_loss=False):
-  """Entry from R to fit the LSTM AE; returns (model, train_loss, val_loss)."""
-  batch_size = int(batch_size)
-  num_epochs = int(num_epochs)
+class LSTMAutoencoder(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
+        self.encoder = Encoder(input_size, encoding_size)
+        self.decoder = Decoder(input_size, encoding_size)
 
-  lae = autoenc_lstm_train(lae, data, batch_size = batch_size, num_epochs = num_epochs, learning_rate = learning_rate)
-  return lae
-
-
-def autoenc_lstm_encode_data(lae, data_loader):
-  # Helper: run encoder on batches and stack numpy arrays
-  encoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = lae.encoder(inputs)
-      encoded_data.append(encoded.detach().numpy())
-
-  encoded_data = np.concatenate(encoded_data, axis=0)
-
-  return encoded_data
-
-def autoenc_lstm_encode(lae, data, batch_size = 20):
-  """Entry from R to obtain latent encodings as np.ndarray (n, encoding_size)."""
-  array = data.to_numpy()
-  array = array.reshape(array.shape[0], 1, array.shape[1])
-  
-  ds = Autoencoder_LSTM_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_data = autoenc_lstm_encode_data(lae, train_loader)
-  
-  encoded_data = encoded_data.reshape((encoded_data.shape[0], encoded_data.shape[2]))
-  
-  return(encoded_data)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.decoder(self.encoder(x))
 
 
-def autoenc_lstm_encode_decode_data(lae, data_loader):
-  # Helper: reconstruction pass over dataset
-  encoded_decoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = lae.encoder(inputs)
-      decoded = lae.decoder(encoded)
-      encoded_decoded_data.append(decoded.detach().numpy())
+class LSTMAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.model = LSTMAutoencoder(input_size, encoding_size).float()
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
 
-  encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
+    @staticmethod
+    def _array(data):
+        if isinstance(data, pd.DataFrame):
+            array = data.to_numpy().astype(np.float32)
+        else:
+            array = np.asarray(data, dtype=np.float32)
+        return array.reshape(array.shape[0], 1, array.shape[1])
 
-  return encoded_decoded_data
+    def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool):
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
+
+    def _run_epoch(self, loader, optimizer: Optional[torch.optim.Optimizer], criterion: nn.Module) -> float:
+        losses: List[float] = []
+        if optimizer is None:
+            self.model.eval()
+            with torch.no_grad():
+                for xb, yb in loader:
+                    losses.append(float(criterion(self.model(xb.float()), yb.float()).item()))
+        else:
+            self.model.train()
+            for xb, yb in loader:
+                optimizer.zero_grad()
+                loss = criterion(self.model(xb.float()), yb.float())
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
+
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
+        array = self._array(data)
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
+
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
+        else:
+            train_loader = None
+            val_loader = None
+
+        for epoch in range(int(config.num_epochs)):
+            self.epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
+            self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
+            if val_loader is not None:
+                val_loss = self._run_epoch(val_loader, None, criterion)
+                self.val_loss.append(val_loss)
+                if stopper.step(self.model, val_loss):
+                    break
+        if stopper.best_state is not None:
+            self.model.load_state_dict(stopper.best_state)
+        return self
+
+    def encode(self, data, batch_size=20):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(self.model.encoder(xb.float()).detach().numpy().reshape(xb.size(0), -1))
+        return np.concatenate(outs, axis=0)
+
+    def encode_decode(self, data, batch_size=20):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(self.model(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
 
 
-def autoenc_lstm_encode_decode(lae, data, batch_size = 20):
-  """Entry from R to obtain reconstructions as np.ndarray."""
-  array = data.to_numpy()
-  array = array.reshape(array.shape[0], 1, array.shape[1])
-  
-  ds = Autoencoder_LSTM_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_decoded_data = autoenc_lstm_encode_decode_data(lae, train_loader)
-  
-  return(encoded_decoded_data)
-  
+def autoenc_lstm_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
+    return LSTMAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+
+
+def autoenc_lstm_fit(lae, data, batch_size=20, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42, return_loss=False):
+    lae.validation_strategy, lae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=lae.validation_strategy,
+        stopping_rule=lae.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    lae.fit(data, config)
+    return lae, np.array(lae.train_loss), np.array(lae.val_loss)
+
+
+def autoenc_lstm_encode(lae, data, batch_size=20):
+    return lae.encode(data, batch_size=batch_size)
+
+
+def autoenc_lstm_encode_decode(lae, data, batch_size=20):
+    return lae.encode_decode(data, batch_size=batch_size)

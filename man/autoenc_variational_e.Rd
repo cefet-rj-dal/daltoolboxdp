@@ -8,20 +8,50 @@ autoenc_variational_e(
   input_size,
   encoding_size,
   batch_size = 32,
-  num_epochs = 1000,
-  learning_rate = 0.001
+  num_epochs = 100L,
+  learning_rate = 0.001,
+  validation_strategy = c("static", "dynamic"),
+  stopping_rule = c("none", "patience", "sma", "ema", "h"),
+  val_ratio = 0.3,
+  patience = 100L,
+  min_delta = 1e-04,
+  sma_window = 5L,
+  ema_alpha = 0.2,
+  test_window = 30L,
+  p_value = 0.05,
+  seed = 42L
 )
 }
 \arguments{
-\item{input_size}{input size}
+\item{input_size}{Integer. Number of input features per observation.}
 
-\item{encoding_size}{encoding size}
+\item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
-\item{batch_size}{size for batch learning}
+\item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{number of epochs for training}
+\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
 
-\item{learning_rate}{learning rate}
+\item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
+
+\item{validation_strategy}{Character. One of \code{static} or \code{dynamic}.}
+
+\item{stopping_rule}{Character. One of \code{none}, \code{patience}, \code{sma}, \code{ema}, or \code{h}.}
+
+\item{val_ratio}{Numeric. Validation fraction used when validation is enabled. Default is 0.3.}
+
+\item{patience}{Integer. Early stopping patience. Default is 100.}
+
+\item{min_delta}{Numeric. Minimum improvement to reset early stopping. Default is 1e-4.}
+
+\item{sma_window}{Integer. Window size used by \code{sma}. Default is 5.}
+
+\item{ema_alpha}{Numeric. Smoothing factor used by \code{ema}. Default is 0.2.}
+
+\item{test_window}{Integer. Window size used by \code{h}. Default is 30.}
+
+\item{p_value}{Numeric. Significance threshold used by \code{h}. Default is 0.05.}
+
+\item{seed}{Integer. Seed used by data splitting routines. Default is 42.}
 }
 \value{
 A \code{autoenc_variational_e} object.
@@ -38,7 +68,7 @@ Wraps a PyTorch implementation.
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 
 # 2) Fit VAE encoder
-ae <- autoenc_variational_e(input_size = 20, encoding_size = 5, num_epochs = 50)
+ae <- autoenc_variational_e(input_size = 20, encoding_size = 5, num_epochs = 100)
 ae <- daltoolbox::fit(ae, X)
 
 # 3) Transform to latent encodings

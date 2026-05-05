@@ -4,35 +4,66 @@
 \alias{ts_conv1d}
 \title{Conv1D}
 \usage{
-ts_conv1d(preprocess = NA, input_size = NA, epochs = 10000L)
+ts_conv1d(
+  preprocess = NA,
+  input_size = NA,
+  epochs = 100L,
+  lr = 0.001,
+  validation_strategy = c("static", "dynamic"),
+  stopping_rule = c("none", "patience", "sma", "ema", "h"),
+  val_ratio = 0.2,
+  batch_size = 8L,
+  patience = 100L,
+  min_delta = 1e-04,
+  sma_window = 5L,
+  ema_alpha = 0.2,
+  test_window = 30L,
+  p_value = 0.05,
+  seed = 42L
+)
 }
 \arguments{
 \item{preprocess}{Optional preprocessing/normalization object.}
 
 \item{input_size}{Integer. Number of lagged inputs per training example.}
 
-\item{epochs}{Integer. Maximum number of training epochs.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is \code{100L}.}
+
+\item{lr}{Numeric. Optimizer learning rate.}
+
+\item{validation_strategy}{Character. One of \code{static} or \code{dynamic}.}
+
+\item{stopping_rule}{Character. One of \code{none}, \code{patience}, \code{sma}, \code{ema}, or \code{h}.}
+
+\item{val_ratio}{Numeric. Validation fraction used when validation is enabled.}
+
+\item{batch_size}{Integer. Mini-batch size.}
+
+\item{patience}{Integer. Early stopping patience.}
+
+\item{min_delta}{Numeric. Minimum improvement to reset early stopping.}
+
+\item{sma_window}{Integer. Window size used by \code{sma}.}
+
+\item{ema_alpha}{Numeric. Smoothing factor used by \code{ema}.}
+
+\item{test_window}{Integer. Window size used by \code{h}.}
+
+\item{p_value}{Numeric. Significance threshold used by \code{h}.}
+
+\item{seed}{Integer. Seed used by data splitting routines.}
 }
 \value{
 A \code{ts_conv1d} object.
 }
 \description{
-Time series forecaster using a 1D convolutional neural network.
+Time series forecaster using a 1D convolutional neural network
+with unified training strategies.
 Wraps a PyTorch implementation via \code{reticulate}.
 }
 \examples{
 \dontrun{
-# Conv1D forecaster expects features + 't0' target internally; the R wrapper
-# builds the required data frame when you call do_fit/do_predict via tspredit.
-
-tsf <- ts_conv1d(input_size = 12, epochs = 1000L)
-# model <- daltoolbox::fit(tsf, your_data)
+library(daltoolboxdp)
+model <- ts_conv1d(input_size = 12, epochs = 100L)
 }
-
-# See:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/timeseries/ts_conv1d.md
-}
-\references{
-LeCun, Y., Bottou, L., Bengio, Y., & Haffner, P. (1998). Gradient-Based Learning Applied to Document Recognition.
-Bai, S., Kolter, J. Z., & Koltun, V. (2018). An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling.
 }

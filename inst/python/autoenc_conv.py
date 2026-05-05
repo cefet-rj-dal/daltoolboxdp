@@ -1,187 +1,164 @@
 """
-Convolutional autoencoder used by daltoolboxdp via reticulate.
-
-R entry points (see R/autoenc_conv_e.R and R/autoenc_conv_ed.R):
-  - autoenc_conv_create(input_size, encoding_size)
-  - autoenc_conv_fit(model, data, batch_size=32, num_epochs=1000, learning_rate=1e-3)
-  - autoenc_conv_encode(model, data, batch_size=32)
-  - autoenc_conv_encode_decode(model, data, batch_size=32)
-
-Data expectations: data is a pandas.DataFrame (n_samples, input_size).
-This module reshapes to (n_samples, input_size, 1) to feed Conv1d.
+Unified convolutional autoencoder used by daltoolboxdp via reticulate.
 """
 
+from typing import List, Optional
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from random import sample
+from torch.utils.data import DataLoader, TensorDataset
+
+from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
 
 
-class Autoencoder_Conv_TS(Dataset):
-    def __init__(self, num_samples, input_size):
-        self.data = np.random.randn(num_samples, input_size)
-
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return self.data.shape[0]
-
-    def __getitem__(self, index):
-        return self.data[index], self.data[index]
-
-class Autoencoder_Conv(nn.Module):
-    def __init__(self, input_size, encoding_size):
-        super(Autoencoder_Conv, self).__init__()
-
+class ConvAutoencoder(nn.Module):
+    def __init__(self, input_size: int, encoding_size: int):
+        super().__init__()
         self.encoder = nn.Sequential(
-            nn.Conv1d(input_size, 64, kernel_size=1),
+            nn.Conv1d(int(input_size), 64, kernel_size=1),
             nn.LeakyReLU(),
             nn.Flatten(),
-            nn.Linear(64, encoding_size))
-            
+            nn.Linear(64, int(encoding_size)),
+        )
         self.decoder = nn.Sequential(
-            nn.Linear(encoding_size, 64),
+            nn.Linear(int(encoding_size), 64),
             nn.LeakyReLU(),
             nn.Unflatten(1, (64, 1)),
-            nn.ConvTranspose1d(64, input_size, kernel_size=1),
-            nn.Sigmoid()
-            )
-    
-    def forward(self, x):
-      x = self.encoder(x)
-      x = self.decoder(x)
-      return x
+            nn.ConvTranspose1d(64, int(input_size), kernel_size=1),
+            nn.Sigmoid(),
+        )
 
-    
-# Create the cae
-def autoenc_conv_create(input_size, encoding_size):
-  """Create a Conv1D autoencoder model for given sizes (called from R)."""
-  input_size = int(input_size)
-  encoding_size = int(encoding_size)
-  
-  cae = Autoencoder_Conv(input_size, encoding_size)
-  cae = cae.float()
-  return cae  
-
-# Train the cae
-def autoenc_conv_train(cae, data, batch_size=32, num_epochs = 1000, learning_rate = 0.001):
-  """Internal training routine; returns (model, train_loss_np, val_loss_np)."""
-  criterion = nn.MSELoss()
-  optimizer = optim.Adam(cae.parameters(), lr=learning_rate)
-
-  train_loss = []
-  val_loss = []
-  
-  for epoch in range(num_epochs):
-      # Train Test Split
-      array = data.to_numpy()
-      array = array[:, :, np.newaxis]
-      
-      val_sample = sample(range(1, data.shape[0], 1), k=int(data.shape[0]*0.3))
-      train_sample = [v for v in range(1, data.shape[0], 1) if v not in val_sample]
-      
-      train_data = array[train_sample, :]
-      val_data = array[val_sample, :]
-      
-      ds_train = Autoencoder_Conv_TS(train_data)
-      ds_val = Autoencoder_Conv_TS(val_data)
-      train_loader = DataLoader(ds_train, batch_size=batch_size)
-      val_loader = DataLoader(ds_val, batch_size=batch_size)
-    
-      # Train
-      train_epoch_loss = []
-      val_epoch_loss = []
-      cae.train()
-      for train_data in train_loader:
-          train_input, _ = train_data
-          train_input = train_input.float()
-          optimizer.zero_grad()
-          train_output = cae(train_input)
-          train_batch_loss = criterion(train_output, train_input)
-          train_batch_loss.backward()
-          optimizer.step()
-          train_epoch_loss.append(train_batch_loss.item())
-          
-          
-      # Validation
-      cae.eval()
-      for val_data in val_loader:
-          val_input, _ = val_data
-          val_input = val_input.float()
-          val_output = cae(val_input)
-          val_batch_loss = criterion(val_output, val_input)
-          val_epoch_loss.append(val_batch_loss.item())
-          
-      train_loss.append(np.mean(train_epoch_loss))
-      val_loss.append(np.mean(val_epoch_loss))
-  
-  return cae, np.array(train_loss), np.array(val_loss)  
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.decoder(self.encoder(x))
 
 
-def autoenc_conv_fit(cae, data, batch_size = 32, num_epochs = 1000, learning_rate = 0.001):
-  """Entry from R to fit the ConvAE; returns (model, train_loss, val_loss)."""
-  batch_size = int(batch_size)
-  num_epochs = int(num_epochs)
+class ConvAutoencoderModel:
+    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+        self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+        self.model = ConvAutoencoder(input_size, encoding_size).float()
+        self.train_loss: List[float] = []
+        self.val_loss: List[float] = []
+        self.epochs_done: int = 0
 
-  cae = autoenc_conv_train(cae, data, batch_size=batch_size, num_epochs = num_epochs, learning_rate = 0.001)
-  return cae
+    @staticmethod
+    def _array(data):
+        if isinstance(data, pd.DataFrame):
+            array = data.to_numpy().astype(np.float32)
+        else:
+            array = np.asarray(data, dtype=np.float32)
+        return array[:, :, np.newaxis]
+
+    def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool):
+        tensor = torch.from_numpy(array.astype(np.float32))
+        return DataLoader(TensorDataset(tensor, tensor), batch_size=int(batch_size), shuffle=shuffle, drop_last=False)
+
+    def _run_epoch(self, loader, optimizer: Optional[torch.optim.Optimizer], criterion: nn.Module) -> float:
+        losses: List[float] = []
+        if optimizer is None:
+            self.model.eval()
+            with torch.no_grad():
+                for xb, yb in loader:
+                    losses.append(float(criterion(self.model(xb.float()), yb.float()).item()))
+        else:
+            self.model.train()
+            for xb, yb in loader:
+                optimizer.zero_grad()
+                loss = criterion(self.model(xb.float()), yb.float())
+                loss.backward()
+                optimizer.step()
+                losses.append(float(loss.item()))
+        return float(np.mean(losses)) if losses else 0.0
+
+    def fit(self, data, config: AutoencTrainingConfig):
+        if config.seed is not None:
+            np.random.seed(int(config.seed))
+            torch.manual_seed(int(config.seed))
+        array = self._array(data)
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
+        stopper = StopController(self.stopping_rule, config.min_delta, config.patience, config.sma_window, config.ema_alpha, config.test_window, config.p_value)
+        self.train_loss = []
+        self.val_loss = []
+        self.epochs_done = 0
+
+        if self.validation_strategy == "static" and self.stopping_rule != "none":
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_loader = self._loader(array[train_idx], config.batch_size, True)
+            val_loader = self._loader(array[val_idx], config.batch_size, False)
+        elif self.validation_strategy == "static":
+            train_loader = self._loader(array, config.batch_size, True)
+            val_loader = None
+        else:
+            train_loader = None
+            val_loader = None
+
+        for epoch in range(int(config.num_epochs)):
+            self.epochs_done += 1
+            if self.validation_strategy == "dynamic":
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_loader = self._loader(array[train_idx], config.batch_size, True)
+                val_loader = self._loader(array[val_idx], config.batch_size, False)
+            self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
+            if val_loader is not None:
+                val_loss = self._run_epoch(val_loader, None, criterion)
+                self.val_loss.append(val_loss)
+                if stopper.step(self.model, val_loss):
+                    break
+        if stopper.best_state is not None:
+            self.model.load_state_dict(stopper.best_state)
+        return self
+
+    def encode(self, data, batch_size=32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(self.model.encoder(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
+
+    def encode_decode(self, data, batch_size=32):
+        array = self._array(data)
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        self.model.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(self.model(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
 
 
-def autoenc_conv_encode_data(cae, data_loader):
-  # Helper: run encoder over dataset and stack numpy batches
-  encoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = cae.encoder(inputs)
-      encoded_data.append(encoded.detach().numpy())
-
-  encoded_data = np.concatenate(encoded_data, axis=0)
-
-  return encoded_data
-
-def autoenc_conv_encode(cae, data, batch_size = 32):
-  """Entry from R to get latent encodings as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :, np.newaxis]
-  
-  ds = Autoencoder_Conv_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_data = autoenc_conv_encode_data(cae, train_loader)
-  
-  return(encoded_data)
+def autoenc_conv_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
+    return ConvAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
 
 
-def autoenc_conv_encode_decode_data(cae, data_loader):
-  # Helper: reconstruction pass (decode(encode(x))) over dataset
-  encoded_decoded_data = []
-  for data in data_loader:
-      inputs, _ = data
-      inputs = inputs.float()
-      encoded = cae.encoder(inputs)
-      decoded = cae.decoder(encoded)
-      encoded_decoded_data.append(decoded.detach().numpy())
+def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+    cae.validation_strategy, cae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
+    config = AutoencTrainingConfig(
+        batch_size=int(batch_size),
+        num_epochs=int(num_epochs),
+        learning_rate=float(learning_rate),
+        validation_strategy=cae.validation_strategy,
+        stopping_rule=cae.stopping_rule,
+        val_ratio=float(val_ratio),
+        patience=int(patience),
+        min_delta=float(min_delta),
+        sma_window=int(sma_window),
+        ema_alpha=float(ema_alpha),
+        test_window=int(test_window),
+        p_value=float(p_value),
+        seed=None if seed is None else int(seed),
+    )
+    cae.fit(data, config)
+    return cae, np.array(cae.train_loss), np.array(cae.val_loss)
 
-  encoded_decoded_data = np.concatenate(encoded_decoded_data, axis=0)
 
-  return encoded_decoded_data
+def autoenc_conv_encode(cae, data, batch_size=32):
+    return cae.encode(data, batch_size=batch_size)
 
 
-def autoenc_conv_encode_decode(cae, data, batch_size = 32):
-  """Entry from R to get reconstructions as np.ndarray."""
-  array = data.to_numpy()
-  array = array[:, :, np.newaxis]
-  
-  ds = Autoencoder_Conv_TS(array)
-  train_loader = DataLoader(ds, batch_size=batch_size)
-  
-  encoded_decoded_data = autoenc_conv_encode_decode_data(cae, train_loader)
-  
-  return(encoded_decoded_data)
-  
+def autoenc_conv_encode_decode(cae, data, batch_size=32):
+    return cae.encode_decode(data, batch_size=batch_size)
