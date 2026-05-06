@@ -19,8 +19,7 @@ It currently focuses on:
 - Deep learning models backed by `torch`
 - Scikit-learn classifiers exposed through the `daltoolbox` API
 - Time-series forecasting models backed by Python
-- Integration of Python model objects into the `daltoolbox`
-  architecture
+- Integration of Python model objects into the `daltoolbox` architecture
 
 These capabilities rely on the `reticulate` bridge, so the package can
 keep the object and workflow conventions of `daltoolbox` while
