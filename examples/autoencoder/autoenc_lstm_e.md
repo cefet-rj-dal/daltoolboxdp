@@ -89,13 +89,16 @@ auto <- fit(auto, train)
 
 
 ``` r
-# Learning curves (train and validation loss per epoch)
+# Learning curves
 fit_loss <- data.frame(
-  x = 1:length(auto$train_loss),
-  train_loss = auto$train_loss,
-  val_loss = auto$val_loss
+  x = seq_along(auto$train_loss),
+  train_loss = auto$train_loss
 )
-grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
+if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
+  fit_loss$val_loss <- auto$val_loss
+}
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 ```
 
@@ -124,13 +127,13 @@ print(head(result))
 ```
 
 ```
-##            [,1]        [,2]       [,3]
-## [1,] -0.6681023 -0.14591748 -0.4801049
-## [2,] -0.6777899 -0.20077242 -0.5213462
-## [3,] -0.6810344 -0.21976873 -0.5422763
-## [4,] -0.6782913 -0.20239381 -0.5458027
-## [5,] -0.6691381 -0.14814849 -0.5326619
-## [6,] -0.6522766 -0.05843845 -0.5014314
+##           [,1]       [,2]      [,3]
+## [1,] 0.5946401 -0.6823187 0.2542222
+## [2,] 0.6140836 -0.6940923 0.3315816
+## [3,] 0.6207411 -0.6989348 0.3707689
+## [4,] 0.6153656 -0.6980367 0.3755830
+## [5,] 0.5968095 -0.6913047 0.3465919
+## [6,] 0.5619162 -0.6774051 0.2806536
 ```
 
 References

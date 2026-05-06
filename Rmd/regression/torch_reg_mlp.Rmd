@@ -1,0 +1,59 @@
+## PyTorch MLP Regressor
+
+This example shows how to train a PyTorch-backed MLP regressor with `daltoolboxdp`. The example uses `mtcars` and follows a standard regression workflow: split, fit, predict, and evaluate.
+
+Prerequisites
+- R packages: daltoolbox, daltoolboxdp
+- Python with PyTorch accessible via reticulate
+
+```{r}
+# Installation (if needed)
+#install.packages("daltoolboxdp")
+```
+
+```{r}
+library(daltoolbox)
+library(daltoolboxdp)
+```
+
+```{r}
+data <- mtcars
+
+set.seed(1)
+idx <- sample(seq_len(nrow(data)), size = floor(0.8 * nrow(data)))
+train <- data[idx, ]
+test <- data[-idx, ]
+```
+
+```{r}
+# Fit the regressor
+model <- torch_reg_mlp(
+  attribute = "mpg",
+  input_size = ncol(data) - 1L,
+  hidden_sizes = c(16L, 8L),
+  epochs = 100L
+)
+
+model <- fit(model, train)
+```
+
+```{r}
+# Test prediction
+prediction <- predict(model, test)
+head(prediction)
+```
+
+```{r}
+# Regression evaluation
+test_eval <- evaluate(model, test$mpg, prediction)
+print(test_eval$metrics)
+```
+
+Notes
+- Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`.
+- To activate early stopping, set `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
+- To activate dynamic validation splits, use `validation_strategy = "dynamic"`.
+
+References
+- Bishop, C. M. (1995). Neural Networks for Pattern Recognition.
+- Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library.

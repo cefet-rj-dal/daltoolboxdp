@@ -34,13 +34,16 @@ auto <- autoenc_stacked_ed(5, 3)
 # Training the model
 auto <- fit(auto, train)
 
-# Learning curves (train and validation loss per epoch)
+# Learning curves
 fit_loss <- data.frame(
-  x = 1:length(auto$train_loss),
-  train_loss = auto$train_loss,
-  val_loss = auto$val_loss
+  x = seq_along(auto$train_loss),
+  train_loss = auto$train_loss
 )
-grf <- plot_series(fit_loss, colors = c('Blue', 'Orange'))
+if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
+  fit_loss$val_loss <- auto$val_loss
+}
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 
 # Testing the autoencoder (reconstruction)

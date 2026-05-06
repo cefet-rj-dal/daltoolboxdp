@@ -38,9 +38,13 @@ test <- as.data.frame(samp$test)
 auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
 auto <- fit(auto, train)
 
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
+fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
+if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
+  fit_loss$val_loss <- auto$val_loss
+}
 
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 
 # Convergence should be stable; too much noise can hinder fitting.

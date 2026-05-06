@@ -16,3 +16,4 @@ Use this section when you want to compare modeling behavior:
 - [skcla_rf.md](skcla_rf.md) — Random Forest: ensemble of decision trees with majority voting; robust via bagging and feature randomness.
 - [skcla_gb.md](skcla_gb.md) — Gradient Boosting: additive ensemble of trees fit to gradients of the loss.
 - [skcla_mlp.md](skcla_mlp.md) — MLP (feedforward neural network): learns nonlinear decision boundaries via backpropagation.
+- [torch_cla_mlp.md](torch_cla_mlp.md) — PyTorch MLP classifier: neural classification with configurable static/dynamic validation and stopping rules.

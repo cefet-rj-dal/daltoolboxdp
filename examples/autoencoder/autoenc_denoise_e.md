@@ -92,9 +92,13 @@ auto <- fit(auto, train)
 
 
 ``` r
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss,val_loss=auto$val_loss)
+fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
+if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
+  fit_loss$val_loss <- auto$val_loss
+}
 
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 ```
 
@@ -128,13 +132,13 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] 0.9826084 -0.5917472 0.7305452
-## [2,] 0.9931242 -0.7277352 0.7443344
-## [3,] 0.9756611 -0.8348280 0.7368876
-## [4,] 0.9290335 -0.9115081 0.7080187
-## [5,] 0.8561411 -0.9530073 0.6595227
-## [6,] 0.7615155 -0.9567460 0.5944147
+##          [,1]      [,2]      [,3]
+## [1,] 1.117690 0.9898893 -0.993864
+## [2,] 1.152339 0.9968618 -1.110235
+## [3,] 1.155837 0.9740390 -1.201708
+## [4,] 1.129380 0.9269360 -1.259379
+## [5,] 1.076711 0.8572657 -1.283343
+## [6,] 1.001107 0.7693598 -1.272109
 ```
 
 References

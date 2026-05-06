@@ -38,10 +38,14 @@ test <- as.data.frame(samp$test)
 auto <- autoenc_ed(5, 3)
 auto <- fit(auto, train)
 
-# Loss curves (train and validation)
-fit_loss <- data.frame(x=1:length(auto$train_loss), train_loss=auto$train_loss, val_loss=auto$val_loss)
+# Loss curves
+fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
+if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
+  fit_loss$val_loss <- auto$val_loss
+}
 
-grf <- plot_series(fit_loss, colors=c('Blue','Orange'))
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 
 # Testing: reconstruction of the test set
