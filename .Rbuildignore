@@ -9,6 +9,7 @@
 ^develop$
 ^autoencoder$
 ^examples$
+^tests.stub$
 ^timeseries$
 ^Rmd$
 package.R
