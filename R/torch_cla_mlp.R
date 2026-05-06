@@ -29,7 +29,7 @@
 #'  slevels = c("A", "B"),
 #'  input_size = 10,
 #'  hidden_sizes = c(64L, 32L),
-#'  epochs = 100L
+#'  epochs = 1000L
 #')
 #'}
 #'@import daltoolbox

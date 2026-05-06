@@ -21,7 +21,8 @@ model <- torch_cla_mlp(
   slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
-  num_classes = 3L
+  num_classes = 3L,
+  epochs = 1000L  
 )
 
 model <- fit(model, iris_train)

@@ -40,7 +40,8 @@ model <- torch_cla_mlp(
   slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
-  num_classes = 3L
+  num_classes = 3L,
+  epochs = 1000L  
 )
 
 model <- fit(model, iris_train)
@@ -52,12 +53,12 @@ print(train_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity  f1
-## 1 0.3583333  0 81  0 39       NaN      0           0           1 NaN
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1    0.975 39 81  0  0         1      1           1           1  1
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L`, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and switch `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and use the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
@@ -73,8 +74,8 @@ print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity  f1
-## 1 0.2333333  0 19  0 11       NaN      0           0           1 NaN
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1        1 11 19  0  0         1      1           1           1  1
 ```
 
 
