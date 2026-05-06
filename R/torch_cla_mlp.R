@@ -59,6 +59,7 @@ torch_cla_mlp <- function(attribute,
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- classification(attribute, slevels)
+  cobj <- class(obj)
   objex <- list(
     preprocess = preprocess,
     input_size = as.integer(input_size),
@@ -83,7 +84,7 @@ torch_cla_mlp <- function(attribute,
     classes_ = NULL
   )
   obj <- c(obj, objex)
-  class(obj) <- append("torch_cla_mlp", class(obj))
+  class(obj) <- c("torch_cla_mlp", cobj)
   obj
 }
 
@@ -103,7 +104,10 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
     )
   }
 
-  df_train <- as.data.frame(data)
+  df_train <- adjust_data.frame(data)
+  df_train[, obj$attribute] <- adjust_factor(df_train[, obj$attribute], obj$ilevels, obj$slevels)
+  obj$x <- setdiff(colnames(df_train), obj$attribute)
+
   obj$model <- torch_cla_mlp_fit(
     obj$model,
     df_train,
@@ -138,7 +142,7 @@ predict.torch_cla_mlp <- function(object, x, ...) {
     reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))
 
   x <- adjust_data.frame(x)
-  x <- x[, !names(x) %in% object$attribute, drop = FALSE]
+  x <- x[, object$x, drop = FALSE]
   prediction <- torch_cla_mlp_predict(object$model, as.data.frame(x), object$classes_)
   adjust_class_label(prediction)
 }
@@ -151,6 +155,7 @@ predict_proba.torch_cla_mlp <- function(obj, x) {
   if (!exists("torch_cla_mlp_predict_proba"))
     reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))
 
-  df_test <- as.data.frame(x)
+  df_test <- adjust_data.frame(x)
+  df_test <- df_test[, obj$x, drop = FALSE]
   torch_cla_mlp_predict_proba(obj$model, df_test)
 }

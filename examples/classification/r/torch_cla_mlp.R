@@ -1,24 +1,31 @@
+## -----------------------------------------------------------------------------
 # Installation (if needed)
 #install.packages("daltoolboxdp")
 
+
+## -----------------------------------------------------------------------------
 library(daltoolbox)
 library(daltoolboxdp)
 
-# Prepare Iris with a numeric target for the current wrapper
-iris_torch <- data.frame(
-  iris[, 1:4],
-  species_encoded = as.integer(iris$Species)
-)
+
+## -----------------------------------------------------------------------------
+# Loading Iris dataset
+iris <- datasets::iris
+
+
+## -----------------------------------------------------------------------------
+# Training and evaluation with PyTorch MLP
+slevels <- levels(iris$Species)
 
 set.seed(1)
-idx <- sample(seq_len(nrow(iris_torch)), size = floor(0.8 * nrow(iris_torch)))
-iris_train <- iris_torch[idx, ]
-iris_test <- iris_torch[-idx, ]
+sr <- sample_random()
+sr <- train_test(sr, iris)
+iris_train <- sr$train
+iris_test <- sr$test
 
-# Fit the classifier
 model <- torch_cla_mlp(
-  attribute = "species_encoded",
-  slevels = c(1L, 2L, 3L),
+  attribute = "Species",
+  slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
   num_classes = 3L,
@@ -26,11 +33,24 @@ model <- torch_cla_mlp(
 )
 
 model <- fit(model, iris_train)
+train_prediction <- predict(model, iris_train)
 
-# Predicted classes
-prediction <- predict(model, iris_test)
-head(prediction)
+iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
+train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+print(train_eval$metrics)
 
+
+## -----------------------------------------------------------------------------
+# Test prediction and evaluation
+test_prediction <- predict(model, iris_test)
+
+iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
+test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+print(test_eval$metrics)
+
+
+## -----------------------------------------------------------------------------
 # Predicted probabilities
-probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, 1:4])
-str(probabilities[1:3])
+probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
+head(probabilities)
+

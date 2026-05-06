@@ -52,6 +52,7 @@ torch_reg_mlp <- function(attribute,
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- regression(attribute)
+  cobj <- class(obj)
   objex <- list(
     preprocess = preprocess,
     input_size = as.integer(input_size),
@@ -73,7 +74,7 @@ torch_reg_mlp <- function(attribute,
     model = NULL
   )
   obj <- c(obj, objex)
-  class(obj) <- append("torch_reg_mlp", class(obj))
+  class(obj) <- c("torch_reg_mlp", cobj)
   obj
 }
 
@@ -92,7 +93,8 @@ fit.torch_reg_mlp <- function(obj, data, ...) {
     )
   }
 
-  df_train <- as.data.frame(data)
+  df_train <- adjust_data.frame(data)
+  obj$x <- setdiff(colnames(df_train), obj$attribute)
   obj$model <- torch_reg_mlp_fit(
     obj$model,
     df_train,
@@ -123,6 +125,7 @@ predict.torch_reg_mlp <- function(object, x, ...) {
   if (!exists("torch_reg_mlp_predict"))
     reticulate::source_python(system.file("python", "torch_reg_mlp.py", package = "daltoolboxdp"))
 
-  df_test <- as.data.frame(x)
-  torch_reg_mlp_predict(object$model, df_test, target_col = object$attribute)
+  df_test <- adjust_data.frame(x)
+  df_test <- df_test[, object$x, drop = FALSE]
+  as.numeric(torch_reg_mlp_predict(object$model, df_test, target_col = object$attribute))
 }
