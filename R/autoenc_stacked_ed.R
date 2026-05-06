@@ -4,7 +4,8 @@
 #'@param input_size Integer. Number of input features per observation.
 #'@param encoding_size Integer. Size of the latent (bottleneck) representation.
 #'@param batch_size Integer. Mini-batch size used during training. Default is 32.
-#'@param num_epochs Integer. Maximum number of training epochs. Default is 100.
+#'@param epochs Integer. Maximum number of training epochs. Default is 100.
+#'@param num_epochs Deprecated compatibility alias for `epochs`. If informed, it overrides `epochs`.
 #'@param learning_rate Numeric. Optimizer learning rate. Default is 0.001.
 #'@param k Integer. Number of autoencoder layers in the stack.
 #'@param validation_strategy Character. One of `static` or `dynamic`.
@@ -25,7 +26,7 @@
 #'@examples
 #'\dontrun{
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-#'ae <- autoenc_stacked_ed(input_size = 20, encoding_size = 5, k = 3, num_epochs = 100)
+#'ae <- autoenc_stacked_ed(input_size = 20, encoding_size = 5, k = 3, epochs = 100)
 #'ae <- daltoolbox::fit(ae, X)
 #'X_hat <- daltoolbox::transform(ae, X)
 #'}
@@ -35,7 +36,7 @@
 #'@importFrom daltoolbox autoenc_base_ed
 #'@import reticulate
 #'@export
-autoenc_stacked_ed <- function(input_size, encoding_size, batch_size = 32, num_epochs = 100L, learning_rate = 0.001, k=3,
+autoenc_stacked_ed <- function(input_size, encoding_size, batch_size = 32, epochs = 100L, num_epochs = NULL, learning_rate = 0.001, k=3,
                                validation_strategy = c("static", "dynamic"),
                                stopping_rule = c("none", "patience", "sma", "ema", "h"),
                                val_ratio = 0.3, patience = 100L, min_delta = 1e-4, sma_window = 5L,
@@ -46,7 +47,8 @@ autoenc_stacked_ed <- function(input_size, encoding_size, batch_size = 32, num_e
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
   obj$batch_size <- batch_size
-  obj$num_epochs <- num_epochs
+  obj$epochs <- resolve_autoenc_epochs(epochs, num_epochs)
+  obj$num_epochs <- obj$epochs
   obj$learning_rate <- learning_rate
   obj$k <- k
   obj$validation_strategy <- validation_strategy
@@ -73,7 +75,7 @@ fit.autoenc_stacked_ed <- function(obj, data, ...) {
     obj$model <- autoenc_stacked_create(obj$input_size, obj$encoding_size, obj$k,
                                         validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule)
 
-  result <- autoenc_stacked_fit(obj$model, data, batch_size = obj$batch_size, num_epochs = obj$num_epochs, learning_rate = obj$learning_rate,
+  result <- autoenc_stacked_fit(obj$model, data, batch_size = obj$batch_size, num_epochs = obj$epochs, learning_rate = obj$learning_rate,
                                 validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule, val_ratio = obj$val_ratio,
                                 patience = obj$patience, min_delta = obj$min_delta, sma_window = obj$sma_window,
                                 ema_alpha = obj$ema_alpha, test_window = obj$test_window, p_value = obj$p_value, seed = obj$seed)
