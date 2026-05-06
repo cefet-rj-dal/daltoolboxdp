@@ -1,5 +1,28 @@
 library(daltoolboxdp)
 
+.initial_temp_entries <- tryCatch(
+  list.files(tempdir(), all.files = TRUE, no.. = TRUE, full.names = TRUE),
+  error = function(...) character()
+)
+
+.temp_cleanup_env <- new.env(parent = emptyenv())
+reg.finalizer(.temp_cleanup_env, function(e) {
+  current_entries <- tryCatch(
+    list.files(tempdir(), all.files = TRUE, no.. = TRUE, full.names = TRUE),
+    error = function(...) character()
+  )
+
+  extra_entries <- setdiff(current_entries, .initial_temp_entries)
+  extra_entries <- extra_entries[file.exists(extra_entries)]
+
+  if (length(extra_entries) > 0) {
+    extra_entries <- extra_entries[order(nchar(extra_entries), decreasing = TRUE)]
+    invisible(lapply(extra_entries, function(path) {
+      try(unlink(path, recursive = TRUE, force = TRUE), silent = TRUE)
+    }))
+  }
+}, onexit = TRUE)
+
 skip_if_no_python_module <- function(module_name) {
   testthat::skip_on_cran()
   testthat::skip_if_not_installed("reticulate")
