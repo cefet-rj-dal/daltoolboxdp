@@ -144,6 +144,7 @@ predict.torch_cla_mlp <- function(object, x, ...) {
   x <- adjust_data.frame(x)
   x <- x[, object$x, drop = FALSE]
   prediction <- torch_cla_mlp_predict(object$model, as.data.frame(x), object$classes_)
+  prediction <- factor(prediction, levels = object$slevels)
   adjust_class_label(prediction)
 }
 
