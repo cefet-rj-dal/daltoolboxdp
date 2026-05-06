@@ -76,11 +76,17 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the VAE (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_variational_ed(5, 3, num_epochs = 350)
+auto <- autoenc_variational_ed(5, 3, epochs = 350)
 
 # Training the model
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 
 ``` r
@@ -165,3 +171,4 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 
 References
 - Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes. ICLR.
+

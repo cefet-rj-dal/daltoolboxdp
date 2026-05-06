@@ -29,8 +29,8 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 # Creating the LSTM autoencoder: reduce from 5 -> 3 dimensions (p -> k)
-# - num_epochs: number of epochs (LSTM may require more epochs to converge)
-auto <- autoenc_lstm_e(5, 3, num_epochs = 1500)
+# - epochs: number of epochs (LSTM may require more epochs to converge)
+auto <- autoenc_lstm_e(5, 3, epochs = 1500)
 
 # Training the model
 auto <- fit(auto, train)

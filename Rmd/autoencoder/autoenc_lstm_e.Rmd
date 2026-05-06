@@ -54,12 +54,18 @@ test  <- as.data.frame(samp$test)
 
 ```{r}
 # Creating the LSTM autoencoder: reduce from 5 -> 3 dimensions (p -> k)
-# - num_epochs: number of epochs (LSTM may require more epochs to converge)
-auto <- autoenc_lstm_e(5, 3, num_epochs = 1500)
+# - epochs: number of epochs (LSTM may require more epochs to converge)
+auto <- autoenc_lstm_e(5, 3, epochs = 1500)
 
 # Training the model
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 ```{r}
 # Learning curves
@@ -85,3 +91,4 @@ print(head(result))
 
 References
 - Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.
+

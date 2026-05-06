@@ -1,19 +1,12 @@
-## -----------------------------------------------------------------------------
 # Installation (if needed)
 #install.packages("daltoolboxdp")
 
-
-## -----------------------------------------------------------------------------
 library(daltoolbox)
 library(daltoolboxdp)
 
-
-## -----------------------------------------------------------------------------
 # Loading Iris dataset
 iris <- datasets::iris
 
-
-## -----------------------------------------------------------------------------
 # Training and evaluation with PyTorch MLP
 slevels <- levels(iris$Species)
 
@@ -39,8 +32,6 @@ iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
 
-
-## -----------------------------------------------------------------------------
 # Test prediction and evaluation
 test_prediction <- predict(model, iris_test)
 
@@ -48,9 +39,20 @@ iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
 print(test_eval$metrics)
 
+# Training and validation curves
+fit_loss <- data.frame(
+  x = seq_along(model$train_loss_hist),
+  train_loss = model$train_loss_hist
+)
 
-## -----------------------------------------------------------------------------
+if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
+  fit_loss$val_loss <- model$val_loss_hist
+}
+
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
+plot(grf)
+
 # Predicted probabilities
 probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
 head(probabilities)
-

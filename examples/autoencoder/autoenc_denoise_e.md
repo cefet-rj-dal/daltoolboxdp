@@ -86,9 +86,15 @@ test <- as.data.frame(samp$test)
 
 ``` r
 # Training autoencoder (reduce 5 -> 3)
-auto <- autoenc_denoise_e(5, 3, num_epochs=1500)
+auto <- autoenc_denoise_e(5, 3, epochs=1500)
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 
 ``` r
@@ -143,3 +149,4 @@ print(head(result))
 
 References
 - Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. (2008). Extracting and composing robust features with denoising autoencoders. ICML.
+

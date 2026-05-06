@@ -93,6 +93,12 @@ auto <- autoenc_e(5, 3)
 auto <- fit(auto, train)
 ```
 
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+
 
 ``` r
 # Visualizing loss curves
@@ -141,3 +147,4 @@ print(head(result))
 
 References
 - Hinton, G. E., & Salakhutdinov, R. R. (2006). Reducing the dimensionality of data with neural networks. Science, 313(5786), 504–507.
+

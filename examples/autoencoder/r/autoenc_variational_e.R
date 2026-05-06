@@ -29,8 +29,8 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 # Creating the VAE: reduce from 5 -> 3 dimensions (p -> k)
-# - num_epochs: fewer epochs may suffice given the additional KL term
-auto <- autoenc_variational_e(5, 3, num_epochs = 350)
+# - epochs: fewer epochs may suffice given the additional KL term
+auto <- autoenc_variational_e(5, 3, epochs = 350)
 
 # Training the model
 auto <- fit(auto, train)

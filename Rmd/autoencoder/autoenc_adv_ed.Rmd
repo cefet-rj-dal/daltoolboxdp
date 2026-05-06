@@ -10,7 +10,7 @@ Prerequisites
 
 Quick notes
 - Evaluation: reconstruction quality measured, for example, via R2 and MAPE per window column.
-- Hyperparameters: `num_epochs`, `batch_size` influence convergence and adversarial stability.
+- Hyperparameters: `epochs`, `batch_size` influence convergence and adversarial stability.
 
 ```{r}
 # Installing example dependencies (if needed)
@@ -54,11 +54,17 @@ test  <- as.data.frame(samp$test)
 
 ```{r}
 # Creating the adversarial autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_adv_ed(5, 3, batch_size = 3, num_epochs = 1500)
+auto <- autoenc_adv_ed(5, 3, batch_size = 3, epochs = 1500)
 
 # Training the model
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 ```{r}
 # Learning curves
@@ -101,3 +107,4 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 
 References
 - Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.
+

@@ -11,7 +11,7 @@ Prerequisites
 Quick notes
 - Architecture: encoder + decoder, with a discriminator in the latent space for adversarial regularization.
 - Goal: learn compact representations (k) that preserve information from the original windows (p).
-- Important hyperparameters: `num_epochs`, `batch_size`, learning rate defined internally.
+- Important hyperparameters: `epochs`, `batch_size`, learning rate defined internally.
 
 
 ``` r
@@ -24,9 +24,31 @@ Quick notes
 ``` r
 # Loading required packages
 library(daltoolbox)
+```
+
+```
+## Warning: package 'daltoolbox' was built under R version 4.5.3
+```
+
+```
+## 
+## Attaching package: 'daltoolbox'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     transform
+```
+
+``` r
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 4.5.3
 ```
 
 
@@ -83,12 +105,18 @@ test  <- as.data.frame(samp$test)
 ``` r
 # Creating the adversarial autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 # - batch_size: training batch size per step
-# - num_epochs: number of training epochs
-auto <- autoenc_adv_e(5, 3, batch_size = 3, num_epochs = 1500)
+# - epochs: number of training epochs
+auto <- autoenc_adv_e(5, 3, batch_size = 3, epochs = 1500)
 
 # Training the model on the train set
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 
 ``` r
@@ -130,14 +158,15 @@ print(head(result))
 ```
 
 ```
-##           [,1]      [,2]      [,3]
-## [1,] -2.740395 -6.154987 -6.525007
-## [2,] -2.722517 -6.793751 -7.023675
-## [3,] -2.760293 -7.015012 -7.185067
-## [4,] -2.803232 -6.913093 -7.086816
-## [5,] -2.851079 -6.492740 -6.729840
-## [6,] -2.932588 -5.724666 -6.096795
+##           [,1]       [,2]      [,3]
+## [1,] -3.841862  0.7064722 -7.463382
+## [2,] -4.124436  0.8869300 -8.023645
+## [3,] -4.260654  0.8834394 -8.323955
+## [4,] -4.228056  0.6730311 -8.366544
+## [5,] -4.024314  0.2777735 -8.129371
+## [6,] -3.616474 -0.3557326 -7.588241
 ```
 
 References
 - Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2015). Adversarial Autoencoders. arXiv:1511.05644.
+

@@ -55,6 +55,12 @@ model <- torch_reg_mlp(
 model <- fit(model, boston_train)
 ```
 
+Constructor configuration
+- Fixed-epoch baseline: keep `epochs = 100L`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
+
 Training evaluation.
 ```{r}
 # Model adjustment
@@ -75,8 +81,26 @@ test_eval <- evaluate(model, boston_test_predictand, test_prediction)
 print(test_eval$metrics)
 ```
 
+Training curves.
+```{r}
+# Training and validation curves
+
+fit_loss <- data.frame(
+  x = seq_along(model$train_loss_hist),
+  train_loss = model$train_loss_hist
+)
+
+if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
+  fit_loss$val_loss <- model$val_loss_hist
+}
+
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
+plot(grf)
+```
+
 Notes
-- Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`.
+- Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.
 - To activate early stopping, set `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - To activate dynamic validation splits, use `validation_strategy = "dynamic"`.
 

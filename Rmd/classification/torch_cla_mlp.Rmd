@@ -48,6 +48,12 @@ train_eval <- evaluate(model, iris_train_predictand, train_prediction)
 print(train_eval$metrics)
 ```
 
+Constructor configuration
+- Fixed-epoch baseline: keep `epochs = 100L`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and switch `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and use the same stopping rules.
+- The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
+
 ```{r}
 # Test prediction and evaluation
 test_prediction <- predict(model, iris_test)
@@ -58,13 +64,29 @@ print(test_eval$metrics)
 ```
 
 ```{r}
+# Training and validation curves
+fit_loss <- data.frame(
+  x = seq_along(model$train_loss_hist),
+  train_loss = model$train_loss_hist
+)
+
+if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
+  fit_loss$val_loss <- model$val_loss_hist
+}
+
+colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+grf <- plot_series(fit_loss, colors = colors)
+plot(grf)
+```
+
+```{r}
 # Predicted probabilities
 probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
 head(probabilities)
 ```
 
 Notes
-- By default, this example uses `validation_strategy = "static"` and `stopping_rule = "none"`.
+- By default, this example uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.
 - To enable early stopping, change `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - To switch to the dynamic split, use `validation_strategy = "dynamic"`.
 

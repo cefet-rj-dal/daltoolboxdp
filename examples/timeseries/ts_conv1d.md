@@ -1,49 +1,164 @@
-## Time Series Forecasting with Conv1D
+## Conv1D Regression
 
-This example shows how to use the PyTorch-backed `ts_conv1d` forecaster with sliding windows from `tspredit`. The model uses 1D convolutions over the lag window to learn local temporal patterns before the final prediction.
+About the method
+- A 1D convolutional network applies learnable filters across the lag window to detect local temporal motifs.
+- It is useful when short repeated patterns matter more than long global recurrence alone.
 
-Prerequisites
-- R packages: daltoolbox, tspredit, daltoolboxdp, ggplot2
-- Python with PyTorch accessible via reticulate
+Didactic goal: understand how convolution changes the representation learned from sliding windows, while keeping the same Experiment Line used in `tspredit`.
 
 
 ``` r
+# Time Series Regression - 1D CNN (Conv1D)
+
+# Installing packages (if needed)
+
+#install.packages("daltoolboxdp")
+```
+
+We start by loading the packages used throughout this example.
+
+
+``` r
+# Loading the packages
 library(daltoolbox)
-library(tspredit)
 library(daltoolboxdp)
+library(tspredit)
 library(ggplot2)
 ```
 
+We load the example series that will be used throughout the demonstration.
+
 
 ``` r
+# Series for study and sliding windows
+
 data(tsd)
-
-sw_size <- 5
-ts <- data.frame(unclass(ts_data(tsd$y, sw_size)))
-
-split_at <- nrow(ts) - 5
-train <- ts[1:split_at, ]
-test <- ts[(split_at + 1):nrow(ts), ]
+ts <- ts_data(tsd$y, 10)
+ts_head(ts, 3)
 ```
+
+```
+##             t9        t8        t7        t6        t5        t4        t3
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
+##             t2        t1        t0
+## [1,] 0.9839859 0.9092974 0.7780732
+## [2,] 0.9092974 0.7780732 0.5984721
+## [3,] 0.7780732 0.5984721 0.3816610
+```
+
+Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
 
 
 ``` r
-model <- ts_conv1d(
-  preprocess = ts_norm_gminmax(),
-  input_size = 4L,
-  epochs = 100L
-)
-
-model <- fit(model, train[, 1:4], train[, 5])
+# Series visualization
+plot_ts(x = tsd$x, y = tsd$y) + theme(text = element_text(size = 16))
 ```
+
+![plot of chunk unnamed-chunk-4](fig/ts_conv1d/unnamed-chunk-4-1.png)
+
+We now preserve the time order, split the data into train and test partitions, and project the windows into inputs and targets.
 
 
 ``` r
-# Training curves
+# Train-test split and projection (X, y)
+
+samp <- ts_sample(ts, test_size = 5)
+io_train <- ts_projection(samp$train)
+io_test <- ts_projection(samp$test)
+```
+
+This step trains the Conv1D model.
+
+
+``` r
+# Training the Conv1D model
+
+model <- ts_conv1d(ts_norm_gminmax(), input_size = 4, epochs = 100)
+model <- fit(model, x = io_train$input, y = io_train$output)
+```
+
+Constructor configuration
+- Fixed-epoch baseline: keep `epochs = 100`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
+
+We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
+
+
+``` r
+# Fit evaluation (train)
+
+adjust <- predict(model, io_train$input)
+adjust <- as.vector(adjust)
+output <- as.vector(io_train$output)
+ev_adjust <- evaluate(model, output, adjust)
+ev_adjust$mse
+```
+
+```
+## [1] 0.000462552
+```
+
+We now forecast the test set and compare the predicted values with the observed ones.
+
+
+``` r
+# Forecast on test set
+
+prediction <- predict(model, x = io_test$input[1, ], steps_ahead = 5)
+prediction <- as.vector(prediction)
+output <- as.vector(io_test$output)
+ev_test <- evaluate(model, output, prediction)
+ev_test
+```
+
+```
+## $values
+## [1]  0.41211849  0.17388949 -0.07515112 -0.31951919 -0.54402111
+## 
+## $prediction
+## [1]  0.437850674  0.222576705 -0.005349692 -0.233961274 -0.457113926
+## 
+## $smape
+## [1] 0.5046229
+## 
+## $mse
+## [1] 0.004555569
+## 
+## $R2
+## [1] 0.9606533
+## 
+## $metrics
+##           mse     smape        R2
+## 1 0.004555569 0.5046229 0.9606533
+```
+
+This final plot summarizes the result of the transformation so the effect can be interpreted visually.
+
+
+``` r
+# Plot results
+
+yvalues <- c(io_train$output, io_test$output)
+plot_ts_pred(y = yvalues, yadj = adjust, ypre = prediction) + theme(text = element_text(size = 16))
+```
+
+![plot of chunk unnamed-chunk-9](fig/ts_conv1d/unnamed-chunk-9-1.png)
+
+The additional plot below shows the training curve and, when enabled, the validation curve used by the unified early-stopping strategies.
+
+
+``` r
+# Training and validation curves
+
 fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
+
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
@@ -53,22 +168,12 @@ grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-4](fig/ts_conv1d/unnamed-chunk-4-1.png)
-
-
-``` r
-# One-step-ahead prediction on the test windows
-prediction <- predict(model, test[, 1:4])
-print(prediction)
-```
-
-```
-## [1]  0.41001562  0.16947048 -0.07644035 -0.31325250 -0.55243968
-```
+![plot of chunk unnamed-chunk-10](fig/ts_conv1d/unnamed-chunk-10-1.png)
 
 Notes
 - The default configuration is `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.
-- To include validation loss, choose an early-stopping rule such as `"patience"`, `"sma"`, `"ema"`, or `"h"`.
+- To display validation loss as well, use an early-stopping rule such as `"patience"`, `"sma"`, `"ema"`, or `"h"`.
+- To combine dynamic validation with those criteria, set `validation_strategy = "dynamic"`.
 
 References
-- LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning.
+- Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner (1998). Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11), 2278–2324.

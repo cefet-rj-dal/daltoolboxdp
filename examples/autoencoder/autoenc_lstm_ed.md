@@ -74,11 +74,17 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the LSTM autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_lstm_ed(5, 3, num_epochs = 1500)
+auto <- autoenc_lstm_ed(5, 3, epochs = 1500)
 
 # Training the model
 auto <- fit(auto, train)
 ```
+
+Constructor configuration
+- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
+- Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
+- The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
 
 ``` r
@@ -209,3 +215,4 @@ An LSTM encoder summarizes each window into a compact state that a decoder uses 
 
 ### References
 - Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.
+

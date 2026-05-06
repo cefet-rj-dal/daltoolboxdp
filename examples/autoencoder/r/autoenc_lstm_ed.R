@@ -29,7 +29,7 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 # Creating the LSTM autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_lstm_ed(5, 3, num_epochs = 1500)
+auto <- autoenc_lstm_ed(5, 3, epochs = 1500)
 
 # Training the model
 auto <- fit(auto, train)
