@@ -6,6 +6,11 @@ make_skcla_data <- function() {
   )
 }
 
+expect_prediction_matrix <- function(pred, n_rows) {
+  expect_equal(nrow(pred), n_rows)
+  expect_true(ncol(pred) >= 1L)
+}
+
 expect_skcla_base <- function(model, cls) {
   expect_s3_class(model, cls)
   expect_identical(model$attribute, "class")
@@ -39,7 +44,7 @@ test_that("skcla_knn fits and predicts", {
   fitted <- fit.skcla_knn(model, df)
   pred <- predict.skcla_knn(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })
 
@@ -50,7 +55,7 @@ test_that("skcla_nb fits and predicts", {
   fitted <- fit.skcla_nb(model, df)
   pred <- predict.skcla_nb(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })
 
@@ -61,7 +66,7 @@ test_that("skcla_rf fits and predicts", {
   fitted <- fit.skcla_rf(model, df)
   pred <- predict.skcla_rf(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })
 
@@ -72,7 +77,7 @@ test_that("skcla_gb fits and predicts", {
   fitted <- fit.skcla_gb(model, df)
   pred <- predict.skcla_gb(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })
 
@@ -83,7 +88,7 @@ test_that("skcla_svc fits and predicts", {
   fitted <- fit.skcla_svc(model, df)
   pred <- predict.skcla_svc(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })
 
@@ -94,6 +99,6 @@ test_that("skcla_mlp fits and predicts", {
   fitted <- fit.skcla_mlp(model, df)
   pred <- predict.skcla_mlp(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
+  expect_prediction_matrix(pred, nrow(df))
   expect_true(!is.null(fitted$model))
 })

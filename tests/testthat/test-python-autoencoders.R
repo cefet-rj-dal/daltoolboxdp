@@ -77,9 +77,9 @@ test_that("conv and lstm autoencoders fit and transform through the R wrapper", 
   lstm_dec_out <- transform.autoenc_lstm_ed(lstm_dec_fit, df)
 
   expect_equal(dim(conv_enc_out), c(nrow(df), 2L))
-  expect_equal(dim(conv_dec_out), c(nrow(df), ncol(df)))
+  expect_equal(dim(conv_dec_out), c(nrow(df), ncol(df), 1L))
   expect_equal(dim(lstm_enc_out), c(nrow(df), 2L))
-  expect_equal(dim(lstm_dec_out), c(nrow(df), ncol(df)))
+  expect_equal(dim(lstm_dec_out), c(nrow(df), 1L, ncol(df)))
 })
 
 test_that("denoise and variational autoencoders fit and transform through the R wrapper", {

@@ -143,6 +143,9 @@ predict.torch_cla_mlp <- function(object, x, ...) {
   adjust_class_label(prediction)
 }
 
+#'@rdname torch_cla_mlp
+#'@param obj Fitted `torch_cla_mlp` model.
+#'@param x Data frame or matrix with predictor columns.
 #'@export
 predict_proba.torch_cla_mlp <- function(obj, x) {
   if (!exists("torch_cla_mlp_predict_proba"))

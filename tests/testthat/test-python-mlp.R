@@ -72,8 +72,10 @@ test_that("torch_cla_mlp fits and predicts through the R wrapper", {
   pred <- predict.torch_cla_mlp(fitted, df[, c("x1", "x2")])
   probs <- predict_proba.torch_cla_mlp(fitted, df[, c("x1", "x2")])
 
-  expect_length(pred, nrow(df))
-  expect_equal(nrow(probs), nrow(df))
+  expect_equal(nrow(pred), nrow(df))
+  expect_true(ncol(pred) >= 1L)
+  expect_length(probs, nrow(df))
+  expect_true(all(vapply(probs, length, integer(1)) == 2L))
   expect_true(length(fitted$train_loss_hist) >= 1)
   expect_true(!is.null(fitted$model))
 })

@@ -12,3 +12,5 @@
 ^timeseries$
 ^Rmd$
 package.R
+^\.positai$
+^\.claude$

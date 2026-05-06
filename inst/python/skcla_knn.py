@@ -36,7 +36,7 @@ def skcla_knn_fit(model, df_train, target_column):
         #print(f"X_train shape: {X_train.shape}")
         #print(f"y_train shape: {y_train.shape}")
 
-        if np.isnan(X_train).values.any() or np.isnan(y_train).any():
+        if X_train.isnull().values.any() or pd.isnull(y_train).any():
             #print("Warning: NaN values detected in training data")
             X_train = X_train.fillna(0)
             y_train = np.nan_to_num(y_train)

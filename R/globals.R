@@ -13,6 +13,8 @@ utils::globalVariables(c(
   "autoenc_stacked_create", "autoenc_stacked_fit", "autoenc_stacked_encode", "autoenc_stacked_encode_decode",
   "autoenc_variational_create", "autoenc_variational_fit", "autoenc_variational_encode", "autoenc_variational_encode_decode",
   "autoenc_denoise_create", "autoenc_denoise_fit", "autoenc_denoise_encode", "autoenc_denoise_encode_decode",
+  "torch_reg_mlp_create", "torch_reg_mlp_fit", "torch_reg_mlp_predict",
+  "torch_cla_mlp_create", "torch_cla_mlp_fit", "torch_cla_mlp_predict", "torch_cla_mlp_predict_proba",
   "skcla_gb_create", "skcla_gb_fit", "skcla_gb_predict",
   "skcla_knn_create", "skcla_knn_fit", "skcla_knn_predict",
   "skcla_rf_create", "skcla_rf_fit", "skcla_rf_predict",

@@ -2,6 +2,7 @@
 % Please edit documentation in R/torch_cla_mlp.R
 \name{torch_cla_mlp}
 \alias{torch_cla_mlp}
+\alias{predict_proba.torch_cla_mlp}
 \title{PyTorch MLP Classifier}
 \usage{
 torch_cla_mlp(
@@ -27,6 +28,8 @@ torch_cla_mlp(
   weight_decay = 0,
   seed = 42L
 )
+
+predict_proba.torch_cla_mlp(obj, x)
 }
 \arguments{
 \item{attribute}{Target attribute name.}
@@ -70,6 +73,10 @@ torch_cla_mlp(
 \item{weight_decay}{Numeric. L2 regularization.}
 
 \item{seed}{Integer. Seed used by data splitting routines.}
+
+\item{obj}{Fitted \code{torch_cla_mlp} model.}
+
+\item{x}{Data frame or matrix with predictor columns.}
 }
 \description{
 Classification model backed by a PyTorch MLP with unified training strategies.
