@@ -12,3 +12,4 @@ Use this section when you want to see:
 - [ts_encode-decode.md](ts_encode-decode.md) — Encodes and reconstructs (p<->k) to evaluate quality via reconstruction error.
 - [ts_lstm.md](ts_lstm.md) — Forecasts one step ahead from lagged windows using a PyTorch LSTM with unified validation/stopping options.
 - [ts_conv1d.md](ts_conv1d.md) — Forecasts one step ahead from lagged windows using a PyTorch Conv1D model.
+- [torch_ts_mlp.md](torch_ts_mlp.md) — Forecasts one step ahead from lagged windows using a feedforward PyTorch MLP.

@@ -56,3 +56,32 @@ test_that("ts_conv1d fits and predicts through the R wrapper", {
   expect_true(length(fitted$train_loss_hist) >= 1)
   expect_true(!is.null(fitted$model))
 })
+
+test_that("torch_ts_mlp constructor exposes unified defaults", {
+  model <- torch_ts_mlp(input_size = 3L)
+
+  expect_s3_class(model, "torch_ts_mlp")
+  expect_identical(model$epochs, 100L)
+  expect_identical(model$validation_strategy, "static")
+  expect_identical(model$stopping_rule, "none")
+  expect_identical(model$hidden_sizes, c(16L, 8L))
+})
+
+test_that("torch_ts_mlp fits and predicts through the R wrapper", {
+  skip_if_no_pytorch()
+
+  data <- make_ts_data()
+  model <- torch_ts_mlp(
+    input_size = 3L,
+    hidden_sizes = c(8L, 4L),
+    epochs = 2L,
+    validation_strategy = "dynamic",
+    stopping_rule = "sma"
+  )
+  fitted <- do_fit.torch_ts_mlp(model, data$x, data$y)
+  pred <- do_predict.torch_ts_mlp(fitted, data$x)
+
+  expect_length(pred, nrow(data$x))
+  expect_true(length(fitted$train_loss_hist) >= 1)
+  expect_true(!is.null(fitted$model))
+})
