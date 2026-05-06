@@ -27,7 +27,7 @@ delegating training, encoding, and prediction to Python libraries such
 as `torch` and `scikit-learn`.
 
 The architecture is inspired by the **Experiment Lines** approach, which
-promotes modularity, extensibility, and interoperability across tools.  
+promotes modularity, extensibility, and interoperability across tools.\
 More information on Experiment Lines is available in [Ogasawara et
 al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
@@ -35,12 +35,37 @@ al. (2009)](https://doi.org/10.1007/978-3-642-02279-1_20).
 
 # Examples
 
-Example scripts are available at:
+The example set is organized by topic and generated from the source
+files under `Rmd/`. If you are exploring the package for the first time,
+start from the rendered indexes under `examples/`.
 
-- [Autoencoders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder)
-- [Classification](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/classification)
+The current topics are organized around these questions:
+
+- Which Python-backed autoencoder should I use to compress time-series
+  windows?
+- Which scikit-learn classifier wrappers are available in the
+  `daltoolbox` architecture?
+- Which Python-backed regression wrappers are available for numeric
+  prediction?
+- How do the time-series examples cover both representation learning and
+  direct forecasting?
+
+Rendered examples are available at:
+
+- [Autoencoders](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/autoencoder) -
+  Autoencoders for time-series windows: simple, convolutional,
+  denoising, LSTM, stacked, and variational variants, in both encode and
+  encode-decode forms.
+- [Classification](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/classification) -
+  Classification wrappers backed by Python libraries, including
+  scikit-learn and PyTorch neural models.
+- [Regression](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/regression) -
+  Regression wrappers backed by Python libraries, currently including
+  the PyTorch MLP regressor.
 - [Time
-  Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries)
+  Series](https://github.com/cefet-rj-dal/daltoolboxdp/tree/main/examples/timeseries) -
+  Time-series examples for encoding, reconstruction, and direct
+  forecasting with PyTorch models.
 
 ------------------------------------------------------------------------
 
