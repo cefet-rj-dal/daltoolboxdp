@@ -17,6 +17,10 @@ if (FALSE) {
   devtools::build(args = "--resave-data")
 }
 
+if (FALSE) {
+  Sys.setenv(DALTOOLBOXDP_RUN_INTEGRATION_TESTS = "true")
+  source("tests/testthat.R") 
+}
 
 if (FALSE) {
   library(devtools)
