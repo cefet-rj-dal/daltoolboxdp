@@ -29,7 +29,7 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 # Creating the VAE (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_variational_ed(5, 3, epochs = 350)
+auto <- autoenc_variational_ed(5, 3)
 
 # Training the model
 auto <- fit(auto, train)

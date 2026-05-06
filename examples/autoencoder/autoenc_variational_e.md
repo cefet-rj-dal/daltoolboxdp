@@ -80,15 +80,15 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the VAE: reduce from 5 -> 3 dimensions (p -> k)
-# - epochs: fewer epochs may suffice given the additional KL term
-auto <- autoenc_variational_e(5, 3, epochs = 350)
+# - the default number of epochs is used
+auto <- autoenc_variational_e(5, 3)
 
 # Training the model
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -133,13 +133,13 @@ print(head(result))
 ```
 
 ```
-##             [,1]       [,2]       [,3]        [,4]          [,5]         [,6]
-## [1,] -0.07901915 -0.1553598 0.08244649 0.013938271 -0.0006018728 -0.003042430
-## [2,] -0.04137995 -0.1667852 0.12363730 0.010060444  0.0009322315 -0.003095359
-## [3,]  0.01253460 -0.1622359 0.15332979 0.008448936  0.0002761930 -0.002896115
-## [4,]  0.06380820 -0.1450436 0.16964257 0.007167250 -0.0002376884 -0.001544014
-## [5,]  0.10588454 -0.1160348 0.16931361 0.007819906 -0.0015499443 -0.001012743
-## [6,]  0.13472784 -0.0773583 0.15230817 0.010161087 -0.0038577318 -0.001108617
+##              [,1]       [,2]      [,3]       [,4]         [,5]        [,6]
+## [1,] -0.090390660 -0.2746773 0.2619951 0.05519966  0.018213168 -0.01911820
+## [2,] -0.044206575 -0.2996334 0.3299380 0.05406588  0.016730666 -0.02071466
+## [3,]  0.007997731 -0.3009214 0.3756417 0.05000485  0.013096467 -0.02301613
+## [4,]  0.057876579 -0.2797591 0.3943878 0.04487998  0.007571951 -0.02626608
+## [5,]  0.105990686 -0.2374635 0.3871394 0.03753541  0.002021432 -0.02749849
+## [6,]  0.148971528 -0.1765159 0.3551162 0.02769829 -0.002698079 -0.02655102
 ```
 
 References

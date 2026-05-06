@@ -86,12 +86,12 @@ test <- as.data.frame(samp$test)
 
 ``` r
 # Training autoencoder (reduce 5 -> 3)
-auto <- autoenc_denoise_e(5, 3, epochs=1500)
+auto <- autoenc_denoise_e(5, 3)
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -138,13 +138,13 @@ print(head(result))
 ```
 
 ```
-##          [,1]      [,2]      [,3]
-## [1,] 1.117690 0.9898893 -0.993864
-## [2,] 1.152339 0.9968618 -1.110235
-## [3,] 1.155837 0.9740390 -1.201708
-## [4,] 1.129380 0.9269360 -1.259379
-## [5,] 1.076711 0.8572657 -1.283343
-## [6,] 1.001107 0.7693598 -1.272109
+##          [,1]     [,2]      [,3]
+## [1,] 1.144002 1.086805 -1.218257
+## [2,] 1.195701 1.141863 -1.316908
+## [3,] 1.216952 1.165608 -1.377211
+## [4,] 1.206436 1.156563 -1.395416
+## [5,] 1.164806 1.115636 -1.369654
+## [6,] 1.089796 1.041549 -1.304699
 ```
 
 References

@@ -74,14 +74,13 @@ Train MLP: define the hidden architecture and training controls.
 model <- torch_reg_mlp(
   attribute = "medv",
   input_size = ncol(Boston) - 1L,
-  hidden_sizes = c(16L, 8L),
-  epochs = 100L
+  hidden_sizes = c(16L, 8L)
 )
 model <- fit(model, boston_train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: keep `epochs = 100L`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.

@@ -71,12 +71,12 @@ We now train the LSTM model on the prepared training data.
 ``` r
 # Training the LSTM model
 
-model <- ts_lstm(ts_norm_gminmax(), input_size = 4, epochs = 100)
+model <- ts_lstm(ts_norm_gminmax(), input_size = 4)
 model <- fit(model, x = io_train$input, y = io_train$output)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: keep `epochs = 100`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.

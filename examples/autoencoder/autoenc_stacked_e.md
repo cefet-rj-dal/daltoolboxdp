@@ -83,7 +83,7 @@ auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -128,13 +128,13 @@ print(head(result))
 ```
 
 ```
-##             [,1]     [,2]     [,3]
-## [1,] -0.08175350 1.093438 1.338181
-## [2,] -0.08640284 1.186911 1.443448
-## [3,] -0.08882306 1.235012 1.497661
-## [4,] -0.08874061 1.232859 1.495268
-## [5,] -0.08637958 1.184942 1.441326
-## [6,] -0.08212122 1.098785 1.344317
+##           [,1]       [,2]      [,3]
+## [1,] -1.050329 -0.5473346 -1.106816
+## [2,] -1.120250 -0.5927152 -1.179724
+## [3,] -1.152544 -0.6134523 -1.214229
+## [4,] -1.148923 -0.6111018 -1.210367
+## [5,] -1.109489 -0.5857104 -1.168289
+## [6,] -1.032402 -0.5355799 -1.088227
 ```
 
 References

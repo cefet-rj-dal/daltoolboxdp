@@ -80,14 +80,14 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the adversarial autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_adv_ed(5, 3, batch_size = 3, epochs = 1500)
+auto <- autoenc_adv_ed(5, 3, batch_size = 3)
 
 # Training the model
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -133,12 +133,12 @@ print(head(result))
 
 ```
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8151594 0.8763216 0.9001299 0.9141362 0.8922138
-## [2,] 0.8373044 0.8963376 0.9186888 0.9309100 0.9099288
-## [3,] 0.8457366 0.9037002 0.9254716 0.9369286 0.9164863
-## [4,] 0.8440041 0.9021019 0.9239698 0.9355564 0.9149376
-## [5,] 0.8316023 0.8909788 0.9136253 0.9262218 0.9047681
-## [6,] 0.8042281 0.8654469 0.8896653 0.9042754 0.8818154
+## [1,] 0.7657076 0.7831252 0.8183091 0.8324802 0.7832918
+## [2,] 0.7856072 0.8018797 0.8377823 0.8510542 0.8013608
+## [3,] 0.7939972 0.8097357 0.8457764 0.8586443 0.8089781
+## [4,] 0.7909091 0.8068165 0.8427923 0.8558112 0.8062163
+## [5,] 0.7766907 0.7934394 0.8290100 0.8426369 0.7933537
+## [6,] 0.7514341 0.7695460 0.8037981 0.8184111 0.7704094
 ```
 
 
@@ -159,11 +159,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.329398397847326 MAPE: 0.177761621972175"
-## [1] "t3 R2 test: 0.887071429162552 MAPE: 0.0959405458278166"
-## [1] "t2 R2 test: 0.96261745561228 MAPE: 0.0486365804340039"
-## [1] "t1 R2 test: 0.896565125264426 MAPE: 0.174585862027162"
-## [1] "t0 R2 test: 0.839414606290013 MAPE: 0.386706418034726"
+## [1] "t4 R2 test: 0.290328186754026 MAPE: 0.18998491051443"
+## [1] "t3 R2 test: 0.870508558204707 MAPE: 0.142528930447876"
+## [1] "t2 R2 test: 0.994446788459565 MAPE: 0.118477927673855"
+## [1] "t1 R2 test: 0.957558082211078 MAPE: 0.211048754369979"
+## [1] "t0 R2 test: 0.905018175348457 MAPE: 0.393094948203386"
 ```
 
 ``` r
@@ -171,7 +171,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.783013402835319 MAPE: 0.176726205659177"
+## [1] "Means R2 test: 0.803571958195566 MAPE: 0.211027094241905"
 ```
 
 References

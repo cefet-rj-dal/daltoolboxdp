@@ -145,18 +145,7 @@ predict.torch_cla_mlp <- function(object, x, ...) {
   x <- x[, object$x, drop = FALSE]
   prediction <- torch_cla_mlp_predict(object$model, as.data.frame(x), object$classes_)
   prediction <- factor(prediction, levels = object$slevels)
-  adjust_class_label(prediction)
-}
-
-#'@rdname torch_cla_mlp
-#'@param obj Fitted `torch_cla_mlp` model.
-#'@param x Data frame or matrix with predictor columns.
-#'@export
-predict_proba.torch_cla_mlp <- function(obj, x) {
-  if (!exists("torch_cla_mlp_predict_proba"))
-    reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))
-
-  df_test <- adjust_data.frame(x)
-  df_test <- df_test[, obj$x, drop = FALSE]
-  torch_cla_mlp_predict_proba(obj$model, df_test)
+  prediction <- as.data.frame(adjust_class_label(prediction))
+  colnames(prediction) <- object$slevels
+  prediction
 }

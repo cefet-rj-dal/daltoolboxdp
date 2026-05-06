@@ -21,8 +21,7 @@ model <- torch_cla_mlp(
   slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
-  num_classes = 3L,
-  epochs = 100L
+  num_classes = 3L
 )
 
 model <- fit(model, iris_train)
@@ -52,7 +51,3 @@ if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
 grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
-
-# Predicted probabilities
-probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
-head(probabilities)

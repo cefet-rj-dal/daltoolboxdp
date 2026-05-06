@@ -40,8 +40,7 @@ model <- torch_cla_mlp(
   slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
-  num_classes = 3L,
-  epochs = 100L
+  num_classes = 3L
 )
 
 model <- fit(model, iris_train)
@@ -53,12 +52,12 @@ print(train_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 39 81  0  0         1      1           1           1  1
+##    accuracy TP TN FP FN precision recall sensitivity specificity  f1
+## 1 0.3583333  0 81  0 39       NaN      0           0           1 NaN
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: keep `epochs = 100L`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and switch `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and use the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
@@ -74,8 +73,8 @@ print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 11 19  0  0         1      1           1           1  1
+##    accuracy TP TN FP FN precision recall sensitivity specificity  f1
+## 1 0.2333333  0 19  0 11       NaN      0           0           1 NaN
 ```
 
 
@@ -96,33 +95,6 @@ plot(grf)
 ```
 
 ![plot of chunk unnamed-chunk-6](fig/torch_cla_mlp/unnamed-chunk-6-1.png)
-
-
-``` r
-# Predicted probabilities
-probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
-head(probabilities)
-```
-
-```
-## [[1]]
-## [1] 0.906842649 0.084879734 0.008277592
-## 
-## [[2]]
-## [1] 0.942767680 0.053357624 0.003874781
-## 
-## [[3]]
-## [1] 0.933061779 0.062121402 0.004816834
-## 
-## [[4]]
-## [1] 0.904949248 0.086110093 0.008940582
-## 
-## [[5]]
-## [1] 0.951331794 0.045821328 0.002846869
-## 
-## [[6]]
-## [1] 0.955557585 0.042090207 0.002352145
-```
 
 Notes
 - By default, this example uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

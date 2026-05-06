@@ -36,8 +36,7 @@ model <- torch_cla_mlp(
   slevels = slevels,
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
-  num_classes = 3L,
-  epochs = 100L
+  num_classes = 3L
 )
 
 model <- fit(model, iris_train)
@@ -49,7 +48,7 @@ print(train_eval$metrics)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: keep `epochs = 100L`, `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and switch `stopping_rule` to `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and use the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
@@ -77,12 +76,6 @@ if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
 grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
-```
-
-```{r}
-# Predicted probabilities
-probabilities <- predict_proba.torch_cla_mlp(model, iris_test[, !names(iris_test) %in% "Species"])
-head(probabilities)
 ```
 
 Notes

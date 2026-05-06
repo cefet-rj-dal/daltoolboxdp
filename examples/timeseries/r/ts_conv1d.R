@@ -27,7 +27,7 @@ io_test <- ts_projection(samp$test)
 
 # Training the Conv1D model
 
-model <- ts_conv1d(ts_norm_gminmax(), input_size = 4, epochs = 100)
+model <- ts_conv1d(ts_norm_gminmax(), input_size = 4)
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

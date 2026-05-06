@@ -31,8 +31,8 @@ test  <- as.data.frame(samp$test)
 
 # Creating the adversarial autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 # - batch_size: training batch size per step
-# - epochs: number of training epochs
-auto <- autoenc_adv_e(5, 3, batch_size = 3, epochs = 1500)
+# - the default number of epochs is used
+auto <- autoenc_adv_e(5, 3, batch_size = 3)
 
 # Training the model on the train set
 auto <- fit(auto, train)

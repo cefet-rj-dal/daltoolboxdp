@@ -57,15 +57,15 @@ test  <- as.data.frame(samp$test)
 ```{r}
 # Creating the adversarial autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 # - batch_size: training batch size per step
-# - epochs: number of training epochs
-auto <- autoenc_adv_e(5, 3, batch_size = 3, epochs = 1500)
+# - the default number of epochs is used
+auto <- autoenc_adv_e(5, 3, batch_size = 3)
 
 # Training the model on the train set
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: set `epochs` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
