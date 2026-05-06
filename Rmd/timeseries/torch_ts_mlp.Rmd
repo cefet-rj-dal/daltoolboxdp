@@ -55,7 +55,13 @@ We now train the MLP forecaster on the prepared training data.
 ```{r}
 # Training the PyTorch MLP model
 
-model <- torch_ts_mlp(ts_norm_gminmax(), input_size = 4, hidden_sizes = c(16L, 8L))
+model <- torch_ts_mlp(
+  ts_norm_gminmax(),
+  input_size = 4,
+  hidden_sizes = c(64L, 32L, 16L),
+  epochs = 1000L,
+  batch_size = 16L
+)
 model <- fit(model, x = io_train$input, y = io_train$output)
 ```
 
@@ -133,6 +139,7 @@ plot(grf)
 
 Notes
 - The default configuration is `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.
+- This example uses `epochs = 1000L` explicitly so the feedforward MLP reaches a competitive fit on this series.
 - To display validation loss as well, use an early-stopping rule such as `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - To combine dynamic validation with those criteria, set `validation_strategy = "dynamic"`.
 

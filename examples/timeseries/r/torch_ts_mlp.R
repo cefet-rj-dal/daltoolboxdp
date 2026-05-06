@@ -26,7 +26,13 @@ io_test <- ts_projection(samp$test)
 
 # Training the PyTorch MLP model
 
-model <- torch_ts_mlp(ts_norm_gminmax(), input_size = 4, hidden_sizes = c(16L, 8L))
+model <- torch_ts_mlp(
+  ts_norm_gminmax(),
+  input_size = 4,
+  hidden_sizes = c(64L, 32L, 16L),
+  epochs = 1000L,
+  batch_size = 16L
+)
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

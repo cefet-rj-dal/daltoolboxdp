@@ -96,7 +96,13 @@ We now train the MLP forecaster on the prepared training data.
 ``` r
 # Training the PyTorch MLP model
 
-model <- torch_ts_mlp(ts_norm_gminmax(), input_size = 4, hidden_sizes = c(16L, 8L))
+model <- torch_ts_mlp(
+  ts_norm_gminmax(),
+  input_size = 4,
+  hidden_sizes = c(64L, 32L, 16L),
+  epochs = 1000L,
+  batch_size = 16L
+)
 model <- fit(model, x = io_train$input, y = io_train$output)
 ```
 
@@ -120,7 +126,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.3968492
+## [1] 7.374302e-07
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -141,7 +147,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, -0.02"  "0.17, -0.04"  "-0.08, -0.07" "-0.32, -0.11" "-0.54, -0.15"
+## [1] "0.41, 0.41"   "0.17, 0.17"   "-0.08, -0.08" "-0.32, -0.32" "-0.54, -0.54"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -155,8 +161,8 @@ print(head(ev_test$metrics))
 ```
 
 ```
-##          mse    smape      R2
-## 1 0.08764334 1.244223 0.24302
+##           mse       smape        R2
+## 1 6.61112e-07 0.003934371 0.9999943
 ```
 
 ``` r
@@ -164,7 +170,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 124.42"
+## [1] "smape: 0.39"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -203,6 +209,7 @@ plot(grf)
 
 Notes
 - The default configuration is `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.
+- This example uses `epochs = 1000L` explicitly so the feedforward MLP reaches a competitive fit on this series.
 - To display validation loss as well, use an early-stopping rule such as `"patience"`, `"sma"`, `"ema"`, or `"h"`.
 - To combine dynamic validation with those criteria, set `validation_strategy = "dynamic"`.
 
