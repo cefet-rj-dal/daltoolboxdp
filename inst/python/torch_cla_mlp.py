@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from scipy.stats import ttest_ind
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -227,6 +228,14 @@ class TorchMLPClassifier:
         idx_to_class = {i: c for i, c in enumerate(self.classes_)}
         return [idx_to_class[i] for i in pred_idx]
 
+    def predict_scores(self, df_test: pd.DataFrame):
+        X = torch.from_numpy(df_test.to_numpy().astype(np.float32))
+        self.network.eval()
+        with torch.no_grad():
+            logits = self.network(X.to(self._device()))
+            scores = F.softmax(logits, dim=-1).cpu().numpy()
+        return scores.tolist()
+
 
 def torch_cla_mlp_create(input_dim: int, hidden_sizes: List[int], num_classes: int, dropout: float = 0.0, validation_strategy: str = "static", stopping_rule: str = "none"):
     return TorchMLPClassifier(input_dim, hidden_sizes, num_classes, dropout=dropout, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
@@ -275,3 +284,9 @@ def torch_cla_mlp_predict(model, df_test: pd.DataFrame, classes_: Optional[List]
     if classes_ is not None and not model.classes_:
         model.classes_ = list(classes_)
     return model.predict(df_test)
+
+
+def torch_cla_mlp_predict_scores(model, df_test: pd.DataFrame, classes_: Optional[List] = None):
+    if classes_ is not None and not model.classes_:
+        model.classes_ = list(classes_)
+    return model.predict_scores(df_test)

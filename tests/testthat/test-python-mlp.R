@@ -74,6 +74,7 @@ test_that("torch_cla_mlp fits and predicts through the R wrapper", {
   expect_equal(nrow(pred), nrow(df))
   expect_identical(colnames(pred), c("a", "b"))
   expect_equal(ncol(pred), 2L)
+  expect_true(all(abs(rowSums(pred) - 1) < 1e-6))
   expect_true(length(fitted$train_loss_hist) >= 1)
   expect_true(!is.null(fitted$model))
 })

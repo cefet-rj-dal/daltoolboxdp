@@ -138,14 +138,14 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
 
 #'@export
 predict.torch_cla_mlp <- function(object, x, ...) {
-  if (!exists("torch_cla_mlp_predict"))
+  if (!exists("torch_cla_mlp_predict_scores"))
     reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))
 
   x <- adjust_data.frame(x)
   x <- x[, object$x, drop = FALSE]
-  prediction <- torch_cla_mlp_predict(object$model, as.data.frame(x), object$classes_)
-  prediction <- factor(prediction, levels = object$slevels)
-  prediction <- as.data.frame(adjust_class_label(prediction))
+  prediction <- torch_cla_mlp_predict_scores(object$model, as.data.frame(x), object$classes_)
+  prediction <- do.call(rbind, prediction)
+  prediction <- as.data.frame(prediction)
   colnames(prediction) <- object$slevels
   prediction
 }
