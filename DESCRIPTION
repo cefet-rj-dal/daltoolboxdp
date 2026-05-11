@@ -1,11 +1,11 @@
 Package: daltoolboxdp
 Title: Deep Python Extensions for 'daltoolbox'
-Version: 1.2.777
+Version: 1.3.707
 Authors@R: 
   c(    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), 
                email = "eogasawara@ieee.org", comment = c(ORCID = "0000-0002-0466-0626")),
         person(given = "Diego", family = "Salles", role = c("aut"), email = "diego.salles@eic.cefet-rj.br"),
-        person(given = "Erick", family = "de Carvalho", role = c("aut"), email = "erick.decarvalho@eic.cefet-rj.br"),
+        person(given = "Erick", family = "Carvalho", role = c("aut"), email = "erick.carvalho@eic.cefet-rj.br"),
         person(given = "Janio", family = "Lima", role = c("aut"), email = "janio.lima@eic.cefet-rj.br"),
         person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.tavares@eic.cefet-rj.br"),
         person(given = "Eduardo", family = "Bezerra", role = c("ctb"), email = "ebezerra@cefet-rj.br"),
