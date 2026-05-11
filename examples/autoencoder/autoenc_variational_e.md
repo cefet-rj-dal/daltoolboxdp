@@ -93,6 +93,12 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- The original VAE is recovered with `encoder_hidden_sizes = c(64L, 32L)`.
+- Deeper VAEs can be built with larger stacks such as `c(128L, 64L, 32L)`.
+- `reconstruction_loss = "bce"` works well with normalized inputs and `output_activation = "sigmoid"`.
+- `reconstruction_loss = "mse"` is often preferable for unconstrained real-valued windows.
+
 
 ``` r
 # Learning curves
@@ -133,13 +139,13 @@ print(head(result))
 ```
 
 ```
-##              [,1]       [,2]      [,3]       [,4]         [,5]        [,6]
-## [1,] -0.090390660 -0.2746773 0.2619951 0.05519966  0.018213168 -0.01911820
-## [2,] -0.044206575 -0.2996334 0.3299380 0.05406588  0.016730666 -0.02071466
-## [3,]  0.007997731 -0.3009214 0.3756417 0.05000485  0.013096467 -0.02301613
-## [4,]  0.057876579 -0.2797591 0.3943878 0.04487998  0.007571951 -0.02626608
-## [5,]  0.105990686 -0.2374635 0.3871394 0.03753541  0.002021432 -0.02749849
-## [6,]  0.148971528 -0.1765159 0.3551162 0.02769829 -0.002698079 -0.02655102
+##            [,1]        [,2]       [,3]         [,4]        [,5]        [,6]
+## [1,] 0.09453892 -0.04132530 -0.3390612 -0.014289722 0.012533598 0.003976442
+## [2,] 0.11676358 -0.04113752 -0.4057636 -0.015387267 0.013307117 0.005494207
+## [3,] 0.12816277 -0.03835291 -0.4404359 -0.015206665 0.012913927 0.006544366
+## [4,] 0.12485760 -0.03417529 -0.4326399 -0.013741165 0.012502484 0.007506035
+## [5,] 0.10989705 -0.02822566 -0.3885940 -0.011211529 0.011300646 0.008377761
+## [6,] 0.08491497 -0.01996851 -0.3146303 -0.007742882 0.009253137 0.008799177
 ```
 
 References

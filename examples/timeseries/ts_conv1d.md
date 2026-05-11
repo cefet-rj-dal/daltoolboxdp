@@ -81,6 +81,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `in_channels` and `sequence_length` control how each row is reshaped before the convolution.
+- `conv_channels`, `kernel_sizes`, and `strides` define the convolutional stack.
+- `pooling` and `dense_hidden_sizes` control feature aggregation and the regression head.
+
 We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
 
 
@@ -95,7 +100,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.0001408308
+## [1] 0.000140831
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -116,20 +121,20 @@ ev_test
 ## [1]  0.41211849  0.17388949 -0.07515112 -0.31951919 -0.54402111
 ## 
 ## $prediction
-## [1]  0.42680142  0.19821292 -0.05069328 -0.30709106 -0.54469888
+## [1]  0.42680154  0.19821316 -0.05069287 -0.30709041 -0.54469819
 ## 
 ## $smape
-## [1] 0.1190704
+## [1] 0.1190725
 ## 
 ## $mse
-## [1] 0.0003120643
+## [1] 0.0003120745
 ## 
 ## $R2
-## [1] 0.9973047
+## [1] 0.9973046
 ## 
 ## $metrics
 ##            mse     smape        R2
-## 1 0.0003120643 0.1190704 0.9973047
+## 1 0.0003120745 0.1190725 0.9973046
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.

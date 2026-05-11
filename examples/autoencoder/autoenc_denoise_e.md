@@ -90,11 +90,22 @@ auto <- autoenc_denoise_e(5, 3)
 auto <- fit(auto, train)
 ```
 
+```
+## Error in `py_call_impl()`:
+## ! TypeError: 'int' object is not iterable
+## Run `reticulate::py_last_error()` for details.
+```
+
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+
+Architecture variations
+- `noise_factor` controls corruption strength during training.
+- `encoder_hidden_sizes` and `decoder_hidden_sizes` define the dense denoising backbone.
+- Combine a deeper encoder with a moderate `noise_factor` to learn more robust latent spaces.
 
 
 ``` r
@@ -138,13 +149,7 @@ print(head(result))
 ```
 
 ```
-##          [,1]     [,2]      [,3]
-## [1,] 1.144002 1.086805 -1.218257
-## [2,] 1.195701 1.141863 -1.316908
-## [3,] 1.216952 1.165608 -1.377211
-## [4,] 1.206436 1.156563 -1.395416
-## [5,] 1.164806 1.115636 -1.369654
-## [6,] 1.089796 1.041549 -1.304699
+## NULL
 ```
 
 References

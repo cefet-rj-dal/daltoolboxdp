@@ -82,11 +82,20 @@ auto <- autoenc_stacked_ed(5, 3)
 auto <- fit(auto, train)
 ```
 
+```
+## Error in `py_call_impl()`:
+## ! TypeError: 'int' object is not iterable
+## Run `reticulate::py_last_error()` for details.
+```
+
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+
+Architecture variations
+- Stage-specific latent sizes and stage-specific dense blocks now make `k` a real architecture parameter instead of only a repetition count.
 
 
 ``` r
@@ -128,13 +137,7 @@ print(head(result))
 ```
 
 ```
-##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8523223 0.8722987 0.9272569 0.8885244 0.8601161
-## [2,] 0.9150851 0.9354568 0.9963372 0.9430361 0.9206288
-## [3,] 0.9466779 0.9672030 1.0311244 0.9704351 0.9507736
-## [4,] 0.9470128 0.9675396 1.0314932 0.9707246 0.9510920
-## [5,] 0.9191545 0.9395333 1.0008104 0.9466132 0.9245506
-## [6,] 0.8630866 0.8831245 0.9390996 0.8979050 0.8705298
+## NULL
 ```
 
 
@@ -142,6 +145,14 @@ print(head(result))
 # Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
+```
+
+```
+## Error in `names(result) <- names(test)`:
+## ! 'names' attribute [5] must be the same length as the vector [0]
+```
+
+``` r
 r2 <- c()
 mape <- c()
 for (col in names(test)){
@@ -154,11 +165,8 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.342099908703846 MAPE: 0.172589596082837"
-## [1] "t3 R2 test: 0.906012353248402 MAPE: 0.0867332356969701"
-## [1] "t2 R2 test: 0.997723075643945 MAPE: 0.0328536228014256"
-## [1] "t1 R2 test: 0.945122910827117 MAPE: 0.160275640110591"
-## [1] "t0 R2 test: 0.872571011167948 MAPE: 0.293591398221106"
+## Error in `[.data.frame`:
+## ! undefined columns selected
 ```
 
 ``` r
@@ -166,7 +174,15 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.812705851918252 MAPE: 0.149208698582586"
+## Warning in mean.default(r2): argument is not numeric or logical: returning NA
+```
+
+```
+## Warning in mean.default(mape): argument is not numeric or logical: returning NA
+```
+
+```
+## [1] "Means R2 test: NA MAPE: NA"
 ```
 
 References

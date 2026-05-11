@@ -82,11 +82,21 @@ auto <- autoenc_stacked_e(5, 3)
 auto <- fit(auto, train)
 ```
 
+```
+## Error in `py_call_impl()`:
+## ! TypeError: 'int' object is not iterable
+## Run `reticulate::py_last_error()` for details.
+```
+
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+
+Architecture variations
+- `encoding_sizes = c(16L, 8L, 4L)` creates progressively smaller latent stages.
+- `encoder_hidden_sizes` can be a single vector shared by all stages or a list with one layout per stage.
 
 
 ``` r
@@ -128,13 +138,7 @@ print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] -1.050329 -0.5473346 -1.106816
-## [2,] -1.120250 -0.5927152 -1.179724
-## [3,] -1.152544 -0.6134523 -1.214229
-## [4,] -1.148923 -0.6111018 -1.210367
-## [5,] -1.109489 -0.5857104 -1.168289
-## [6,] -1.032402 -0.5355799 -1.088227
+## NULL
 ```
 
 References

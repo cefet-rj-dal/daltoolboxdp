@@ -8,6 +8,13 @@ Use these examples to answer questions such as:
 - Do I need reconstruction quality as well as encoding? Use the encode-decode variants.
 - Do I want temporal memory, convolutional locality, denoising robustness, adversarial regularization, stacking, or a probabilistic latent space? Choose the corresponding family below.
 
+New architecture flexibility
+- Dense autoencoders now expose encoder/decoder hidden sizes, hidden activations, decoder output activations, and LeakyReLU slope when applicable.
+- Variational autoencoders now expose encoder/decoder depth, reconstruction loss (`"bce"` or `"mse"`), and activation/output activation choices.
+- Adversarial autoencoders now expose encoder/decoder/discriminator topologies, dropout, latent prior scale, and optimizer-specific learning rates.
+- Stacked autoencoders now allow stage-specific latent sizes and stage-specific hidden layouts, not only a repeated `k`.
+- LSTM autoencoders now separate latent size from recurrent hidden size and expose `sequence_length`, `num_layers`, and recurrent dropout.
+
 - [autoenc_e.md](autoenc_e.md) — Simple autoencoder (encode) that learns a latent representation (p->k) by minimizing reconstruction loss.
 - [autoenc_ed.md](autoenc_ed.md) — Simple autoencoder (encode-decode) trained end-to-end to reconstruct (p<->k) and evaluate reconstruction error.
 - [autoenc_adv_e.md](autoenc_adv_e.md) — Adversarial autoencoder (encode) that regularizes the latent space via a discriminator to match a prior.

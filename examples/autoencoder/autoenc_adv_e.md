@@ -27,10 +27,6 @@ library(daltoolbox)
 ```
 
 ```
-## Warning: package 'daltoolbox' was built under R version 4.5.3
-```
-
-```
 ## 
 ## Attaching package: 'daltoolbox'
 ```
@@ -45,10 +41,6 @@ library(daltoolbox)
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 4.5.3
 ```
 
 
@@ -118,6 +110,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- `encoder_hidden_sizes`, `decoder_hidden_sizes`, and `discriminator_hidden_sizes` let you decouple the three adversarial sub-networks.
+- `latent_prior_scale` controls how spread out the target latent prior is.
+- `lr_encoder`, `lr_decoder`, `lr_generator`, and `lr_discriminator` can override the base `learning_rate` when the adversarial game becomes unstable.
+
 
 ``` r
 # Learning curves
@@ -158,13 +155,13 @@ print(head(result))
 ```
 
 ```
-##           [,1]     [,2]      [,3]
-## [1,] -1.491699 2.074816 -3.796273
-## [2,] -1.569242 2.165766 -4.009469
-## [3,] -1.595400 2.200364 -4.089914
-## [4,] -1.571107 2.177091 -4.040386
-## [5,] -1.494393 2.093533 -3.850502
-## [6,] -1.363089 1.955527 -3.515303
+##            [,1]      [,2]      [,3]
+## [1,] -0.5196798 -4.407041 -6.146891
+## [2,] -0.5780468 -4.542418 -6.878399
+## [3,] -0.6163431 -4.638053 -7.240364
+## [4,] -0.6264635 -4.683009 -7.231423
+## [5,] -0.6125282 -4.693814 -6.815262
+## [6,] -0.5843532 -4.686831 -5.977830
 ```
 
 References

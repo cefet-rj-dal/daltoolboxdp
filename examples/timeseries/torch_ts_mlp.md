@@ -20,31 +20,9 @@ We start by loading the packages used throughout this example.
 ``` r
 # Loading the packages
 library(daltoolbox)
-```
-
-```
-## Warning: package 'daltoolbox' was built under R version 4.5.3
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-``` r
 library(daltoolboxdp)
 library(tspredit)
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 4.5.3
 ```
 
 We load the example series that will be used throughout the demonstration.
@@ -59,14 +37,10 @@ ts_head(ts, 3)
 ```
 
 ```
-##             t9        t8        t7        t6        t5        t4        t3
-## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
-## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
-## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
-##             t2        t1        t0
-## [1,] 0.9839859 0.9092974 0.7780732
-## [2,] 0.9092974 0.7780732 0.5984721
-## [3,] 0.7780732 0.5984721 0.3816610
+##             t9        t8        t7        t6        t5        t4        t3        t2        t1        t0
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721 0.3816610
 ```
 
 Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
@@ -112,6 +86,12 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `activation` changes the hidden nonlinearity.
+- `normalization = "batch"` or `"layer"` adds normalization after each hidden layer.
+- `init_method` controls how linear weights are initialized.
+- `output_activation` can constrain the forecast range when needed.
+
 We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
 
 
@@ -126,7 +106,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 7.374302e-07
+## [1] 2.523589e-06
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -147,7 +127,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.41"   "0.17, 0.17"   "-0.08, -0.08" "-0.32, -0.32" "-0.54, -0.54"
+## [1] "0.41, 0.41"   "0.17, 0.18"   "-0.08, -0.07" "-0.32, -0.32" "-0.54, -0.54"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -161,8 +141,8 @@ print(head(ev_test$metrics))
 ```
 
 ```
-##           mse       smape        R2
-## 1 6.61112e-07 0.003934371 0.9999943
+##            mse       smape       R2
+## 1 1.383854e-06 0.005942644 0.999988
 ```
 
 ``` r
@@ -170,7 +150,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 0.39"
+## [1] "smape: 0.59"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.

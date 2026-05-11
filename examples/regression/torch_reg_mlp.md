@@ -28,10 +28,10 @@ print(t(sapply(Boston, class)))
 ```
 
 ```
-##      crim      zn        indus     chas      nox       rm        age       dis       rad       tax       ptratio   black     lstat    
-## [1,] "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric" "numeric"
-##      medv     
-## [1,] "numeric"
+##      crim      zn        indus     chas      nox       rm        age       dis       rad       tax       ptratio   black    
+## [1,] "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric"
+##      lstat     medv     
+## [1,] "numeric" "numeric"
 ```
 
 ``` r
@@ -86,6 +86,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `activation` and `normalization` control the hidden blocks.
+- `output_activation` can restrict the prediction range when required by the domain.
+- `init_method` exposes the initialization strategy for deeper or more sensitive regressors.
+
 Training evaluation.
 
 ``` r
@@ -99,7 +104,7 @@ print(train_eval$metrics)
 
 ```
 ##        mse     smape        R2
-## 1 11.91066 0.1250267 0.8676715
+## 1 11.91065 0.1250267 0.8676715
 ```
 
 Test evaluation.

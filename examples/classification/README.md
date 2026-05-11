@@ -1,5 +1,8 @@
 # Classification — Examples
 
+Deep-learning note
+- The PyTorch MLP classifier now supports configurable hidden activation, hidden normalization, and weight initialization, in addition to the existing hidden-size and dropout controls.
+
 These examples show how `daltoolboxdp` exposes Python classifiers, especially from the scikit-learn ecosystem, with the same training and prediction flow used in `daltoolbox`.
 
 Use this section when you want to compare modeling behavior:

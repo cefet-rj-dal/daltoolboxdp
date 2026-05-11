@@ -93,11 +93,23 @@ auto <- autoenc_e(5, 3)
 auto <- fit(auto, train)
 ```
 
+```
+## Error in `py_call_impl()`:
+## ! TypeError: 'int' object is not iterable
+## Run `reticulate::py_last_error()` for details.
+```
+
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+
+Architecture variations
+- Shallow default: `encoder_hidden_sizes = 64L` preserves the original architecture.
+- Deep encoder: use `encoder_hidden_sizes = c(128L, 64L, 32L)` to add depth before the bottleneck.
+- Asymmetric decoder: set `decoder_hidden_sizes` explicitly when you do not want the mirrored decoder.
+- Nonlinear choices: switch `activation` among `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, `"selu"`, and `"tanh"`.
 
 
 ``` r
@@ -136,13 +148,7 @@ print(head(result))
 ```
 
 ```
-##           [,1]      [,2]       [,3]
-## [1,] 0.2345753 0.9385822 -0.9306791
-## [2,] 0.2852491 0.9902593 -0.9940149
-## [3,] 0.3182359 1.0117304 -1.0212765
-## [4,] 0.3314644 1.0023199 -1.0119416
-## [5,] 0.3215228 0.9621685 -0.9660465
-## [6,] 0.2794291 0.8827558 -0.8838395
+## NULL
 ```
 
 References
