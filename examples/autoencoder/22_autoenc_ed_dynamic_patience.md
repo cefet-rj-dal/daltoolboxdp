@@ -86,6 +86,20 @@ plot(grf)
 
 ``` r
 # Testing: reconstruction of the test set
+print(head(test))
+```
+
+```
+##          t4        t3        t2        t1        t0
+## 1 0.7258342 0.8294719 0.9126527 0.9702046 0.9985496
+## 2 0.8294719 0.9126527 0.9702046 0.9985496 0.9959251
+## 3 0.9126527 0.9702046 0.9985496 0.9959251 0.9624944
+## 4 0.9702046 0.9985496 0.9959251 0.9624944 0.9003360
+## 5 0.9985496 0.9959251 0.9624944 0.9003360 0.8133146
+## 6 0.9959251 0.9624944 0.9003360 0.8133146 0.7068409
+```
+
+``` r
 result <- transform(auto, test)
 result <- as.data.frame(result)
 names(result) <- names(test)
@@ -100,6 +114,36 @@ print(head(result))
 ## 4 0.9825926 1.0155282 0.9854522 0.9344487 0.8853105
 ## 5 1.0114759 1.0120234 0.9533769 0.8667711 0.8000152
 ## 6 1.0051498 0.9787415 0.8955949 0.7792678 0.6946990
+```
+
+
+``` r
+# Evaluating reconstruction quality: R2 and MAPE per attribute
+r2 <- c()
+mape <- c()
+for (col in names(test)){
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+}
+```
+
+```
+## [1] "t4 R2 test: 0.983732591520324 MAPE: 0.0170932287711434"
+## [1] "t3 R2 test: 0.998578884558099 MAPE: 0.0153797747070078"
+## [1] "t2 R2 test: 0.999739477278881 MAPE: 0.00772138126024207"
+## [1] "t1 R2 test: 0.996254343655056 MAPE: 0.0266927457458654"
+## [1] "t0 R2 test: 0.999004678349328 MAPE: 0.0228838491623557"
+```
+
+``` r
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
+```
+
+```
+## [1] "Means R2 test: 0.995461995072338 MAPE: 0.0179541959293229"
 ```
 
 Notes

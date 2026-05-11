@@ -47,7 +47,20 @@ grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 
 # Testing: reconstruction of the test set
+print(head(test))
 result <- transform(auto, test)
 result <- as.data.frame(result)
 names(result) <- names(test)
 print(head(result))
+
+# Evaluating reconstruction quality: R2 and MAPE per attribute
+r2 <- c()
+mape <- c()
+for (col in names(test)){
+  r2_col <- cor(test[col], result[col])^2
+  r2 <- append(r2, r2_col)
+  mape_col <- mean((abs((result[col] - test[col]))/test[col])[[col]])
+  mape <- append(mape, mape_col)
+  print(paste(col, 'R2 test:', r2_col, 'MAPE:', mape_col))
+}
+print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
