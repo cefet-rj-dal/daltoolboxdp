@@ -38,10 +38,14 @@ ts_head(ts, 3)
 ```
 
 ```
-##             t9        t8        t7        t6        t5        t4        t3        t2        t1        t0
-## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
-## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721
-## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721 0.3816610
+##             t9        t8        t7        t6        t5        t4        t3
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
+##             t2        t1        t0
+## [1,] 0.9839859 0.9092974 0.7780732
+## [2,] 0.9092974 0.7780732 0.5984721
+## [3,] 0.7780732 0.5984721 0.3816610
 ```
 
 Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
@@ -108,7 +112,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.0005340278
+## [1] 0.001334207
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -129,7 +133,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.43"   "0.17, 0.19"   "-0.08, -0.07" "-0.32, -0.33" "-0.54, -0.57"
+## [1] "0.41, 0.40"   "0.17, 0.17"   "-0.08, -0.08" "-0.32, -0.32" "-0.54, -0.54"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -144,7 +148,7 @@ print(head(ev_test$metrics))
 
 ```
 ##            mse      smape        R2
-## 1 0.0002284451 0.06766851 0.9980269
+## 1 6.152518e-05 0.02687127 0.9994686
 ```
 
 ``` r
@@ -152,7 +156,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 6.77"
+## [1] "smape: 2.69"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
