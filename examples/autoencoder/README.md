@@ -1,11 +1,11 @@
 # Autoencoders — Examples
 
-This section is for readers who want to understand how `daltoolboxdp` brings Python-backed deep learning models into the `daltoolbox` workflow. All examples work on time-series windows, so the main choice is the type of inductive bias you want in the autoencoder.
+This section is for readers who want to understand how `daltoolboxdp` brings Python-backed deep learning models into the `daltoolbox` workflow. All examples work on time-series windows, so the main decision is whether you only need a latent representation or whether reconstruction quality is also part of the task.
 
 Use these examples to answer questions such as:
 
-- Do I just need a compact latent representation? Start with the simple autoencoder.
-- Do I need reconstruction quality as well as encoding? Use the encode-decode variants.
+- Do I just need a compact latent representation? Start with the encoder-only block.
+- Do I need reconstruction quality as well as encoding? Jump to the encoder-decoder block.
 - Do I want temporal memory, convolutional locality, denoising robustness, adversarial regularization, stacking, or a probabilistic latent space? Choose the corresponding family below.
 
 New architecture flexibility
@@ -15,17 +15,20 @@ New architecture flexibility
 - Stacked autoencoders now allow stage-specific latent sizes and stage-specific hidden layouts, not only a repeated `k`.
 - LSTM autoencoders now separate latent size from recurrent hidden size and expose `sequence_length`, `num_layers`, and recurrent dropout.
 
-- [autoenc_e.md](autoenc_e.md) — Simple autoencoder (encode) that learns a latent representation (p->k) by minimizing reconstruction loss.
-- [autoenc_ed.md](autoenc_ed.md) — Simple autoencoder (encode-decode) trained end-to-end to reconstruct (p<->k) and evaluate reconstruction error.
-- [autoenc_adv_e.md](autoenc_adv_e.md) — Adversarial autoencoder (encode) that regularizes the latent space via a discriminator to match a prior.
-- [autoenc_adv_ed.md](autoenc_adv_ed.md) — Adversarial autoencoder (encode-decode) combining reconstruction loss with an adversarial game in latent space.
-- [autoenc_conv_e.md](autoenc_conv_e.md) — 1D convolutional autoencoder (encode) to capture local patterns within windows.
-- [autoenc_conv_ed.md](autoenc_conv_ed.md) — 1D convolutional autoencoder (encode-decode) reconstructing from the compressed code.
-- [autoenc_denoise_e.md](autoenc_denoise_e.md) — Denoising autoencoder (encode) trained to recover clean inputs from corrupted data.
-- [autoenc_denoise_ed.md](autoenc_denoise_ed.md) — Denoising autoencoder (encode-decode) with stochastic input noise and clean reconstruction.
-- [autoenc_lstm_e.md](autoenc_lstm_e.md) — LSTM autoencoder (encode) that encodes temporal dependencies into a fixed-size vector.
-- [autoenc_lstm_ed.md](autoenc_lstm_ed.md) — LSTM autoencoder (encode-decode) to encode (p->k) and reconstruct (k->p) time-series windows.
-- [autoenc_stacked_e.md](autoenc_stacked_e.md) — Stacked autoencoder (encode) with multiple nonlinear layers for gradual compression.
-- [autoenc_stacked_ed.md](autoenc_stacked_ed.md) — Stacked autoencoder (encode-decode) with a bottleneck and reconstruction guided by loss.
-- [autoenc_variational_e.md](autoenc_variational_e.md) — Variational autoencoder (VAE, encode) with KL regularization for a probabilistic latent space.
-- [autoenc_variational_ed.md](autoenc_variational_ed.md) — Variational autoencoder (encode-decode) optimizing the ELBO (reconstruction + KL) for a smooth latent space.
+Encoder only
+- [01_autoenc_e.md](01_autoenc_e.md) — Simple autoencoder (encode) for compact latent representations when reconstruction is not the final product.
+- [02_autoenc_denoise_e.md](02_autoenc_denoise_e.md) — Denoising autoencoder (encode) for robust latent features under noisy inputs.
+- [03_autoenc_conv_e.md](03_autoenc_conv_e.md) — 1D convolutional autoencoder (encode) for local temporal structures within each window.
+- [04_autoenc_lstm_e.md](04_autoenc_lstm_e.md) — LSTM autoencoder (encode) for temporal dependencies across ordered steps in the window.
+- [05_autoenc_stacked_e.md](05_autoenc_stacked_e.md) — Stacked autoencoder (encode) for gradual nonlinear compression through multiple stages.
+- [06_autoenc_variational_e.md](06_autoenc_variational_e.md) — Variational autoencoder (encode) for probabilistic latent representations with KL regularization.
+- [07_autoenc_adv_e.md](07_autoenc_adv_e.md) — Adversarial autoencoder (encode) for latent spaces regularized against a chosen prior.
+
+Encoder-decoder
+- [11_autoenc_ed.md](11_autoenc_ed.md) — Simple autoencoder (encode-decode) when reconstruction error itself is part of the analysis.
+- [12_autoenc_denoise_ed.md](12_autoenc_denoise_ed.md) — Denoising autoencoder (encode-decode) for clean reconstruction from corrupted inputs.
+- [13_autoenc_conv_ed.md](13_autoenc_conv_ed.md) — 1D convolutional autoencoder (encode-decode) to reconstruct windows while preserving local patterns.
+- [14_autoenc_lstm_ed.md](14_autoenc_lstm_ed.md) — LSTM autoencoder (encode-decode) to reconstruct sequential windows after recurrent compression.
+- [15_autoenc_stacked_ed.md](15_autoenc_stacked_ed.md) — Stacked autoencoder (encode-decode) for deeper reconstruction pipelines.
+- [16_autoenc_variational_ed.md](16_autoenc_variational_ed.md) — Variational autoencoder (encode-decode) optimizing the ELBO for smooth latent spaces and reconstruction.
+- [17_autoenc_adv_ed.md](17_autoenc_adv_ed.md) — Adversarial autoencoder (encode-decode) combining reconstruction with adversarial latent regularization.
