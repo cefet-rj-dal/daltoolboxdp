@@ -94,7 +94,7 @@ library(daltoolboxdp)
 model <- ts_lstm(
   input_size = 12,
   hidden_size = 16L,
-  sequence_length = 4L,
+  sequence_length = 3L,
   num_layers = 2L,
   dropout = 0.1,
   mlp_hidden_sizes = c(16L, 8L),

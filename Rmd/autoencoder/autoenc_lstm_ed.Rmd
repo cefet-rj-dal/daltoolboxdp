@@ -48,14 +48,20 @@ test  <- as.data.frame(samp$test)
 
 ```{r}
 # Creating the LSTM autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_lstm_ed(5, 3)
+# - this example intentionally increases the number of epochs above the library default
+auto <- autoenc_lstm_ed(
+  5, 3,
+  sequence_length = 5L,
+  lstm_hidden_size = 16L,
+  epochs = 200L
+)
 
 # Training the model
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
