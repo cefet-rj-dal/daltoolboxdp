@@ -29,8 +29,14 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 # Creating the LSTM autoencoder: reduce from 5 -> 3 dimensions (p -> k)
-# - the default number of epochs is used
-auto <- autoenc_lstm_e(5, 3)
+# - this example intentionally increases the number of epochs above the library default
+# - use the full window as a sequence and a larger recurrent hidden state
+auto <- autoenc_lstm_e(
+  5, 3,
+  sequence_length = 5L,
+  lstm_hidden_size = 16L,
+  epochs = 200L
+)
 
 # Training the model
 auto <- fit(auto, train)

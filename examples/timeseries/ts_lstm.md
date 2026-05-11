@@ -71,12 +71,18 @@ We now train the LSTM model on the prepared training data.
 ``` r
 # Training the LSTM model
 
-model <- ts_lstm(ts_norm_gminmax(), input_size = 4)
+model <- ts_lstm(
+  ts_norm_gminmax(),
+  input_size = 9,
+  sequence_length = 3L,
+  hidden_size = 16L,
+  epochs = 200L
+)
 model <- fit(model, x = io_train$input, y = io_train$output)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L`, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
@@ -85,6 +91,8 @@ Architecture variations
 - `sequence_length` converts each row into a true multistep sequence instead of a single recurrent step.
 - `hidden_size`, `num_layers`, `dropout`, and `bidirectional` change the recurrent backbone.
 - `mlp_hidden_sizes` adds a dense head after the final recurrent state.
+- In this example, `input_size = 9` matches the nine lagged predictors produced by `ts_projection()`, and `sequence_length = 3L` turns them into three temporal steps with three features each.
+- The example also raises `epochs` to `200L` on purpose, because the default `100L` is intended to be tuned by the user when needed.
 
 We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
 
@@ -100,7 +108,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.175199
+## [1] 0.0005340278
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -121,7 +129,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.50"  "0.17, 0.44"  "-0.08, 0.34" "-0.32, 0.22" "-0.54, 0.07"
+## [1] "0.41, 0.43"   "0.17, 0.19"   "-0.08, -0.07" "-0.32, -0.33" "-0.54, -0.57"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -135,8 +143,8 @@ print(head(ev_test$metrics))
 ```
 
 ```
-##         mse    smape         R2
-## 1 0.1835147 1.408233 -0.5850259
+##            mse      smape        R2
+## 1 0.0002284451 0.06766851 0.9980269
 ```
 
 ``` r
@@ -144,7 +152,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 140.82"
+## [1] "smape: 6.77"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.

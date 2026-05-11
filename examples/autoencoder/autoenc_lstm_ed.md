@@ -74,14 +74,20 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the LSTM autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
-auto <- autoenc_lstm_ed(5, 3)
+# - this example intentionally increases the number of epochs above the library default
+auto <- autoenc_lstm_ed(
+  5, 3,
+  sequence_length = 5L,
+  lstm_hidden_size = 16L,
+  epochs = 200L
+)
 
 # Training the model
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -129,13 +135,13 @@ print(head(result))
 ```
 
 ```
-##            [,1]      [,2]      [,3]       [,4]      [,5]
-## [1,] -0.1236760 0.1928266 0.4885542 -0.2129956 0.2566809
-## [2,] -0.1228106 0.1935897 0.4879884 -0.2124107 0.2570767
-## [3,] -0.1220713 0.1943054 0.4875085 -0.2118745 0.2574098
-## [4,] -0.1214681 0.1949572 0.4871206 -0.2113981 0.2576762
-## [5,] -0.1210141 0.1955227 0.4868330 -0.2109969 0.2578704
-## [6,] -0.1207310 0.1959704 0.4866593 -0.2106929 0.2579834
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.8040059 0.9103663 0.9085211 0.8938085 0.8827338
+## [2,] 0.8382092 0.9515531 0.9487075 0.9324941 0.9207430
+## [3,] 0.8542729 0.9706618 0.9672009 0.9502169 0.9381310
+## [4,] 0.8543822 0.9702017 0.9664368 0.9494026 0.9373508
+## [5,] 0.8388515 0.9505527 0.9468001 0.9304248 0.9187636
+## [6,] 0.8060559 0.9098929 0.9065513 0.8915296 0.8805629
 ```
 
 
@@ -155,11 +161,11 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.475497356397994 MAPE: 1.14007894792947"
-## [1] "t3 R2 test: 0.0561473685754342 MAPE: 0.768967941841427"
-## [1] "t2 R2 test: 0.0321844704692927 MAPE: 0.387548978446317"
-## [1] "t1 R2 test: 0.423289485723205 MAPE: 1.30890170028726"
-## [1] "t0 R2 test: 0.193718098625527 MAPE: 0.562458748632022"
+## [1] "t4 R2 test: 0.353552305338186 MAPE: 0.176903235597001"
+## [1] "t3 R2 test: 0.9046898873966 MAPE: 0.0708696365648956"
+## [1] "t2 R2 test: 0.988419697570328 MAPE: 0.0285374904846622"
+## [1] "t1 R2 test: 0.931850891356267 MAPE: 0.14507371199229"
+## [1] "t0 R2 test: 0.857872041959809 MAPE: 0.338666710881192"
 ```
 
 ``` r
@@ -167,7 +173,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.236167355958291 MAPE: 0.833591263427299"
+## [1] "Means R2 test: 0.807276964724238 MAPE: 0.152010157104008"
 ```
 
 ### Method

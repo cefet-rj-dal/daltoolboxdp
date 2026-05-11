@@ -80,15 +80,21 @@ test  <- as.data.frame(samp$test)
 
 ``` r
 # Creating the LSTM autoencoder: reduce from 5 -> 3 dimensions (p -> k)
-# - the default number of epochs is used
-auto <- autoenc_lstm_e(5, 3)
+# - this example intentionally increases the number of epochs above the library default
+# - use the full window as a sequence and a larger recurrent hidden state
+auto <- autoenc_lstm_e(
+  5, 3,
+  sequence_length = 5L,
+  lstm_hidden_size = 16L,
+  epochs = 200L
+)
 
 # Training the model
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
@@ -97,6 +103,7 @@ Architecture variations
 - `sequence_length` reshapes each row into a longer temporal sequence before the recurrent encoder.
 - `lstm_hidden_size` decouples recurrent capacity from the latent bottleneck `encoding_size`.
 - `num_layers` and `dropout` enable deeper recurrent autoencoders.
+- For this example, `sequence_length = 5L` makes each window a true 5-step sequence, which is usually more informative than the degenerate `sequence_length = 1L`.
 
 
 ``` r
@@ -138,13 +145,13 @@ print(head(result))
 ```
 
 ```
-##              [,1]       [,2]      [,3]
-## [1,] -0.036920741 -0.2758777 0.8391165
-## [2,] -0.020880073 -0.2815280 0.8516430
-## [3,] -0.010051519 -0.2883967 0.8615128
-## [4,] -0.004274160 -0.2961676 0.8686837
-## [5,] -0.003337443 -0.3044106 0.8730975
-## [6,] -0.007122874 -0.3125890 0.8745928
+##          [,1]      [,2]      [,3]
+## [1,] 1.362024 0.7970662 0.6722835
+## [2,] 1.444962 0.8730902 0.7173678
+## [3,] 1.486477 0.9091334 0.7370238
+## [4,] 1.489795 0.9081959 0.7319571
+## [5,] 1.455718 0.8711807 0.7024149
+## [6,] 1.382273 0.7966385 0.6480446
 ```
 
 References

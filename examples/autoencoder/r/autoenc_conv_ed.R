@@ -35,7 +35,7 @@ train <- as.data.frame(samp$train)
 test <- as.data.frame(samp$test)
 
 # Training autoencoder (reduce 5 -> 3)
-auto <- autoenc_conv_ed(5, 3)
+auto <- autoenc_conv_ed(5, 3, epochs = 200L)
 auto <- fit(auto, train)
 
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)

@@ -27,7 +27,13 @@ io_test <- ts_projection(samp$test)
 
 # Training the LSTM model
 
-model <- ts_lstm(ts_norm_gminmax(), input_size = 4)
+model <- ts_lstm(
+  ts_norm_gminmax(),
+  input_size = 9,
+  sequence_length = 3L,
+  hidden_size = 16L,
+  epochs = 200L
+)
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

@@ -86,15 +86,16 @@ test <- as.data.frame(samp$test)
 
 ``` r
 # Training autoencoder (reduce 5 -> 3)
-auto <- autoenc_conv_e(5, 3)
+auto <- autoenc_conv_e(5, 3, epochs = 200L)
 auto <- fit(auto, train)
 ```
 
 Constructor configuration
-- Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
+- Fixed-epoch baseline: omit `epochs` to use the default value of `100L` and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
+- This example intentionally raises `epochs` to `200L`, because the convolutional autoencoder was still improving noticeably at the 100-epoch default.
 
 
 ``` r
@@ -139,12 +140,12 @@ print(head(result))
 
 ```
 ##           [,1]       [,2]       [,3]
-## [1,] -1.173076 -0.5960507 -1.1396550
-## [2,] -1.279619 -0.6703183 -1.2609624
-## [3,] -1.326293 -0.6788120 -1.3074102
-## [4,] -1.304490 -0.6172864 -1.2724645
-## [5,] -1.216148 -0.4984950 -1.1649903
-## [6,] -1.061418 -0.3276087 -0.9852813
+## [1,] -1.135940 -0.7724385 -0.7823503
+## [2,] -1.324376 -0.7586309 -0.9745132
+## [3,] -1.449305 -0.6785424 -1.1048681
+## [4,] -1.500632 -0.5341694 -1.1636206
+## [5,] -1.473447 -0.3296132 -1.1434628
+## [6,] -1.371794 -0.0843915 -1.0502691
 ```
 
 References
