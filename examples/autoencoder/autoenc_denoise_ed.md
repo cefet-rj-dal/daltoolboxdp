@@ -90,12 +90,6 @@ auto <- autoenc_denoise_ed(5, 3)
 auto <- fit(auto, train)
 ```
 
-```
-## Error in `py_call_impl()`:
-## ! TypeError: 'int' object is not iterable
-## Run `reticulate::py_last_error()` for details.
-```
-
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
@@ -142,7 +136,13 @@ print(head(result))
 ```
 
 ```
-## NULL
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.7944430 0.8346548 0.8297872 0.8534696 0.8070765
+## [2,] 0.8414693 0.8800712 0.8712983 0.9064133 0.8408270
+## [3,] 0.8674822 0.9043114 0.8940526 0.9353836 0.8580968
+## [4,] 0.8711587 0.9053955 0.8963138 0.9383258 0.8580381
+## [5,] 0.8520324 0.8835632 0.8781675 0.9152544 0.8403491
+## [6,] 0.8100625 0.8385325 0.8394073 0.8660409 0.8048079
 ```
 
 
@@ -150,14 +150,6 @@ print(head(result))
 # Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
 names(result) <- names(test)
-```
-
-```
-## Error in `names(result) <- names(test)`:
-## ! 'names' attribute [5] must be the same length as the vector [0]
-```
-
-``` r
 r2 <- c()
 mape <- c()
 for (col in names(test)){
@@ -170,8 +162,11 @@ for (col in names(test)){
 ```
 
 ```
-## Error in `[.data.frame`:
-## ! undefined columns selected
+## [1] "t4 R2 test: 0.355771323935736 MAPE: 0.179775612568807"
+## [1] "t3 R2 test: 0.900708355774482 MAPE: 0.114650317244655"
+## [1] "t2 R2 test: 0.99768281680059 MAPE: 0.0759368483991717"
+## [1] "t1 R2 test: 0.944240583410996 MAPE: 0.120104913774824"
+## [1] "t0 R2 test: 0.889859386885515 MAPE: 0.346770579286949"
 ```
 
 ``` r
@@ -179,15 +174,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## Warning in mean.default(r2): argument is not numeric or logical: returning NA
-```
-
-```
-## Warning in mean.default(mape): argument is not numeric or logical: returning NA
-```
-
-```
-## [1] "Means R2 test: NA MAPE: NA"
+## [1] "Means R2 test: 0.817652493361464 MAPE: 0.167447654254881"
 ```
  
 

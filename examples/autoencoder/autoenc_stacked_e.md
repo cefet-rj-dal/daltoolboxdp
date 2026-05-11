@@ -82,12 +82,6 @@ auto <- autoenc_stacked_e(5, 3)
 auto <- fit(auto, train)
 ```
 
-```
-## Error in `py_call_impl()`:
-## ! TypeError: 'int' object is not iterable
-## Run `reticulate::py_last_error()` for details.
-```
-
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
@@ -138,7 +132,13 @@ print(head(result))
 ```
 
 ```
-## NULL
+##           [,1]       [,2]      [,3]
+## [1,] -1.422097 -0.9948580 0.2520369
+## [2,] -1.504448 -1.0676463 0.2517187
+## [3,] -1.541969 -1.1003380 0.2539774
+## [4,] -1.540159 -1.0989952 0.2546771
+## [5,] -1.498114 -1.0623713 0.2552076
+## [6,] -1.413195 -0.9863642 0.2584034
 ```
 
 References
