@@ -8,68 +8,32 @@ skcla_rf(
   attribute,
   slevels,
   n_estimators = 100,
-  criterion = c("gini", "entropy", "log_loss"),
   max_depth = NULL,
   min_samples_split = 2,
   min_samples_leaf = 1,
-  min_weight_fraction_leaf = 0,
   max_features = "sqrt",
-  max_leaf_nodes = NULL,
-  min_impurity_decrease = 0,
-  bootstrap = TRUE,
-  oob_score = FALSE,
-  n_jobs = NULL,
-  random_state = NULL,
-  verbose = 0,
-  warm_start = FALSE,
   class_weight = NULL,
-  ccp_alpha = 0,
-  max_samples = NULL,
-  monotonic_cst = NULL
+  random_state = NULL
 )
 }
 \arguments{
-\item{attribute}{Target attribute name for model building}
+\item{attribute}{Target attribute name for model building.}
 
-\item{slevels}{List of possible values for classification target}
+\item{slevels}{List of possible values for classification target.}
 
-\item{n_estimators}{Number of trees in random forest}
+\item{n_estimators}{Number of trees in the forest.}
 
-\item{criterion}{Function name for measuring split quality}
+\item{max_depth}{Maximum tree depth value.}
 
-\item{max_depth}{Maximum tree depth value}
+\item{min_samples_split}{Minimum samples needed for an internal node split.}
 
-\item{min_samples_split}{Minimum samples needed for internal node split}
+\item{min_samples_leaf}{Minimum samples needed at a leaf node.}
 
-\item{min_samples_leaf}{Minimum samples needed at leaf node}
+\item{max_features}{Number of features to consider at each split. Use \code{"sqrt"}, \code{"log2"}, \code{NULL}, or a numeric value.}
 
-\item{min_weight_fraction_leaf}{Minimum weighted fraction value}
+\item{class_weight}{Optional weights associated with classes.}
 
-\item{max_features}{Number of features to consider for best split}
-
-\item{max_leaf_nodes}{Maximum number of leaf nodes}
-
-\item{min_impurity_decrease}{Minimum impurity decrease needed for split}
-
-\item{bootstrap}{Whether to use bootstrap samples}
-
-\item{oob_score}{Whether to use out-of-bag samples}
-
-\item{n_jobs}{Number of parallel jobs}
-
-\item{random_state}{Seed for random number generation}
-
-\item{verbose}{Whether to enable verbose output}
-
-\item{warm_start}{Whether to reuse previous solution}
-
-\item{class_weight}{Weights associated with classes}
-
-\item{ccp_alpha}{Complexity parameter value for pruning}
-
-\item{max_samples}{Number of samples for training estimators}
-
-\item{monotonic_cst}{Monotonicity constraints for features}
+\item{random_state}{Optional seed for reproducibility.}
 }
 \value{
 A \code{skcla_rf} classifier object.
@@ -84,18 +48,16 @@ Tree Ensemble
 \examples{
 \dontrun{
 data(iris)
-
-# 1) Define classifier with target attribute and its levels
-clf <- skcla_rf(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 200)
-
-# 2) Fit and predict
+clf <- skcla_rf(
+  attribute = "Species",
+  slevels = levels(iris$Species),
+  n_estimators = 200,
+  max_features = "sqrt"
+)
 clf <- daltoolbox::fit(clf, iris)
-pred <- predict(clf, iris)   # wrapper drops target column internally
+pred <- predict(clf, iris)
 table(pred, iris$Species)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
 }
 \references{
 Breiman, L. (2001). Random Forests. Machine Learning.

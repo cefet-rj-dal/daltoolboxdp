@@ -4,7 +4,7 @@
 \alias{skcla_nb}
 \title{Gaussian Naive Bayes Classifier}
 \usage{
-skcla_nb(attribute, slevels, var_smoothing = 1e-09, priors = NULL)
+skcla_nb(attribute, slevels, var_smoothing = 1e-09)
 }
 \arguments{
 \item{attribute}{Target attribute name for model building}
@@ -12,8 +12,6 @@ skcla_nb(attribute, slevels, var_smoothing = 1e-09, priors = NULL)
 \item{slevels}{List of possible values for classification target}
 
 \item{var_smoothing}{Portion of the largest variance of all features that is added to variances}
-
-\item{priors}{Prior probabilities of the classes. If specified must be a list of length n_classes}
 }
 \value{
 A \code{skcla_nb} classifier object.

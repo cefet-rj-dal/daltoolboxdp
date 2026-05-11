@@ -10,10 +10,7 @@ R entry points (see R/skcla_svc.R):
 from sklearn.svm import SVC
 import pandas as pd
 
-def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001, 
-               C=1.0, shrinking=True, probability=False, cache_size=200, 
-               class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', 
-               break_ties=False, random_state=None):
+def skcla_svc_create(C=1.0, kernel='rbf', gamma='scale', degree=3, coef0=0.0, probability=False, class_weight=None):
     
     model = SVC(
         C=C,
@@ -21,16 +18,8 @@ def skcla_svc_create(kernel='rbf', degree=3, gamma='scale', coef0=0.0, tol=0.001
         degree=degree,
         gamma=gamma,
         coef0=coef0,
-        shrinking=shrinking,
         probability=probability,
-        tol=tol,
-        cache_size=cache_size,
-        class_weight=class_weight,
-        verbose=verbose,
-        max_iter=max_iter,
-        decision_function_shape=decision_function_shape,
-        break_ties=break_ties,
-        random_state=random_state
+        class_weight=class_weight
     )
     
     return model

@@ -11,17 +11,11 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import pandas as pd
 
-def skcla_knn_create(n_neighbors=5, weights='uniform', algorithm='auto', leaf_size=30, 
-               p=2, metric='minkowski', metric_params=None, n_jobs=None):
+def skcla_knn_create(n_neighbors=5, weights='uniform', metric='euclidean'):
     model = KNeighborsClassifier(
         n_neighbors=n_neighbors,
         weights=weights,
-        algorithm=algorithm,
-        leaf_size=leaf_size,
-        p=p,
-        metric=metric,
-        metric_params=metric_params,
-        n_jobs=n_jobs
+        metric=metric
     )
     return model
 

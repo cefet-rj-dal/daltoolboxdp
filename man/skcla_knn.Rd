@@ -9,34 +9,20 @@ skcla_knn(
   slevels,
   n_neighbors = 5,
   weights = c("uniform", "distance"),
-  algorithm = c("auto", "ball_tree", "kd_tree", "brute"),
-  leaf_size = 30,
-  p = 2,
-  metric = "minkowski",
-  metric_params = NULL,
-  n_jobs = NULL
+  metric = c("euclidean", "manhattan", "chebyshev", "minkowski")
 )
 }
 \arguments{
-\item{attribute}{Target attribute name for model building}
+\item{attribute}{Target attribute name for model building.}
 
-\item{slevels}{List of possible values for classification target}
+\item{slevels}{List of possible values for classification target.}
 
-\item{n_neighbors}{Number of neighbors to use for queries}
+\item{n_neighbors}{Number of neighbors to use for queries.}
 
-\item{weights}{Weight function used in prediction ('uniform', 'distance')}
+\item{weights}{Weight function used in prediction. One of \code{"uniform"} or \code{"distance"}.}
 
-\item{algorithm}{Algorithm used to compute nearest neighbors ('auto', 'ball_tree', 'kd_tree', 'brute')}
-
-\item{leaf_size}{Leaf size passed to BallTree or KDTree}
-
-\item{p}{Power parameter for the Minkowski metric}
-
-\item{metric}{Distance metric for the tree ('euclidean', 'manhattan', 'chebyshev', 'minkowski', etc.)}
-
-\item{metric_params}{Additional parameters for the metric function}
-
-\item{n_jobs}{Number of parallel jobs for neighbor searches}
+\item{metric}{Distance metric used by the neighbor search. One of
+\code{"euclidean"}, \code{"manhattan"}, \code{"chebyshev"}, or \code{"minkowski"}.}
 }
 \value{
 A \code{skcla_knn} classifier object.
@@ -51,18 +37,16 @@ K-Nearest Neighbors Classifier
 \examples{
 \dontrun{
 data(iris)
-
-# 1) Initialize KNN (k=7) with target attribute + levels
-clf <- skcla_knn(attribute = 'Species', slevels = levels(iris$Species), n_neighbors = 7)
-
-# 2) Fit and predict; factors are handled internally
+clf <- skcla_knn(
+  attribute = "Species",
+  slevels = levels(iris$Species),
+  n_neighbors = 7,
+  weights = "distance"
+)
 clf <- daltoolbox::fit(clf, iris)
 pred <- predict(clf, iris)
 table(pred, iris$Species)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_knn.md
 }
 \references{
 Cover, T., & Hart, P. (1967). Nearest neighbor pattern classification.

@@ -1,129 +1,95 @@
 #' SVM Classifier
-#'@title Support Vector Machine Classification
-#'@description Implements classification using support vector machines.
+#' @title Support Vector Machine Classification
+#' @description Implements classification using support vector machines.
 #' Wraps scikit-learn's `SVC` through `reticulate`.
-#'@param attribute Target attribute name for model building
-#'@param slevels List of possible values for classification target
-#'@param C Regularization strength parameter
-#'@param kernel Kernel function type ('linear', 'poly', 'rbf', 'sigmoid')
-#'@param degree Polynomial degree when using 'poly' kernel
-#'@param gamma Kernel coefficient value
-#'@param coef0 Independent term value in kernel function
-#'@param probability Whether to enable probability estimates
-#'@param shrinking Whether to use shrinking heuristic
-#'@param tol Tolerance value for stopping criterion
-#'@param cache_size Kernel cache size value in MB
-#'@param class_weight Weights associated with classes
-#'@param verbose Whether to enable verbose output
-#'@param max_iter Maximum number of iterations
-#'@param decision_function_shape Shape of decision function ('ovo', 'ovr')
-#'@param break_ties Whether to break tie decisions
-#'@param random_state Seed for random number generation
-#'@return A `skcla_svc` classifier object.
+#' @param attribute Target attribute name for model building.
+#' @param slevels List of possible values for classification target.
+#' @param C Regularization strength parameter.
+#' @param kernel Kernel function type. One of `"rbf"`, `"linear"`, `"poly"`, or `"sigmoid"`.
+#' @param gamma Kernel coefficient value. Use `"scale"`, `"auto"`, or a numeric value.
+#' @param degree Polynomial degree when using `kernel = "poly"`.
+#' @param coef0 Independent term value in polynomial and sigmoid kernels.
+#' @param probability Whether to enable probability estimates.
+#' @param class_weight Optional weights associated with classes.
+#' @return A `skcla_svc` classifier object.
 #'
-#'@references
+#' @references
 #' Cortes, C., & Vapnik, V. (1995). Support-Vector Networks.
-#'@examples
-#'\dontrun{
-#'data(iris)
-#'
-#'# 1) Create SVM classifier (RBF kernel)
-#'clf <- skcla_svc(attribute = 'Species', slevels = levels(iris$Species), kernel = 'rbf', C = 1)
-#'
-#'# 2) Fit and predict
-#'clf <- daltoolbox::fit(clf, iris)
-#'pred <- predict(clf, iris)
-#'table(pred, iris$Species)
-#'}
-#'
-#'# More examples:
-#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
-#'@import daltoolbox
-#'@export
+#' @examples
+#' \dontrun{
+#' data(iris)
+#' clf <- skcla_svc(
+#'   attribute = "Species",
+#'   slevels = levels(iris$Species),
+#'   kernel = "rbf",
+#'   C = 1
+#' )
+#' clf <- daltoolbox::fit(clf, iris)
+#' pred <- predict(clf, iris)
+#' table(pred, iris$Species)
+#' }
+#' @import daltoolbox
+#' @export
 skcla_svc <- function(attribute, slevels,
-                    kernel = c("rbf", "linear", "poly", "sigmoid"),
-                    degree = 3,
-                    gamma = 'scale',
-                    coef0 = 0.0,
-                    tol = 0.001,
-                    C = 1.0,
-                    shrinking = TRUE,
-                    probability = FALSE,
-                    cache_size = 200,
-                    class_weight = NULL,
-                    verbose = FALSE,
-                    max_iter = -1,
-                    decision_function_shape = c("ovr", "ovo"),
-                    break_ties = FALSE,
-                    random_state = NULL) {
+                      C = 1,
+                      kernel = c("rbf", "linear", "poly", "sigmoid"),
+                      gamma = "scale",
+                      degree = 3,
+                      coef0 = 0,
+                      probability = FALSE,
+                      class_weight = NULL) {
   kernel <- match.arg(kernel)
-  decision_function_shape <- match.arg(decision_function_shape)
+
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(
     attribute = attribute,
     slevels = slevels,
-    kernel = kernel,
-    degree = as.integer(degree),
-    gamma = gamma,
-    coef0 = as.numeric(coef0),
-    tol = as.numeric(tol),
     C = as.numeric(C),
-    shrinking = shrinking,
+    kernel = kernel,
+    gamma = gamma,
+    degree = as.integer(degree),
+    coef0 = as.numeric(coef0),
     probability = probability,
-    cache_size = as.numeric(cache_size),
-    class_weight = class_weight,
-    verbose = verbose,
-    max_iter = as.integer(max_iter),
-    decision_function_shape = decision_function_shape,
-    break_ties = break_ties,
-    random_state = if(!is.null(random_state)) as.integer(random_state) else NULL
+    class_weight = class_weight
   )
-  
+
   obj <- c(obj, objex)
   class(obj) <- c("skcla_svc", cobj)
-  return(obj)
+  obj
 }
 
-#'@import daltoolbox
-#'@import reticulate
-#'@exportS3Method fit skcla_svc
+#' @import daltoolbox
+#' @import reticulate
+#' @exportS3Method fit skcla_svc
 fit.skcla_svc <- function(obj, data, ...) {
   python_path <- system.file("python/skcla_svc.py", package = "daltoolboxdp")
-    if (!file.exists(python_path)) {
-      stop("Python source file not found. Please check package installation.")
-    }
+  if (!file.exists(python_path)) {
+    stop("Python source file not found. Please check package installation.")
+  }
   reticulate::source_python(python_path)
-  
+
   if (is.null(obj$model)) {
     obj$model <- skcla_svc_create(
-      obj$kernel,
-      obj$degree,
-      obj$gamma,
-      obj$coef0,
-      obj$tol,
-      obj$C,
-      obj$shrinking,
-      obj$probability,
-      obj$cache_size,
-      obj$class_weight,
-      obj$verbose,
-      obj$max_iter,
-      obj$decision_function_shape,
-      obj$break_ties,
-      obj$random_state
+      C = obj$C,
+      kernel = obj$kernel,
+      gamma = obj$gamma,
+      degree = obj$degree,
+      coef0 = obj$coef0,
+      probability = obj$probability,
+      class_weight = obj$class_weight
     )
   }
-  
+
   data <- adjust_data.frame(data)
   obj$model <- skcla_svc_fit(obj$model, data, obj$attribute, obj$slevels)
-  
-  return(obj)
+
+  obj
 }
 
-#'@import daltoolbox
-#'@import reticulate
-#'@export
+#' @import daltoolbox
+#' @import reticulate
+#' @export
 predict.skcla_svc <- function(object, x, ...) {
   if (!exists("skcla_svc_predict")) {
     python_path <- system.file("python/skcla_svc.py", package = "daltoolboxdp")
@@ -132,13 +98,12 @@ predict.skcla_svc <- function(object, x, ...) {
     }
     reticulate::source_python(python_path)
   }
-  
-  # Prepare features for prediction
+
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
-  
+
   prediction <- skcla_svc_predict(object$model, x)
   prediction <- adjust_class_label(prediction)
-  
-  return(prediction)
+
+  prediction
 }

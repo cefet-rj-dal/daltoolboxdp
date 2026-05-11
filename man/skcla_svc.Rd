@@ -7,57 +7,33 @@
 skcla_svc(
   attribute,
   slevels,
-  kernel = c("rbf", "linear", "poly", "sigmoid"),
-  degree = 3,
-  gamma = "scale",
-  coef0 = 0,
-  tol = 0.001,
   C = 1,
-  shrinking = TRUE,
+  kernel = c("rbf", "linear", "poly", "sigmoid"),
+  gamma = "scale",
+  degree = 3,
+  coef0 = 0,
   probability = FALSE,
-  cache_size = 200,
-  class_weight = NULL,
-  verbose = FALSE,
-  max_iter = -1,
-  decision_function_shape = c("ovr", "ovo"),
-  break_ties = FALSE,
-  random_state = NULL
+  class_weight = NULL
 )
 }
 \arguments{
-\item{attribute}{Target attribute name for model building}
+\item{attribute}{Target attribute name for model building.}
 
-\item{slevels}{List of possible values for classification target}
+\item{slevels}{List of possible values for classification target.}
 
-\item{kernel}{Kernel function type ('linear', 'poly', 'rbf', 'sigmoid')}
+\item{C}{Regularization strength parameter.}
 
-\item{degree}{Polynomial degree when using 'poly' kernel}
+\item{kernel}{Kernel function type. One of \code{"rbf"}, \code{"linear"}, \code{"poly"}, or \code{"sigmoid"}.}
 
-\item{gamma}{Kernel coefficient value}
+\item{gamma}{Kernel coefficient value. Use \code{"scale"}, \code{"auto"}, or a numeric value.}
 
-\item{coef0}{Independent term value in kernel function}
+\item{degree}{Polynomial degree when using \code{kernel = "poly"}.}
 
-\item{tol}{Tolerance value for stopping criterion}
+\item{coef0}{Independent term value in polynomial and sigmoid kernels.}
 
-\item{C}{Regularization strength parameter}
+\item{probability}{Whether to enable probability estimates.}
 
-\item{shrinking}{Whether to use shrinking heuristic}
-
-\item{probability}{Whether to enable probability estimates}
-
-\item{cache_size}{Kernel cache size value in MB}
-
-\item{class_weight}{Weights associated with classes}
-
-\item{verbose}{Whether to enable verbose output}
-
-\item{max_iter}{Maximum number of iterations}
-
-\item{decision_function_shape}{Shape of decision function ('ovo', 'ovr')}
-
-\item{break_ties}{Whether to break tie decisions}
-
-\item{random_state}{Seed for random number generation}
+\item{class_weight}{Optional weights associated with classes.}
 }
 \value{
 A \code{skcla_svc} classifier object.
@@ -72,18 +48,16 @@ SVM Classifier
 \examples{
 \dontrun{
 data(iris)
-
-# 1) Create SVM classifier (RBF kernel)
-clf <- skcla_svc(attribute = 'Species', slevels = levels(iris$Species), kernel = 'rbf', C = 1)
-
-# 2) Fit and predict
+clf <- skcla_svc(
+  attribute = "Species",
+  slevels = levels(iris$Species),
+  kernel = "rbf",
+  C = 1
+)
 clf <- daltoolbox::fit(clf, iris)
 pred <- predict(clf, iris)
 table(pred, iris$Species)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/cla_svm.md
 }
 \references{
 Cortes, C., & Vapnik, V. (1995). Support-Vector Networks.

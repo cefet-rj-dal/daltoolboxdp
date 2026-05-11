@@ -10,33 +10,18 @@ R entry points (see R/skcla_gb.R):
 from sklearn.ensemble import GradientBoostingClassifier
 import pandas as pd
 
-def skcla_gb_create(loss='log_loss', learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse', 
-                  min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_depth=3, 
-                  min_impurity_decrease=0.0, init=None, random_state=None, max_features=None, verbose=0, 
-                  max_leaf_nodes=None, warm_start=False, validation_fraction=0.1, n_iter_no_change=None, 
-                  tol=0.0001, ccp_alpha=0.0):
+def skcla_gb_create(n_estimators=100, learning_rate=0.1, max_depth=3, subsample=1.0,
+                  min_samples_split=2, min_samples_leaf=1, loss='log_loss', random_state=None):
     
     model = GradientBoostingClassifier(
-        loss=loss,
-        learning_rate=learning_rate,
         n_estimators=n_estimators,
+        learning_rate=learning_rate,
+        max_depth=max_depth,
         subsample=subsample,
-        criterion=criterion,
         min_samples_split=min_samples_split,
         min_samples_leaf=min_samples_leaf,
-        min_weight_fraction_leaf=min_weight_fraction_leaf,
-        max_depth=max_depth,
-        min_impurity_decrease=min_impurity_decrease,
-        init=init,
+        loss=loss,
         random_state=random_state,
-        max_features=max_features,
-        verbose=verbose,
-        max_leaf_nodes=max_leaf_nodes,
-        warm_start=warm_start,
-        validation_fraction=validation_fraction,
-        n_iter_no_change=n_iter_no_change,
-        tol=tol,
-        ccp_alpha=ccp_alpha
     )
     
     return model

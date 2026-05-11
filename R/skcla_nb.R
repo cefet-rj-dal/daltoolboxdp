@@ -5,7 +5,6 @@
 #'@param attribute Target attribute name for model building
 #'@param slevels List of possible values for classification target
 #'@param var_smoothing Portion of the largest variance of all features that is added to variances
-#'@param priors Prior probabilities of the classes. If specified must be a list of length n_classes
 #'@return A `skcla_nb` classifier object.
 #'
 #'@references
@@ -25,12 +24,11 @@
 #'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_nb.md
 #'@import daltoolbox
 #'@export
-skcla_nb <- function(attribute, slevels, var_smoothing=1e-9, priors=NULL) {
+skcla_nb <- function(attribute, slevels, var_smoothing=1e-9) {
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(
-    var_smoothing = as.numeric(var_smoothing),
-    priors = priors
+    var_smoothing = as.numeric(var_smoothing)
   )
   
   obj <- c(obj, objex)
@@ -54,7 +52,6 @@ fit.skcla_nb <- function(obj, data, ...) {
   
   if (is.null(obj$model)) {
     obj$model <- skcla_nb_create(
-      priors = obj$priors,
       var_smoothing = obj$var_smoothing
     )
     

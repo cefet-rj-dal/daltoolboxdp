@@ -1,129 +1,91 @@
 #' Tree Ensemble
-#'@title Random Forest Classifier
-#'@description Implements classification using the Random Forest algorithm.
+#' @title Random Forest Classifier
+#' @description Implements classification using the Random Forest algorithm.
 #' Wraps scikit-learn's `RandomForestClassifier` through `reticulate`.
-#'@param attribute Target attribute name for model building
-#'@param slevels List of possible values for classification target
-#'@param n_estimators Number of trees in random forest
-#'@param criterion Function name for measuring split quality
-#'@param max_depth Maximum tree depth value
-#'@param min_samples_split Minimum samples needed for internal node split
-#'@param min_samples_leaf Minimum samples needed at leaf node
-#'@param min_weight_fraction_leaf Minimum weighted fraction value
-#'@param max_features Number of features to consider for best split
-#'@param max_leaf_nodes Maximum number of leaf nodes
-#'@param min_impurity_decrease Minimum impurity decrease needed for split
-#'@param bootstrap Whether to use bootstrap samples
-#'@param oob_score Whether to use out-of-bag samples
-#'@param n_jobs Number of parallel jobs
-#'@param random_state Seed for random number generation
-#'@param verbose Whether to enable verbose output
-#'@param warm_start Whether to reuse previous solution
-#'@param class_weight Weights associated with classes
-#'@param ccp_alpha Complexity parameter value for pruning
-#'@param max_samples Number of samples for training estimators
-#'@param monotonic_cst Monotonicity constraints for features
-#'@return A `skcla_rf` classifier object.
+#' @param attribute Target attribute name for model building.
+#' @param slevels List of possible values for classification target.
+#' @param n_estimators Number of trees in the forest.
+#' @param max_depth Maximum tree depth value.
+#' @param min_samples_split Minimum samples needed for an internal node split.
+#' @param min_samples_leaf Minimum samples needed at a leaf node.
+#' @param max_features Number of features to consider at each split. Use `"sqrt"`, `"log2"`, `NULL`, or a numeric value.
+#' @param class_weight Optional weights associated with classes.
+#' @param random_state Optional seed for reproducibility.
+#' @return A `skcla_rf` classifier object.
 #'
-#'@references
+#' @references
 #' Breiman, L. (2001). Random Forests. Machine Learning.
-#'@examples
-#'\dontrun{
-#'data(iris)
-#'
-#'# 1) Define classifier with target attribute and its levels
-#'clf <- skcla_rf(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 200)
-#'
-#'# 2) Fit and predict
-#'clf <- daltoolbox::fit(clf, iris)
-#'pred <- predict(clf, iris)   # wrapper drops target column internally
-#'table(pred, iris$Species)
-#'}
-#'
-#'# More examples:
-#'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
-#'@import daltoolbox
-#'@export
-skcla_rf <- function(attribute, slevels, n_estimators=100, criterion = c("gini", "entropy", "log_loss"), max_depth=NULL, min_samples_split=2,
-                   min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt', max_leaf_nodes=NULL,
-                   min_impurity_decrease=0.0, bootstrap=TRUE, oob_score=FALSE, n_jobs=NULL, random_state=NULL,
-                   verbose=0, warm_start=FALSE, class_weight=NULL, ccp_alpha=0.0, max_samples=NULL,
-                   monotonic_cst=NULL) {
-  criterion <- match.arg(criterion)
+#' @examples
+#' \dontrun{
+#' data(iris)
+#' clf <- skcla_rf(
+#'   attribute = "Species",
+#'   slevels = levels(iris$Species),
+#'   n_estimators = 200,
+#'   max_features = "sqrt"
+#' )
+#' clf <- daltoolbox::fit(clf, iris)
+#' pred <- predict(clf, iris)
+#' table(pred, iris$Species)
+#' }
+#' @import daltoolbox
+#' @export
+skcla_rf <- function(attribute, slevels,
+                     n_estimators = 100,
+                     max_depth = NULL,
+                     min_samples_split = 2,
+                     min_samples_leaf = 1,
+                     max_features = "sqrt",
+                     class_weight = NULL,
+                     random_state = NULL) {
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(
-    n_estimators = as.integer(n_estimators), 
-    criterion = criterion,
-    max_depth = max_depth, 
-    min_samples_split = as.integer(min_samples_split), 
+    n_estimators = as.integer(n_estimators),
+    max_depth = max_depth,
+    min_samples_split = as.integer(min_samples_split),
     min_samples_leaf = as.integer(min_samples_leaf),
-    min_weight_fraction_leaf = as.numeric(min_weight_fraction_leaf), 
     max_features = max_features,
-    max_leaf_nodes = max_leaf_nodes, 
-    min_impurity_decrease = as.numeric(min_impurity_decrease),
-    bootstrap = bootstrap, 
-    oob_score = oob_score, 
-    n_jobs = n_jobs, 
-    random_state = if(!is.null(random_state)) as.integer(random_state) else NULL,
-    verbose = as.integer(verbose), 
-    warm_start = warm_start, 
-    class_weight = class_weight, 
-    ccp_alpha = as.numeric(ccp_alpha),
-    max_samples = max_samples, 
-    monotonic_cst = monotonic_cst
+    class_weight = class_weight,
+    random_state = if (!is.null(random_state)) as.integer(random_state) else NULL
   )
-  
+
   obj <- c(obj, objex)
   class(obj) <- c("skcla_rf", cobj)
-  return(obj)
+  obj
 }
 
-#'@import daltoolbox
-#'@import reticulate
-#'@exportS3Method fit skcla_rf
+#' @import daltoolbox
+#' @import reticulate
+#' @exportS3Method fit skcla_rf
 fit.skcla_rf <- function(obj, data, ...) {
   python_path <- system.file("python/skcla_rf.py", package = "daltoolboxdp")
   if (!file.exists(python_path)) {
     stop("Python source file not found. Please check package installation.")
   }
   reticulate::source_python(python_path)
-  
+
   if (is.null(obj$model)) {
     obj$model <- skcla_rf_create(
-      as.integer(obj$n_estimators),
-      obj$criterion,
-      obj$max_depth,
-      as.integer(obj$min_samples_split),
-      as.integer(obj$min_samples_leaf),
-      obj$min_weight_fraction_leaf,
-      obj$max_features,
-      obj$max_leaf_nodes,
-      obj$min_impurity_decrease,
-      obj$bootstrap,
-      obj$oob_score,
-      obj$n_jobs,
-      obj$random_state,
-      as.integer(obj$verbose),
-      obj$warm_start,
-      obj$class_weight,
-      obj$ccp_alpha,
-      obj$max_samples,
-      obj$monotonic_cst
+      n_estimators = obj$n_estimators,
+      max_depth = obj$max_depth,
+      min_samples_split = obj$min_samples_split,
+      min_samples_leaf = obj$min_samples_leaf,
+      max_features = obj$max_features,
+      class_weight = obj$class_weight,
+      random_state = obj$random_state
     )
   }
-  
-  # Adjust the data frame (factor handling, ordering, etc.)
+
   data <- adjust_data.frame(data)
-  
   obj$model <- skcla_rf_fit(obj$model, data, obj$attribute)
-  
-  return(obj)
+
+  obj
 }
 
-#'@import daltoolbox
-#'@import reticulate
-#'@export
+#' @import daltoolbox
+#' @import reticulate
+#' @export
 predict.skcla_rf  <- function(object, x, ...) {
   if (!exists("skcla_rf_predict")) {
     python_path <- system.file("python/skcla_rf.py", package = "daltoolboxdp")
@@ -132,13 +94,12 @@ predict.skcla_rf  <- function(object, x, ...) {
     }
     reticulate::source_python(python_path)
   }
-  
-  # Prepare features for prediction
+
   x <- adjust_data.frame(x)
   x <- x[, !names(x) %in% object$attribute]
-  
+
   prediction <- skcla_rf_predict(object$model, x)
   prediction <- adjust_class_label(prediction)
-  
-  return(prediction)
+
+  prediction
 }

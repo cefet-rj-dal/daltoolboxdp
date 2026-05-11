@@ -12,76 +12,35 @@ skcla_mlp(
   solver = c("adam", "lbfgs", "sgd"),
   alpha = 1e-04,
   batch_size = "auto",
-  learning_rate = c("constant", "invscaling", "adaptive"),
   learning_rate_init = 0.001,
-  power_t = 0.5,
   max_iter = 200,
-  shuffle = TRUE,
-  random_state = NULL,
-  tol = 1e-04,
-  verbose = FALSE,
-  warm_start = FALSE,
-  momentum = 0.9,
-  nesterovs_momentum = TRUE,
   early_stopping = FALSE,
-  validation_fraction = 0.1,
-  beta_1 = 0.9,
-  beta_2 = 0.999,
-  epsilon = 1e-08,
-  n_iter_no_change = 10,
-  max_fun = 15000
+  random_state = NULL
 )
 }
 \arguments{
-\item{attribute}{Target attribute name for model building}
+\item{attribute}{Target attribute name for model building.}
 
-\item{slevels}{List of possible values for classification target}
+\item{slevels}{List of possible values for classification target.}
 
-\item{hidden_layer_sizes}{Number of neurons in each hidden layer}
+\item{hidden_layer_sizes}{Number of neurons in each hidden layer.}
 
-\item{activation}{Activation function for hidden layer ('identity', 'logistic', 'tanh', 'relu')}
+\item{activation}{Activation function for hidden layers. One of
+\code{"relu"}, \code{"identity"}, \code{"logistic"}, or \code{"tanh"}.}
 
-\item{solver}{The solver for weight optimization ('lbfgs', 'sgd', 'adam')}
+\item{solver}{Optimizer used for training. One of \code{"adam"}, \code{"lbfgs"}, or \code{"sgd"}.}
 
-\item{alpha}{L2 penalty (regularization term) parameter}
+\item{alpha}{L2 penalty (regularization term).}
 
-\item{batch_size}{Size of minibatches for stochastic optimizers}
+\item{batch_size}{Size of minibatches for stochastic optimizers. Use \code{"auto"} or an integer.}
 
-\item{learning_rate}{Learning rate schedule for weight updates}
+\item{learning_rate_init}{Initial learning rate used by stochastic solvers.}
 
-\item{learning_rate_init}{Initial learning rate used}
+\item{max_iter}{Maximum number of iterations.}
 
-\item{power_t}{Exponent for inverse scaling learning rate}
+\item{early_stopping}{Whether to use early stopping.}
 
-\item{max_iter}{Maximum number of iterations}
-
-\item{shuffle}{Whether to shuffle samples in each iteration}
-
-\item{random_state}{Seed for random number generation}
-
-\item{tol}{Tolerance for optimization}
-
-\item{verbose}{Whether to print progress messages to stdout}
-
-\item{warm_start}{Whether to reuse previous solution}
-
-\item{momentum}{Momentum for gradient descent update}
-
-\item{nesterovs_momentum}{Whether to use Nesterov's momentum}
-
-\item{early_stopping}{Whether to use early stopping}
-
-\item{validation_fraction}{Proportion of training data for validation}
-
-\item{beta_1}{Exponential decay rate for estimates of first moment vector}
-
-\item{beta_2}{Exponential decay rate for estimates of second moment vector}
-
-\item{epsilon}{Value for numerical stability in adam}
-
-\item{n_iter_no_change}{Maximum number of epochs to not meet tol improvement}
-
-\item{max_fun}{Maximum number of loss function calls}
+\item{random_state}{Optional seed for random number generation.}
 }
 \value{
 A \code{skcla_mlp} classifier object.
@@ -96,19 +55,16 @@ Neural Network Classifier
 \examples{
 \dontrun{
 data(iris)
-
-# 1) Define MLP architecture (two hidden layers)
-clf <- skcla_mlp(attribute = 'Species', slevels = levels(iris$Species), 
-                hidden_layer_sizes = c(32, 16))
-
-# 2) Fit and predict
+clf <- skcla_mlp(
+  attribute = "Species",
+  slevels = levels(iris$Species),
+  hidden_layer_sizes = c(32, 16),
+  activation = "relu"
+)
 clf <- daltoolbox::fit(clf, iris)
 pred <- predict(clf, iris)
 table(pred, iris$Species)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_mlp.md
 }
 \references{
 Bishop, C. M. (1995). Neural Networks for Pattern Recognition.

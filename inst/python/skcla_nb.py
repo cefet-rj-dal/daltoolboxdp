@@ -13,9 +13,8 @@ from sklearn.naive_bayes import GaussianNB
 import numpy as np
 import pandas as pd
 
-def skcla_nb_create(priors=None, var_smoothing=1e-9):
+def skcla_nb_create(var_smoothing=1e-9):
     model = GaussianNB(
-        priors=priors,
         var_smoothing=var_smoothing
     )
     return model

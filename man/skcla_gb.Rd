@@ -7,72 +7,36 @@
 skcla_gb(
   attribute,
   slevels,
-  loss = c("log_loss", "exponential"),
-  learning_rate = 0.1,
   n_estimators = 100,
+  learning_rate = 0.1,
+  max_depth = 3,
   subsample = 1,
-  criterion = c("friedman_mse", "squared_error"),
   min_samples_split = 2,
   min_samples_leaf = 1,
-  min_weight_fraction_leaf = 0,
-  max_depth = 3,
-  min_impurity_decrease = 0,
-  init = NULL,
-  random_state = NULL,
-  max_features = NULL,
-  verbose = 0,
-  max_leaf_nodes = NULL,
-  warm_start = FALSE,
-  validation_fraction = 0.1,
-  n_iter_no_change = NULL,
-  tol = 1e-04,
-  ccp_alpha = 0
+  loss = c("log_loss", "exponential"),
+  random_state = NULL
 )
 }
 \arguments{
-\item{attribute}{Target attribute name for model building}
+\item{attribute}{Target attribute name for model building.}
 
-\item{slevels}{Possible values for the target classification}
+\item{slevels}{Possible values for the target classification.}
 
-\item{loss}{Loss function to be optimized ('log_loss', 'exponential')}
+\item{n_estimators}{Number of boosting stages to perform.}
 
-\item{learning_rate}{Learning rate that shrinks the contribution of each tree}
+\item{learning_rate}{Learning rate that shrinks the contribution of each tree.}
 
-\item{n_estimators}{Number of boosting stages to perform}
+\item{max_depth}{Maximum depth of the individual regression estimators.}
 
-\item{subsample}{Fraction of samples to be used for fitting the individual base learners}
+\item{subsample}{Fraction of samples used to fit each stage.}
 
-\item{criterion}{Function to measure the quality of a split}
+\item{min_samples_split}{Minimum number of samples required to split an internal node.}
 
-\item{min_samples_split}{Minimum number of samples required to split an internal node}
+\item{min_samples_leaf}{Minimum number of samples required to be at a leaf node.}
 
-\item{min_samples_leaf}{Minimum number of samples required to be at a leaf node}
+\item{loss}{Loss function to be optimized. One of \code{"log_loss"} or \code{"exponential"}.}
 
-\item{min_weight_fraction_leaf}{Minimum weighted fraction of the sum total of weights}
-
-\item{max_depth}{Maximum depth of the individual regression estimators}
-
-\item{min_impurity_decrease}{Minimum impurity decrease required for split}
-
-\item{init}{Estimator object to initialize the model}
-
-\item{random_state}{Random number generator seed}
-
-\item{max_features}{Number of features to consider for best split}
-
-\item{verbose}{Controls verbosity of the output}
-
-\item{max_leaf_nodes}{Maximum number of leaf nodes}
-
-\item{warm_start}{Whether to reuse solution of previous call}
-
-\item{validation_fraction}{Proportion of training data to set aside for validation}
-
-\item{n_iter_no_change}{Used to decide if early stopping will be used}
-
-\item{tol}{Tolerance for early stopping}
-
-\item{ccp_alpha}{Complexity parameter for cost-complexity pruning}
+\item{random_state}{Optional random number generator seed.}
 }
 \value{
 A \code{skcla_gb} classifier object.
@@ -87,14 +51,16 @@ Tree Boosting
 \examples{
 \dontrun{
 data(iris)
-clf <- skcla_gb(attribute = 'Species', slevels = levels(iris$Species), n_estimators = 150)
+clf <- skcla_gb(
+  attribute = "Species",
+  slevels = levels(iris$Species),
+  n_estimators = 150,
+  learning_rate = 0.05
+)
 clf <- daltoolbox::fit(clf, iris)
 pred <- predict(clf, iris)
 table(pred, iris$Species)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_gb.md
 }
 \references{
 Friedman, J. H. (2001). Greedy Function Approximation: A Gradient Boosting Machine.
