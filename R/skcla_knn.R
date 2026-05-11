@@ -35,13 +35,15 @@
 #'@export
 skcla_knn <- function(attribute, slevels, 
                     n_neighbors = 5, 
-                    weights = 'uniform', 
-                    algorithm = 'auto', 
+                    weights = c("uniform", "distance"), 
+                    algorithm = c("auto", "ball_tree", "kd_tree", "brute"), 
                     leaf_size = 30, 
                     p = 2, 
                     metric = 'minkowski', 
                     metric_params = NULL, 
                     n_jobs = NULL) {
+  weights <- match.arg(weights)
+  algorithm <- match.arg(algorithm)
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(

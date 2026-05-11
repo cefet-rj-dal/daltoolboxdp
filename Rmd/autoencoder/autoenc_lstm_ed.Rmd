@@ -60,6 +60,9 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- The encode-decode LSTM variant uses the same recurrent controls as `autoenc_lstm_e`, but reconstruction quality becomes especially sensitive to `sequence_length`.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

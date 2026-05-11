@@ -62,6 +62,10 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- `encoding_sizes = c(16L, 8L, 4L)` creates progressively smaller latent stages.
+- `encoder_hidden_sizes` can be a single vector shared by all stages or a list with one layout per stage.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

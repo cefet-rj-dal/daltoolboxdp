@@ -10,27 +10,40 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
+from autoenc_common import AutoencTrainingConfig, StopController, activation_module, build_dense_stack, ensure_int_list, split_indices, validate_strategy
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "leaky_relu",
+        negative_slope: float = 0.2,
+        output_activation: str = "sigmoid",
+    ):
         super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(int(input_size), 64),
-            nn.LeakyReLU(0.2),
-            nn.Linear(64, 32),
-            nn.LeakyReLU(0.2),
-        )
-        self.mean_layer = nn.Linear(32, int(encoding_size))
-        self.var_layer = nn.Linear(32, int(encoding_size))
-        self.decoder = nn.Sequential(
-            nn.Linear(int(encoding_size), 32),
-            nn.LeakyReLU(0.2),
-            nn.Linear(32, 64),
-            nn.LeakyReLU(0.2),
-            nn.Linear(64, int(input_size)),
-            nn.Sigmoid(),
+        encoder_hidden_sizes = ensure_int_list(encoder_hidden_sizes, default=[64, 32])
+        decoder_hidden_sizes = ensure_int_list(decoder_hidden_sizes, default=list(reversed(encoder_hidden_sizes)))
+        encoder_layers = []
+        prev = int(input_size)
+        for hidden_size in encoder_hidden_sizes:
+            encoder_layers.append(nn.Linear(prev, int(hidden_size)))
+            encoder_layers.append(activation_module(activation, negative_slope=negative_slope))
+            prev = int(hidden_size)
+        self.encoder = nn.Sequential(*encoder_layers)
+        latent_input_dim = prev
+        self.mean_layer = nn.Linear(latent_input_dim, int(encoding_size))
+        self.var_layer = nn.Linear(latent_input_dim, int(encoding_size))
+        self.decoder = build_dense_stack(
+            int(encoding_size),
+            decoder_hidden_sizes,
+            int(input_size),
+            activation=activation,
+            output_activation=output_activation,
+            negative_slope=negative_slope,
         )
 
     def encode(self, x: torch.Tensor):
@@ -50,16 +63,43 @@ class VariationalAutoencoder(nn.Module):
         return self.decode(z), mean, var
 
 
-def _vae_loss(outputs, inputs, mean, var):
-    reproduction_loss = nn.functional.binary_cross_entropy(outputs, inputs, reduction="sum")
+def _vae_loss(outputs, inputs, mean, var, reconstruction_loss: str = "bce"):
+    reconstruction_loss = str(reconstruction_loss).lower()
+    if reconstruction_loss == "bce":
+        reproduction_loss = nn.functional.binary_cross_entropy(outputs, inputs, reduction="sum")
+    elif reconstruction_loss == "mse":
+        reproduction_loss = nn.functional.mse_loss(outputs, inputs, reduction="sum")
+    else:
+        raise ValueError("reconstruction_loss must be one of {'bce', 'mse'}")
     kld = -0.5 * torch.sum(1 + var - mean.pow(2) - var.exp())
     return reproduction_loss + kld
 
 
 class VariationalAutoencoderModel:
-    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "leaky_relu",
+        negative_slope: float = 0.2,
+        output_activation: str = "sigmoid",
+        reconstruction_loss: str = "bce",
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.model = VariationalAutoencoder(input_size, encoding_size).float()
+        self.model = VariationalAutoencoder(
+            input_size,
+            encoding_size,
+            encoder_hidden_sizes=encoder_hidden_sizes,
+            decoder_hidden_sizes=decoder_hidden_sizes,
+            activation=activation,
+            negative_slope=negative_slope,
+            output_activation=output_activation,
+        ).float()
+        self.reconstruction_loss = str(reconstruction_loss).lower()
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
@@ -81,13 +121,13 @@ class VariationalAutoencoderModel:
             with torch.no_grad():
                 for xb, yb in loader:
                     out, mean, var = self.model(xb.float())
-                    losses.append(float(_vae_loss(out, yb.float(), mean, var).item()))
+                    losses.append(float(_vae_loss(out, yb.float(), mean, var, reconstruction_loss=self.reconstruction_loss).item()))
         else:
             self.model.train()
             for xb, yb in loader:
                 optimizer.zero_grad()
                 out, mean, var = self.model(xb.float())
-                loss = _vae_loss(out, yb.float(), mean, var)
+                loss = _vae_loss(out, yb.float(), mean, var, reconstruction_loss=self.reconstruction_loss)
                 loss.backward()
                 optimizer.step()
                 losses.append(float(loss.item()))
@@ -154,8 +194,30 @@ class VariationalAutoencoderModel:
         return np.concatenate(outs, axis=0)
 
 
-def autoenc_variational_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
-    return VariationalAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def autoenc_variational_create(
+    input_size,
+    encoding_size,
+    encoder_hidden_sizes=None,
+    decoder_hidden_sizes=None,
+    activation="leaky_relu",
+    negative_slope=0.2,
+    output_activation="sigmoid",
+    reconstruction_loss="bce",
+    validation_strategy="static",
+    stopping_rule="none",
+):
+    return VariationalAutoencoderModel(
+        input_size,
+        encoding_size,
+        encoder_hidden_sizes=encoder_hidden_sizes,
+        decoder_hidden_sizes=decoder_hidden_sizes,
+        activation=activation,
+        negative_slope=negative_slope,
+        output_activation=output_activation,
+        reconstruction_loss=reconstruction_loss,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def autoenc_variational_fit(vae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):

@@ -66,6 +66,9 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Reconstruction quality is affected by both decoder width and discriminator strength, so vary them together during tuning.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

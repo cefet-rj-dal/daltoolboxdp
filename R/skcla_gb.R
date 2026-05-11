@@ -42,11 +42,11 @@
 #'@import daltoolbox
 #'@export
 skcla_gb <- function(attribute, slevels,
-                   loss = 'log_loss',
+                   loss = c("log_loss", "exponential"),
                    learning_rate = 0.1,
                    n_estimators = 100,
                    subsample = 1.0,
-                   criterion = 'friedman_mse',
+                   criterion = c("friedman_mse", "squared_error"),
                    min_samples_split = 2,
                    min_samples_leaf = 1,
                    min_weight_fraction_leaf = 0.0,
@@ -62,6 +62,8 @@ skcla_gb <- function(attribute, slevels,
                    n_iter_no_change = NULL,
                    tol = 0.0001,
                    ccp_alpha = 0.0) {
+  loss <- match.arg(loss)
+  criterion <- match.arg(criterion)
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(

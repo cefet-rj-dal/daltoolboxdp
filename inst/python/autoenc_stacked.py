@@ -10,26 +10,90 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
+from autoenc_common import AutoencTrainingConfig, StopController, build_dense_stack, ensure_int_list, split_indices, validate_strategy
 
 
 class StackUnit(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "relu",
+        output_activation: str = "none",
+        negative_slope: float = 0.2,
+    ):
         super().__init__()
-        self.encoder = nn.Sequential(nn.Linear(int(input_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(encoding_size)))
-        self.decoder = nn.Sequential(nn.Linear(int(encoding_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(input_size)))
+        encoder_hidden_sizes = [64] if encoder_hidden_sizes is None else encoder_hidden_sizes
+        decoder_hidden_sizes = list(reversed(list(encoder_hidden_sizes))) if decoder_hidden_sizes is None else decoder_hidden_sizes
+        self.encoder = build_dense_stack(
+            int(input_size),
+            encoder_hidden_sizes,
+            int(encoding_size),
+            activation=activation,
+            negative_slope=negative_slope,
+        )
+        self.decoder = build_dense_stack(
+            int(encoding_size),
+            decoder_hidden_sizes,
+            int(input_size),
+            activation=activation,
+            output_activation=output_activation,
+            negative_slope=negative_slope,
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.decoder(self.encoder(x))
 
 
 class StackedAutoencoderModel:
-    def __init__(self, input_size: int, encoding_size: int, k: int = 3, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        k: int = 3,
+        encoding_sizes=None,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "relu",
+        output_activation: str = "none",
+        negative_slope: float = 0.2,
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.stack = [StackUnit(input_size, encoding_size).float() for _ in range(int(k))]
+        self.encoding_sizes = ensure_int_list(encoding_sizes, default=[int(encoding_size)] * int(k))
+        self.stage_count = len(self.encoding_sizes)
+        self.stack: List[StackUnit] = []
+        current_size = int(input_size)
+        encoder_hidden_per_stage = self._expand_stage_param(encoder_hidden_sizes, self.stage_count, default=[64])
+        decoder_hidden_per_stage = self._expand_stage_param(decoder_hidden_sizes, self.stage_count, default=None)
+        for idx, latent_size in enumerate(self.encoding_sizes):
+            unit = StackUnit(
+                current_size,
+                latent_size,
+                encoder_hidden_sizes=encoder_hidden_per_stage[idx],
+                decoder_hidden_sizes=decoder_hidden_per_stage[idx],
+                activation=activation,
+                output_activation=output_activation,
+                negative_slope=negative_slope,
+            ).float()
+            self.stack.append(unit)
+            current_size = int(latent_size)
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
+
+    @staticmethod
+    def _expand_stage_param(value, n_stages: int, default=None):
+        if value is None:
+            return [default for _ in range(n_stages)]
+        if isinstance(value, (list, tuple)) and value and isinstance(value[0], (list, tuple, np.ndarray)):
+            if len(value) != n_stages:
+                raise ValueError("Stage-specific parameter lists must match the number of stacked stages.")
+            return [list(v) if v is not None else default for v in value]
+        return [value for _ in range(n_stages)]
 
     @staticmethod
     def _array(data):
@@ -113,6 +177,15 @@ class StackedAutoencoderModel:
                 outs.append(unit.encoder(xb.float()).detach().numpy())
         return np.concatenate(outs, axis=0)
 
+    def _decode_unit(self, unit: nn.Module, array: np.ndarray, batch_size: int):
+        loader = self._loader(array, batch_size, False)
+        outs = []
+        unit.eval()
+        with torch.no_grad():
+            for xb, _ in loader:
+                outs.append(unit.decoder(xb.float()).detach().numpy())
+        return np.concatenate(outs, axis=0)
+
     def fit(self, data, config: AutoencTrainingConfig):
         if config.seed is not None:
             np.random.seed(int(config.seed))
@@ -126,28 +199,53 @@ class StackedAutoencoderModel:
             self.train_loss = train_hist
             self.val_loss = val_hist
             self.epochs_done += done
-            current = self._encode_decode_unit(unit, current, config.batch_size)
+            current = self._encode_unit(unit, current, config.batch_size)
         return self
 
     def encode(self, data, batch_size=32):
         array = self._array(data)
         current = array
-        if len(self.stack) == 1:
-            return self._encode_unit(self.stack[0], current, batch_size)
-        for unit in self.stack[:-1]:
-            current = self._encode_decode_unit(unit, current, batch_size)
-        return self._encode_unit(self.stack[-1], current, batch_size)
+        for unit in self.stack:
+            current = self._encode_unit(unit, current, batch_size)
+        return current
 
     def encode_decode(self, data, batch_size=32):
         array = self._array(data)
-        current = array
+        encoded = array
         for unit in self.stack:
-            current = self._encode_decode_unit(unit, current, batch_size)
-        return current
+            encoded = self._encode_unit(unit, encoded, batch_size)
+        reconstructed = encoded
+        for unit in reversed(self.stack):
+            reconstructed = self._decode_unit(unit, reconstructed, batch_size)
+        return reconstructed
 
 
-def autoenc_stacked_create(input_size, encoding_size, k=3, validation_strategy="static", stopping_rule="none"):
-    return StackedAutoencoderModel(input_size, encoding_size, k=k, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def autoenc_stacked_create(
+    input_size,
+    encoding_size,
+    k=3,
+    encoding_sizes=None,
+    encoder_hidden_sizes=None,
+    decoder_hidden_sizes=None,
+    activation="relu",
+    output_activation="none",
+    negative_slope=0.2,
+    validation_strategy="static",
+    stopping_rule="none",
+):
+    return StackedAutoencoderModel(
+        input_size,
+        encoding_size,
+        k=k,
+        encoding_sizes=encoding_sizes,
+        encoder_hidden_sizes=encoder_hidden_sizes,
+        decoder_hidden_sizes=decoder_hidden_sizes,
+        activation=activation,
+        output_activation=output_activation,
+        negative_slope=negative_slope,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def autoenc_stacked_fit(stack, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):

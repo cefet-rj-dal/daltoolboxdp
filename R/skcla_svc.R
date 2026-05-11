@@ -41,7 +41,7 @@
 #'@import daltoolbox
 #'@export
 skcla_svc <- function(attribute, slevels,
-                    kernel = 'rbf',
+                    kernel = c("rbf", "linear", "poly", "sigmoid"),
                     degree = 3,
                     gamma = 'scale',
                     coef0 = 0.0,
@@ -53,9 +53,11 @@ skcla_svc <- function(attribute, slevels,
                     class_weight = NULL,
                     verbose = FALSE,
                     max_iter = -1,
-                    decision_function_shape = 'ovr',
+                    decision_function_shape = c("ovr", "ovo"),
                     break_ties = FALSE,
                     random_state = NULL) {
+  kernel <- match.arg(kernel)
+  decision_function_shape <- match.arg(decision_function_shape)
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(

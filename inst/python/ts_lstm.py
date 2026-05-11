@@ -37,11 +37,60 @@ class _TrainingConfig:
     seed: Optional[int] = 42
 
 
+def _activation(name: str) -> nn.Module:
+    name = str(name).lower()
+    if name == "relu":
+        return nn.ReLU(inplace=True)
+    if name == "leaky_relu":
+        return nn.LeakyReLU(0.2, inplace=True)
+    if name == "elu":
+        return nn.ELU(inplace=True)
+    if name == "gelu":
+        return nn.GELU()
+    if name == "tanh":
+        return nn.Tanh()
+    raise ValueError(f"Unsupported activation: {name}")
+
+
+def _as_int_list(values):
+    if values is None:
+        return []
+    if isinstance(values, (int, np.integer)):
+        return [int(values)]
+    return [int(v) for v in values]
+
+
 class TsLSTMNet(nn.Module):
-    def __init__(self, n_neurons: int, look_back: int):
+    def __init__(
+        self,
+        feature_dim: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        bidirectional: bool = False,
+        mlp_hidden_sizes=None,
+        activation: str = "relu",
+    ):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=look_back, hidden_size=n_neurons, batch_first=True)
-        self.fc = nn.Linear(n_neurons, 1)
+        effective_dropout = float(dropout) if int(num_layers) > 1 else 0.0
+        self.bidirectional = bool(bidirectional)
+        self.hidden_multiplier = 2 if self.bidirectional else 1
+        self.lstm = nn.LSTM(
+            input_size=int(feature_dim),
+            hidden_size=int(hidden_size),
+            num_layers=int(num_layers),
+            dropout=effective_dropout,
+            bidirectional=self.bidirectional,
+            batch_first=True,
+        )
+        head_layers = []
+        prev = int(hidden_size) * self.hidden_multiplier
+        for size in _as_int_list(mlp_hidden_sizes):
+            head_layers.append(nn.Linear(prev, int(size)))
+            head_layers.append(_activation(activation))
+            prev = int(size)
+        head_layers.append(nn.Linear(prev, 1))
+        self.fc = nn.Sequential(*head_layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out, _ = self.lstm(x)
@@ -122,7 +171,19 @@ class _StopController:
 
 
 class TsLSTMModel:
-    def __init__(self, n_neurons: int, look_back: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        hidden_size: int,
+        input_dim: int,
+        sequence_length: int = 1,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        bidirectional: bool = False,
+        mlp_hidden_sizes=None,
+        activation: str = "relu",
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         validation_strategy = str(validation_strategy).lower()
         stopping_rule = str(stopping_rule).lower()
         if validation_strategy not in VALIDATION_STRATEGIES:
@@ -132,7 +193,18 @@ class TsLSTMModel:
 
         self.validation_strategy = validation_strategy
         self.stopping_rule = stopping_rule
-        self.network = TsLSTMNet(int(n_neurons), int(look_back)).to(self._device())
+        self.input_dim = int(input_dim)
+        self.sequence_length = int(sequence_length)
+        self.feature_dim = self._feature_dim(self.input_dim, self.sequence_length)
+        self.network = TsLSTMNet(
+            feature_dim=self.feature_dim,
+            hidden_size=int(hidden_size),
+            num_layers=int(num_layers),
+            dropout=float(dropout),
+            bidirectional=bool(bidirectional),
+            mlp_hidden_sizes=mlp_hidden_sizes,
+            activation=activation,
+        ).to(self._device())
         self.train_loss_hist: List[float] = []
         self.val_loss_hist: List[float] = []
         self.epochs_done: int = 0
@@ -142,10 +214,20 @@ class TsLSTMModel:
         return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     @staticmethod
-    def _prepare_xy(df: pd.DataFrame) -> Tuple[torch.Tensor, torch.Tensor]:
+    def _feature_dim(input_dim: int, sequence_length: int) -> int:
+        if int(input_dim) % int(sequence_length) != 0:
+            raise ValueError("input_dim must be divisible by sequence_length.")
+        return int(input_dim) // int(sequence_length)
+
+    def _reshape_inputs(self, X: np.ndarray) -> torch.Tensor:
+        if X.shape[1] != self.input_dim:
+            raise ValueError(f"Expected {self.input_dim} input features, got {X.shape[1]}.")
+        return torch.from_numpy(X).reshape(X.shape[0], self.sequence_length, self.feature_dim)
+
+    def _prepare_xy(self, df: pd.DataFrame) -> Tuple[torch.Tensor, torch.Tensor]:
         X = df.drop(columns=["t0"]).to_numpy().astype(np.float32)
         y = df["t0"].to_numpy().astype(np.float32)
-        X = torch.from_numpy(X).unsqueeze(1)
+        X = self._reshape_inputs(X)
         y = torch.from_numpy(y).unsqueeze(-1)
         return X, y
 
@@ -242,7 +324,7 @@ class TsLSTMModel:
 
     def predict(self, df_test: pd.DataFrame, batch_size: int = 8):
         X_test = df_test.drop(columns=["t0"], errors="ignore").to_numpy().astype(np.float32)
-        X_test = torch.from_numpy(X_test).unsqueeze(1)
+        X_test = self._reshape_inputs(X_test)
         loader = DataLoader(TensorDataset(X_test, torch.zeros(X_test.shape[0], 1)), batch_size=int(batch_size), shuffle=False, drop_last=False)
         preds: List[torch.Tensor] = []
         self.network.eval()
@@ -252,8 +334,19 @@ class TsLSTMModel:
         return torch.vstack(preds).squeeze(-1).numpy()
 
 
-def ts_lstm_create(n_neurons, look_back, validation_strategy="static", stopping_rule="none"):
-    return TsLSTMModel(int(n_neurons), int(look_back), validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def ts_lstm_create(hidden_size, input_dim, sequence_length=1, num_layers=1, dropout=0.0, bidirectional=False, mlp_hidden_sizes=None, activation="relu", validation_strategy="static", stopping_rule="none"):
+    return TsLSTMModel(
+        int(hidden_size),
+        int(input_dim),
+        sequence_length=sequence_length,
+        num_layers=num_layers,
+        dropout=dropout,
+        bidirectional=bidirectional,
+        mlp_hidden_sizes=mlp_hidden_sizes,
+        activation=activation,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def ts_lstm_fit(

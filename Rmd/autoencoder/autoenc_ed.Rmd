@@ -73,6 +73,10 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Use `encoder_hidden_sizes` and `decoder_hidden_sizes` to control compression and reconstruction depth separately.
+- When inputs are normalized to `[0, 1]`, `output_activation = "sigmoid"` can be useful; otherwise keep `"none"` to preserve the original linear decoder output.
+
 ```{r}
 # Loss curves
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)

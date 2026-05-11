@@ -67,6 +67,12 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- The original VAE is recovered with `encoder_hidden_sizes = c(64L, 32L)`.
+- Deeper VAEs can be built with larger stacks such as `c(128L, 64L, 32L)`.
+- `reconstruction_loss = "bce"` works well with normalized inputs and `output_activation = "sigmoid"`.
+- `reconstruction_loss = "mse"` is often preferable for unconstrained real-valued windows.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

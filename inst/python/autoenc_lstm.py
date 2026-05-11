@@ -14,51 +14,93 @@ from autoenc_common import AutoencTrainingConfig, StopController, split_indices,
 
 
 class Encoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(self, feature_dim: int, latent_size: int, lstm_hidden_size: int, num_layers: int = 1, dropout: float = 0.0):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=int(input_size), hidden_size=int(encoding_size), batch_first=True)
+        effective_dropout = float(dropout) if int(num_layers) > 1 else 0.0
+        self.lstm = nn.LSTM(
+            input_size=int(feature_dim),
+            hidden_size=int(lstm_hidden_size),
+            num_layers=int(num_layers),
+            dropout=effective_dropout,
+            batch_first=True,
+        )
+        self.projection = nn.Linear(int(lstm_hidden_size), int(latent_size))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         _, (h_n, _) = self.lstm(x)
-        return h_n[-1].unsqueeze(1)
+        return self.projection(h_n[-1]).unsqueeze(1)
 
 
 class Decoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(self, feature_dim: int, sequence_length: int, latent_size: int, lstm_hidden_size: int, num_layers: int = 1, dropout: float = 0.0):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=int(encoding_size), hidden_size=int(encoding_size), batch_first=True)
-        self.output_layer = nn.Linear(int(encoding_size), int(input_size))
+        effective_dropout = float(dropout) if int(num_layers) > 1 else 0.0
+        self.sequence_length = int(sequence_length)
+        self.latent_to_hidden = nn.Linear(int(latent_size), int(lstm_hidden_size))
+        self.lstm = nn.LSTM(
+            input_size=int(lstm_hidden_size),
+            hidden_size=int(lstm_hidden_size),
+            num_layers=int(num_layers),
+            dropout=effective_dropout,
+            batch_first=True,
+        )
+        self.output_layer = nn.Linear(int(lstm_hidden_size), int(feature_dim))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        out, _ = self.lstm(x)
-        return self.output_layer(out).view(out.size(0), 1, -1)
+        repeated = self.latent_to_hidden(x).repeat(1, self.sequence_length, 1)
+        out, _ = self.lstm(repeated)
+        return self.output_layer(out)
 
 
 class LSTMAutoencoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(self, feature_dim: int, sequence_length: int, latent_size: int, lstm_hidden_size: int, num_layers: int = 1, dropout: float = 0.0):
         super().__init__()
-        self.encoder = Encoder(input_size, encoding_size)
-        self.decoder = Decoder(input_size, encoding_size)
+        self.encoder = Encoder(feature_dim, latent_size, lstm_hidden_size, num_layers=num_layers, dropout=dropout)
+        self.decoder = Decoder(feature_dim, sequence_length, latent_size, lstm_hidden_size, num_layers=num_layers, dropout=dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.decoder(self.encoder(x))
 
 
 class LSTMAutoencoderModel:
-    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        lstm_hidden_size: Optional[int] = None,
+        sequence_length: int = 1,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.model = LSTMAutoencoder(input_size, encoding_size).float()
+        self.sequence_length = int(sequence_length)
+        self.feature_dim = self._feature_dim(int(input_size), self.sequence_length)
+        self.model = LSTMAutoencoder(
+            feature_dim=self.feature_dim,
+            sequence_length=self.sequence_length,
+            latent_size=int(encoding_size),
+            lstm_hidden_size=int(lstm_hidden_size if lstm_hidden_size is not None else encoding_size),
+            num_layers=int(num_layers),
+            dropout=float(dropout),
+        ).float()
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
 
     @staticmethod
-    def _array(data):
+    def _feature_dim(input_size: int, sequence_length: int) -> int:
+        if int(input_size) % int(sequence_length) != 0:
+            raise ValueError("input_size must be divisible by sequence_length for LSTM autoencoder reshaping.")
+        return int(input_size) // int(sequence_length)
+
+    def _array(self, data):
         if isinstance(data, pd.DataFrame):
             array = data.to_numpy().astype(np.float32)
         else:
             array = np.asarray(data, dtype=np.float32)
-        return array.reshape(array.shape[0], 1, array.shape[1])
+        return array.reshape(array.shape[0], self.sequence_length, self.feature_dim)
 
     def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool):
         tensor = torch.from_numpy(array.astype(np.float32))
@@ -137,12 +179,21 @@ class LSTMAutoencoderModel:
         self.model.eval()
         with torch.no_grad():
             for xb, _ in loader:
-                outs.append(self.model(xb.float()).detach().numpy())
+                outs.append(self.model(xb.float()).detach().numpy().reshape(xb.size(0), -1))
         return np.concatenate(outs, axis=0)
 
 
-def autoenc_lstm_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
-    return LSTMAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def autoenc_lstm_create(input_size, encoding_size, lstm_hidden_size=None, sequence_length=1, num_layers=1, dropout=0.0, validation_strategy="static", stopping_rule="none"):
+    return LSTMAutoencoderModel(
+        input_size,
+        encoding_size,
+        lstm_hidden_size=lstm_hidden_size,
+        sequence_length=sequence_length,
+        num_layers=num_layers,
+        dropout=dropout,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def autoenc_lstm_fit(lae, data, batch_size=20, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42, return_loss=False):

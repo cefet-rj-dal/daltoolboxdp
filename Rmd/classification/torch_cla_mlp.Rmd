@@ -54,6 +54,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and use the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- Use `normalization = "batch"` or `"layer"` to stabilize deeper classifiers.
+- `init_method` lets you switch from PyTorch defaults to Xavier or Kaiming initialization.
+- `activation` changes the hidden nonlinearity without changing the public workflow.
+
 ```{r}
 # Test prediction and evaluation
 test_prediction <- predict(model, iris_test)

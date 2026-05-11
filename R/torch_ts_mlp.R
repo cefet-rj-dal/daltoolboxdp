@@ -1,38 +1,55 @@
-#'@title PyTorch Time-Series MLP
-#'@description Time series forecaster using a feedforward PyTorch MLP with unified
-#' training strategies.
-#' Wraps a PyTorch implementation via `reticulate`.
+#' @title PyTorch Time-Series MLP
+#' @description Time-series forecaster using a configurable feedforward PyTorch MLP with unified
+#'   training strategies and a Python backend.
 #'
-#'@param preprocess Optional preprocessing/normalization object.
-#'@param input_size Integer. Number of lagged inputs per training example.
-#'@param hidden_sizes Integer vector with hidden layer sizes.
-#'@param dropout Numeric. Dropout rate.
-#'@param epochs Integer. Maximum number of training epochs. Default is `100L`.
-#'@param lr Numeric. Optimizer learning rate.
-#'@param validation_strategy Character. One of `static` or `dynamic`.
-#'@param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
-#'@param val_ratio Numeric. Validation fraction used when validation is enabled.
-#'@param batch_size Integer. Mini-batch size.
-#'@param patience Integer. Early stopping patience.
-#'@param min_delta Numeric. Minimum improvement to reset early stopping.
-#'@param sma_window Integer. Window size used by `sma`.
-#'@param ema_alpha Numeric. Smoothing factor used by `ema`.
-#'@param test_window Integer. Window size used by `h`.
-#'@param p_value Numeric. Significance threshold used by `h`.
-#'@param seed Integer. Seed used by data splitting routines.
-#'@return A `torch_ts_mlp` object.
-#'@examples
-#'\dontrun{
-#'library(daltoolboxdp)
-#'model <- torch_ts_mlp(input_size = 12, hidden_sizes = c(16L, 8L), epochs = 100L)
-#'}
-#'@importFrom tspredit ts_regsw
-#'@import reticulate
-#'@export
+#' @param preprocess Optional preprocessing/normalization object.
+#' @param input_size Integer. Number of lagged inputs per training example.
+#' @param hidden_sizes Integer vector with hidden layer sizes.
+#' @param dropout Numeric. Dropout rate.
+#' @param activation Character. Hidden activation function. One of
+#'   `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, or `"tanh"`.
+#' @param output_activation Character. Output activation of the regression head. One of
+#'   `"none"`, `"relu"`, `"sigmoid"`, `"tanh"`, or `"softplus"`.
+#' @param normalization Character. Optional normalization after each hidden linear layer.
+#'   One of `"none"`, `"batch"`, or `"layer"`.
+#' @param init_method Character. Weight initialization strategy. One of
+#'   `"default"`, `"xavier_uniform"`, `"xavier_normal"`, `"kaiming_uniform"`, or `"kaiming_normal"`.
+#' @param epochs Integer. Maximum number of training epochs. Default is `100L`.
+#' @param lr Numeric. Optimizer learning rate.
+#' @param validation_strategy Character. One of `static` or `dynamic`.
+#' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
+#' @param val_ratio Numeric. Validation fraction used when validation is enabled.
+#' @param batch_size Integer. Mini-batch size.
+#' @param patience Integer. Early stopping patience.
+#' @param min_delta Numeric. Minimum improvement to reset early stopping.
+#' @param sma_window Integer. Window size used by `sma`.
+#' @param ema_alpha Numeric. Smoothing factor used by `ema`.
+#' @param test_window Integer. Window size used by `h`.
+#' @param p_value Numeric. Significance threshold used by `h`.
+#' @param seed Integer. Seed used by data splitting routines.
+#' @return A `torch_ts_mlp` object.
+#' @examples
+#' \dontrun{
+#' library(daltoolboxdp)
+#' model <- torch_ts_mlp(
+#'   input_size = 12,
+#'   hidden_sizes = c(32L, 16L),
+#'   normalization = "batch",
+#'   init_method = "kaiming_uniform",
+#'   epochs = 100L
+#' )
+#' }
+#' @importFrom tspredit ts_regsw
+#' @import reticulate
+#' @export
 torch_ts_mlp <- function(preprocess = NA,
                          input_size = NA,
                          hidden_sizes = c(16L, 8L),
                          dropout = 0,
+                         activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+                         output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+                         normalization = c("none", "batch", "layer"),
+                         init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform", "kaiming_normal"),
                          epochs = 100L,
                          lr = 0.001,
                          validation_strategy = c("static", "dynamic"),
@@ -46,12 +63,20 @@ torch_ts_mlp <- function(preprocess = NA,
                          test_window = 30L,
                          p_value = 0.05,
                          seed = 42L) {
+  activation <- match.arg(activation)
+  output_activation <- match.arg(output_activation)
+  normalization <- match.arg(normalization)
+  init_method <- match.arg(init_method)
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
 
   obj <- tspredit::ts_regsw(preprocess, input_size)
   obj$hidden_sizes <- as.integer(hidden_sizes)
   obj$dropout <- as.numeric(dropout)
+  obj$activation <- activation
+  obj$output_activation <- output_activation
+  obj$normalization <- normalization
+  obj$init_method <- init_method
   obj$epochs <- as.integer(epochs)
   obj$lr <- as.numeric(lr)
   obj$validation_strategy <- validation_strategy
@@ -67,11 +92,11 @@ torch_ts_mlp <- function(preprocess = NA,
   obj$seed <- if (is.null(seed)) NULL else as.integer(seed)
   class(obj) <- append("torch_ts_mlp", class(obj))
 
-  return(obj)
+  obj
 }
 
-#'@importFrom tspredit do_fit
-#'@exportS3Method do_fit torch_ts_mlp
+#' @importFrom tspredit do_fit
+#' @exportS3Method do_fit torch_ts_mlp
 do_fit.torch_ts_mlp <- function(obj, x, y) {
   if (!exists("torch_ts_mlp_create"))
     reticulate::source_python(system.file("python", "torch_ts_mlp.py", package = "daltoolboxdp"))
@@ -81,6 +106,10 @@ do_fit.torch_ts_mlp <- function(obj, x, y) {
       obj$input_size,
       obj$hidden_sizes,
       dropout = obj$dropout,
+      activation = obj$activation,
+      output_activation = obj$output_activation,
+      normalization = obj$normalization,
+      init_method = obj$init_method,
       validation_strategy = obj$validation_strategy,
       stopping_rule = obj$stopping_rule
     )
@@ -110,11 +139,11 @@ do_fit.torch_ts_mlp <- function(obj, x, y) {
   obj$train_loss_hist <- obj$model$train_loss_hist
   obj$val_loss_hist <- obj$model$val_loss_hist
   obj$epochs_done <- obj$model$epochs_done
-  return(obj)
+  obj
 }
 
-#'@importFrom tspredit do_predict
-#'@exportS3Method do_predict torch_ts_mlp
+#' @importFrom tspredit do_predict
+#' @exportS3Method do_predict torch_ts_mlp
 do_predict.torch_ts_mlp <- function(obj, x) {
   if (!exists("torch_ts_mlp_predict"))
     reticulate::source_python(system.file("python", "torch_ts_mlp.py", package = "daltoolboxdp"))

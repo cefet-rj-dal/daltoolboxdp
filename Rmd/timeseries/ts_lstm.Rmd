@@ -66,6 +66,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `sequence_length` converts each row into a true multistep sequence instead of a single recurrent step.
+- `hidden_size`, `num_layers`, `dropout`, and `bidirectional` change the recurrent backbone.
+- `mlp_hidden_sizes` adds a dense head after the final recurrent state.
+
 We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
 
 ```{r}

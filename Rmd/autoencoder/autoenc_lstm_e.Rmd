@@ -67,6 +67,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- `sequence_length` reshapes each row into a longer temporal sequence before the recurrent encoder.
+- `lstm_hidden_size` decouples recurrent capacity from the latent bottleneck `encoding_size`.
+- `num_layers` and `dropout` enable deeper recurrent autoencoders.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

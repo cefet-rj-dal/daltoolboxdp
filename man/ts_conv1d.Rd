@@ -7,6 +7,15 @@
 ts_conv1d(
   preprocess = NA,
   input_size = NA,
+  in_channels = 1L,
+  sequence_length = NULL,
+  conv_channels = 64L,
+  kernel_sizes = NULL,
+  strides = 1L,
+  pooling = c("none", "max", "avg"),
+  pool_kernel_size = 2L,
+  dense_hidden_sizes = 50L,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
   epochs = 100L,
   lr = 0.001,
   validation_strategy = c("static", "dynamic"),
@@ -26,6 +35,29 @@ ts_conv1d(
 \item{preprocess}{Optional preprocessing/normalization object.}
 
 \item{input_size}{Integer. Number of lagged inputs per training example.}
+
+\item{in_channels}{Integer. Number of channels used to reshape each example before the convolution.
+\code{input_size} must equal \code{in_channels * sequence_length}.}
+
+\item{sequence_length}{Optional integer. Temporal length after reshaping. If \code{NULL}, it is inferred
+as \code{input_size / in_channels}.}
+
+\item{conv_channels}{Integer vector. Output channels for each convolutional block.}
+
+\item{kernel_sizes}{Integer vector. Kernel sizes for each convolutional block. If \code{NULL}, defaults to
+\code{2L} for sequence lengths greater than 1 and \code{1L} otherwise.}
+
+\item{strides}{Integer vector. Strides for each convolutional block.}
+
+\item{pooling}{Character. Pooling strategy applied after each convolutional block. One of
+\code{"none"}, \code{"max"}, or \code{"avg"}.}
+
+\item{pool_kernel_size}{Integer. Pooling kernel size when pooling is enabled.}
+
+\item{dense_hidden_sizes}{Integer vector. Hidden sizes of the dense head after the convolutional stack.}
+
+\item{activation}{Character. Activation function used in convolutional and dense hidden layers. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
 
 \item{epochs}{Integer. Maximum number of training epochs. Default is \code{100L}.}
 
@@ -57,13 +89,24 @@ ts_conv1d(
 A \code{ts_conv1d} object.
 }
 \description{
-Time series forecaster using a 1D convolutional neural network
-with unified training strategies.
-Wraps a PyTorch implementation via \code{reticulate}.
+Time-series forecaster using a configurable 1D convolutional neural network
+with unified training strategies and a Python/PyTorch backend.
+}
+\details{
+The Conv1D forecaster now supports multiple convolutional blocks, explicit channel/sequence
+reshaping, optional pooling, and a configurable dense prediction head. Keep the defaults to
+preserve the original single-channel behavior, or define architectures such as
+\code{conv_channels = c(32L, 64L)} and \code{dense_hidden_sizes = c(64L, 16L)}.
 }
 \examples{
 \dontrun{
 library(daltoolboxdp)
-model <- ts_conv1d(input_size = 12, epochs = 100L)
+model <- ts_conv1d(
+  input_size = 12,
+  in_channels = 1L,
+  conv_channels = c(32L, 64L),
+  dense_hidden_sizes = c(64L, 16L),
+  epochs = 100L
+)
 }
 }

@@ -34,20 +34,79 @@ class _TrainingConfig:
     seed: Optional[int] = 42
 
 
+def _activation_module(name: str) -> nn.Module:
+    name = str(name).lower()
+    if name == "relu":
+        return nn.ReLU(inplace=True)
+    if name == "leaky_relu":
+        return nn.LeakyReLU(0.2, inplace=True)
+    if name == "elu":
+        return nn.ELU(inplace=True)
+    if name == "gelu":
+        return nn.GELU()
+    if name == "tanh":
+        return nn.Tanh()
+    raise ValueError(f"Unsupported activation: {name}")
+
+
+def _normalization_module(kind: str, dim: int) -> Optional[nn.Module]:
+    kind = str(kind).lower()
+    if kind == "none":
+        return None
+    if kind == "batch":
+        return nn.BatchNorm1d(int(dim))
+    if kind == "layer":
+        return nn.LayerNorm(int(dim))
+    raise ValueError("normalization must be one of {'none', 'batch', 'layer'}")
+
+
+def _apply_init(module: nn.Module, init_method: str):
+    init_method = str(init_method).lower()
+    if isinstance(module, nn.Linear):
+        if init_method == "xavier_uniform":
+            nn.init.xavier_uniform_(module.weight)
+        elif init_method == "xavier_normal":
+            nn.init.xavier_normal_(module.weight)
+        elif init_method == "kaiming_uniform":
+            nn.init.kaiming_uniform_(module.weight, nonlinearity="relu")
+        elif init_method == "kaiming_normal":
+            nn.init.kaiming_normal_(module.weight, nonlinearity="relu")
+        elif init_method == "default":
+            return
+        else:
+            raise ValueError(f"Unsupported init_method: {init_method}")
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+
+
 class TorchMLPClassifierNet(nn.Module):
-    def __init__(self, input_dim: int, hidden_sizes: List[int], num_classes: int, dropout: float = 0.0):
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_sizes: List[int],
+        num_classes: int,
+        dropout: float = 0.0,
+        activation: str = "relu",
+        normalization: str = "none",
+        init_method: str = "default",
+    ):
         super().__init__()
         layers = []
         prev = int(input_dim)
         if isinstance(hidden_sizes, (int, np.integer)):
             hidden_sizes = [int(hidden_sizes)]
         for h in hidden_sizes:
-            layers += [nn.Linear(prev, int(h)), nn.ReLU(inplace=True)]
+            layers.append(nn.Linear(prev, int(h)))
+            norm = _normalization_module(normalization, int(h))
+            if norm is not None:
+                layers.append(norm)
+            layers.append(_activation_module(activation))
             if float(dropout) > 0:
-                layers += [nn.Dropout(p=float(dropout))]
+                layers.append(nn.Dropout(p=float(dropout)))
             prev = int(h)
-        layers += [nn.Linear(prev, int(num_classes))]
+        layers.append(nn.Linear(prev, int(num_classes)))
         self.net = nn.Sequential(*layers)
+        self.net.apply(lambda module: _apply_init(module, init_method))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
@@ -118,7 +177,18 @@ class _StopController:
 
 
 class TorchMLPClassifier:
-    def __init__(self, input_dim: int, hidden_sizes: List[int], num_classes: int, dropout: float = 0.0, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_sizes: List[int],
+        num_classes: int,
+        dropout: float = 0.0,
+        activation: str = "relu",
+        normalization: str = "none",
+        init_method: str = "default",
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         validation_strategy = str(validation_strategy).lower()
         stopping_rule = str(stopping_rule).lower()
         if validation_strategy not in VALIDATION_STRATEGIES:
@@ -127,7 +197,15 @@ class TorchMLPClassifier:
             raise ValueError(f"stopping_rule must be one of {sorted(STOPPING_RULES)}")
         self.validation_strategy = validation_strategy
         self.stopping_rule = stopping_rule
-        self.network = TorchMLPClassifierNet(input_dim, hidden_sizes, num_classes, dropout=dropout).to(self._device())
+        self.network = TorchMLPClassifierNet(
+            input_dim,
+            hidden_sizes,
+            num_classes,
+            dropout=dropout,
+            activation=activation,
+            normalization=normalization,
+            init_method=init_method,
+        ).to(self._device())
         self.classes_: List = []
         self.train_loss_hist: List[float] = []
         self.val_loss_hist: List[float] = []
@@ -237,8 +315,28 @@ class TorchMLPClassifier:
         return scores.tolist()
 
 
-def torch_cla_mlp_create(input_dim: int, hidden_sizes: List[int], num_classes: int, dropout: float = 0.0, validation_strategy: str = "static", stopping_rule: str = "none"):
-    return TorchMLPClassifier(input_dim, hidden_sizes, num_classes, dropout=dropout, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def torch_cla_mlp_create(
+    input_dim: int,
+    hidden_sizes: List[int],
+    num_classes: int,
+    dropout: float = 0.0,
+    activation: str = "relu",
+    normalization: str = "none",
+    init_method: str = "default",
+    validation_strategy: str = "static",
+    stopping_rule: str = "none",
+):
+    return TorchMLPClassifier(
+        input_dim,
+        hidden_sizes,
+        num_classes,
+        dropout=dropout,
+        activation=activation,
+        normalization=normalization,
+        init_method=init_method,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def torch_cla_mlp_fit(

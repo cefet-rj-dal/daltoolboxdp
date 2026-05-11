@@ -8,7 +8,8 @@ autoenc_conv_e(
   input_size,
   encoding_size,
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -29,7 +30,9 @@ autoenc_conv_e(
 
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
@@ -64,7 +67,7 @@ of observations. Wraps a PyTorch implementation.
 \dontrun{
 # Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, epochs = 100)
 ae <- daltoolbox::fit(ae, X)
 Z  <- daltoolbox::transform(ae, X)   # 50 x 5 encodings
 }

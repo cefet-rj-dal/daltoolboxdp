@@ -62,6 +62,9 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Stage-specific latent sizes and stage-specific dense blocks now make `k` a real architecture parameter instead of only a repetition count.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

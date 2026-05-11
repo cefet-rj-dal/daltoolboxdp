@@ -7,8 +7,15 @@
 autoenc_stacked_e(
   input_size,
   encoding_size,
+  encoding_sizes = NULL,
+  encoder_hidden_sizes = 64L,
+  decoder_hidden_sizes = NULL,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "selu", "tanh"),
+  output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+  negative_slope = 0.2,
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   k = 3,
   validation_strategy = c("static", "dynamic"),
@@ -26,15 +33,34 @@ autoenc_stacked_e(
 \arguments{
 \item{input_size}{Integer. Number of input features per observation.}
 
-\item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
+\item{encoding_size}{Integer. Default latent size used when \code{encoding_sizes = NULL}.}
+
+\item{encoding_sizes}{Optional integer vector. Stage-specific latent sizes. If supplied,
+it defines the number of stages and overrides \code{k}.}
+
+\item{encoder_hidden_sizes}{Integer vector shared by all stages, or a list of integer
+vectors with one encoder architecture per stage.}
+
+\item{decoder_hidden_sizes}{Optional integer vector or list mirroring
+\code{encoder_hidden_sizes}. If \code{NULL}, each stage mirrors its encoder in reverse order.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, \code{"selu"}, or \code{"tanh"}.}
+
+\item{output_activation}{Character. Output activation used by stage decoders. One of
+\code{"none"}, \code{"relu"}, \code{"sigmoid"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{negative_slope}{Numeric. Negative slope used when \code{activation = "leaky_relu"}.}
 
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
-\item{k}{Integer. Number of autoencoder layers in the stack.}
+\item{k}{Integer. Number of stacked stages when \code{encoding_sizes = NULL}.}
 
 \item{validation_strategy}{Character. One of \code{static} or \code{dynamic}.}
 
@@ -60,19 +86,29 @@ autoenc_stacked_e(
 A \code{autoenc_stacked_e} object.
 }
 \description{
-Creates a deep learning stacked autoencoder to encode sequences of observations.
-The autoencoder layers are based on DAL Toolbox vanilla autoencoder and wrap a PyTorch implementation.
+Creates a stacked autoencoder with stage-wise configurable latent sizes
+and dense sub-architectures through a Python/PyTorch backend.
+}
+\details{
+The stacked autoencoder now supports progressively different latent widths across
+stages. Keep \code{k = 3} and \code{encoding_sizes = NULL} to repeat the original bottleneck,
+or use \code{encoding_sizes = c(16L, 8L, 4L)} to progressively compress the representation.
+\code{encoder_hidden_sizes} and \code{decoder_hidden_sizes} may be either a single integer
+vector shared by all stages or an R list with one integer vector per stage.
 }
 \examples{
 \dontrun{
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-ae <- autoenc_stacked_e(input_size = 20, encoding_size = 5, k = 3, num_epochs = 100)
+ae <- autoenc_stacked_e(
+  input_size = 20,
+  encoding_size = 5,
+  encoding_sizes = c(12L, 8L, 5L),
+  encoder_hidden_sizes = list(c(64L), c(32L), c(16L))
+)
 ae <- daltoolbox::fit(ae, X)
-Z  <- daltoolbox::transform(ae, X)
+Z <- daltoolbox::transform(ae, X)
 }
 
-# See:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_stacked_e.md
 }
 \references{
 Vincent, P., Larochelle, H., Lajoie, I., Bengio, Y., & Manzagol, P.-A. (2010).

@@ -71,6 +71,12 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The final curve plot always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `activation` changes the hidden nonlinearity.
+- `normalization = "batch"` or `"layer"` adds normalization after each hidden layer.
+- `init_method` controls how linear weights are initialized.
+- `output_activation` can constrain the forecast range when needed.
+
 We first evaluate the in-sample fit so the model adjustment can be compared with the later forecast.
 
 ```{r}

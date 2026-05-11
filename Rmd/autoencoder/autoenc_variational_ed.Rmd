@@ -62,6 +62,10 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Decoder behavior is controlled by `decoder_hidden_sizes` and `output_activation`.
+- Reconstruction scale and ELBO behavior can change substantially between `"bce"` and `"mse"`.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

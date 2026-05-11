@@ -70,6 +70,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- `encoder_hidden_sizes`, `decoder_hidden_sizes`, and `discriminator_hidden_sizes` let you decouple the three adversarial sub-networks.
+- `latent_prior_scale` controls how spread out the target latent prior is.
+- `lr_encoder`, `lr_decoder`, `lr_generator`, and `lr_discriminator` can override the base `learning_rate` when the adversarial game becomes unstable.
+
 ```{r}
 # Learning curves
 fit_loss <- data.frame(

@@ -51,11 +51,11 @@
 #'@export
 skcla_mlp <- function(attribute, slevels,
                     hidden_layer_sizes = c(100),
-                    activation = 'relu',
-                    solver = 'adam',
+                    activation = c("relu", "identity", "logistic", "tanh"),
+                    solver = c("adam", "lbfgs", "sgd"),
                     alpha = 0.0001,
                     batch_size = 'auto',
-                    learning_rate = 'constant',
+                    learning_rate = c("constant", "invscaling", "adaptive"),
                     learning_rate_init = 0.001,
                     power_t = 0.5,
                     max_iter = 200,
@@ -73,6 +73,9 @@ skcla_mlp <- function(attribute, slevels,
                     epsilon = 1e-8,
                     n_iter_no_change = 10,
                     max_fun = 15000) {
+  activation <- match.arg(activation)
+  solver <- match.arg(solver)
+  learning_rate <- match.arg(learning_rate)
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(

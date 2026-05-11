@@ -1,40 +1,48 @@
-#'@title PyTorch MLP Classifier
-#'@description Classification model backed by a PyTorch MLP with unified training strategies.
-#'@param attribute Target attribute name.
-#'@param slevels Vector with valid class labels.
-#'@param preprocess Optional preprocessing object.
-#'@param input_size Integer. Number of input attributes.
-#'@param hidden_sizes Integer vector with hidden layer sizes.
-#'@param num_classes Integer. Number of classes. Defaults to `length(slevels)`.
-#'@param dropout Numeric. Dropout rate.
-#'@param epochs Integer. Maximum number of epochs. Default is `100L`.
-#'@param lr Numeric. Learning rate.
-#'@param validation_strategy Character. One of `static` or `dynamic`.
-#'@param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
-#'@param val_ratio Numeric. Validation fraction used when validation is enabled.
-#'@param batch_size Integer. Mini-batch size.
-#'@param patience Integer. Early stopping patience.
-#'@param min_delta Numeric. Minimum improvement to reset early stopping.
-#'@param sma_window Integer. Window size used by `sma`.
-#'@param ema_alpha Numeric. Smoothing factor used by `ema`.
-#'@param test_window Integer. Window size used by `h`.
-#'@param p_value Numeric. Significance threshold used by `h`.
-#'@param weight_decay Numeric. L2 regularization.
-#'@param seed Integer. Seed used by data splitting routines.
-#'@examples
-#'\dontrun{
-#'library(daltoolboxdp)
-#'model <- torch_cla_mlp(
-#'  attribute = "class",
-#'  slevels = c("A", "B"),
-#'  input_size = 10,
-#'  hidden_sizes = c(64L, 32L),
-#'  epochs = 1000L
-#')
-#'}
-#'@import daltoolbox
-#'@import reticulate
-#'@export
+#' @title PyTorch MLP Classifier
+#' @description Classification model backed by a configurable PyTorch MLP with unified training strategies.
+#' @param attribute Target attribute name.
+#' @param slevels Vector with valid class labels.
+#' @param preprocess Optional preprocessing object.
+#' @param input_size Integer. Number of input attributes.
+#' @param hidden_sizes Integer vector with hidden layer sizes.
+#' @param num_classes Integer. Number of classes. Defaults to `length(slevels)`.
+#' @param dropout Numeric. Dropout rate.
+#' @param activation Character. Hidden activation function. One of
+#'   `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, or `"tanh"`.
+#' @param normalization Character. Optional normalization after each hidden linear layer.
+#'   One of `"none"`, `"batch"`, or `"layer"`.
+#' @param init_method Character. Weight initialization strategy. One of
+#'   `"default"`, `"xavier_uniform"`, `"xavier_normal"`, `"kaiming_uniform"`, or `"kaiming_normal"`.
+#' @param epochs Integer. Maximum number of epochs. Default is `100L`.
+#' @param lr Numeric. Learning rate.
+#' @param validation_strategy Character. One of `static` or `dynamic`.
+#' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
+#' @param val_ratio Numeric. Validation fraction used when validation is enabled.
+#' @param batch_size Integer. Mini-batch size.
+#' @param patience Integer. Early stopping patience.
+#' @param min_delta Numeric. Minimum improvement to reset early stopping.
+#' @param sma_window Integer. Window size used by `sma`.
+#' @param ema_alpha Numeric. Smoothing factor used by `ema`.
+#' @param test_window Integer. Window size used by `h`.
+#' @param p_value Numeric. Significance threshold used by `h`.
+#' @param weight_decay Numeric. L2 regularization.
+#' @param seed Integer. Seed used by data splitting routines.
+#' @examples
+#' \dontrun{
+#' library(daltoolboxdp)
+#' model <- torch_cla_mlp(
+#'   attribute = "class",
+#'   slevels = c("A", "B"),
+#'   input_size = 10,
+#'   hidden_sizes = c(64L, 32L),
+#'   normalization = "batch",
+#'   init_method = "kaiming_uniform",
+#'   epochs = 1000L
+#' )
+#' }
+#' @import daltoolbox
+#' @import reticulate
+#' @export
 torch_cla_mlp <- function(attribute,
                           slevels,
                           preprocess = NA,
@@ -42,6 +50,9 @@ torch_cla_mlp <- function(attribute,
                           hidden_sizes,
                           num_classes = length(slevels),
                           dropout = 0,
+                          activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+                          normalization = c("none", "batch", "layer"),
+                          init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform", "kaiming_normal"),
                           epochs = 100L,
                           lr = 1e-3,
                           validation_strategy = c("static", "dynamic"),
@@ -56,6 +67,9 @@ torch_cla_mlp <- function(attribute,
                           p_value = 0.05,
                           weight_decay = 0,
                           seed = 42L) {
+  activation <- match.arg(activation)
+  normalization <- match.arg(normalization)
+  init_method <- match.arg(init_method)
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- classification(attribute, slevels)
@@ -66,6 +80,9 @@ torch_cla_mlp <- function(attribute,
     hidden_sizes = as.integer(hidden_sizes),
     num_classes = as.integer(num_classes),
     dropout = as.numeric(dropout),
+    activation = activation,
+    normalization = normalization,
+    init_method = init_method,
     epochs = as.integer(epochs),
     lr = as.numeric(lr),
     validation_strategy = validation_strategy,
@@ -88,7 +105,7 @@ torch_cla_mlp <- function(attribute,
   obj
 }
 
-#'@exportS3Method fit torch_cla_mlp
+#' @exportS3Method fit torch_cla_mlp
 fit.torch_cla_mlp <- function(obj, data, ...) {
   if (!exists("torch_cla_mlp_create"))
     reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))
@@ -99,6 +116,9 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
       obj$hidden_sizes,
       obj$num_classes,
       dropout = obj$dropout,
+      activation = obj$activation,
+      normalization = obj$normalization,
+      init_method = obj$init_method,
       validation_strategy = obj$validation_strategy,
       stopping_rule = obj$stopping_rule
     )
@@ -136,7 +156,7 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
   obj
 }
 
-#'@export
+#' @export
 predict.torch_cla_mlp <- function(object, x, ...) {
   if (!exists("torch_cla_mlp_predict_scores"))
     reticulate::source_python(system.file("python", "torch_cla_mlp.py", package = "daltoolboxdp"))

@@ -73,6 +73,12 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Shallow default: `encoder_hidden_sizes = 64L` preserves the original architecture.
+- Deep encoder: use `encoder_hidden_sizes = c(128L, 64L, 32L)` to add depth before the bottleneck.
+- Asymmetric decoder: set `decoder_hidden_sizes` explicitly when you do not want the mirrored decoder.
+- Nonlinear choices: switch `activation` among `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, `"selu"`, and `"tanh"`.
+
 ```{r}
 # Visualizing loss curves
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)

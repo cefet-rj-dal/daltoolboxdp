@@ -7,8 +7,19 @@
 autoenc_adv_ed(
   input_size,
   encoding_size,
-  batch_size = 32,
-  num_epochs = 100L,
+  encoder_hidden_sizes = c(60L, 60L),
+  decoder_hidden_sizes = c(60L, 60L),
+  discriminator_hidden_sizes = c(60L, 60L),
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+  dropout = 0.4,
+  latent_prior_scale = 5,
+  lr_encoder = NULL,
+  lr_decoder = NULL,
+  lr_generator = NULL,
+  lr_discriminator = NULL,
+  batch_size = 350,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,11 +38,35 @@ autoenc_adv_ed(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
-\item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
+\item{encoder_hidden_sizes}{Integer vector used by the encoder network. Default is \code{c(60L, 60L)}.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{decoder_hidden_sizes}{Integer vector used by the decoder network. Default is \code{c(60L, 60L)}.}
 
-\item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
+\item{discriminator_hidden_sizes}{Integer vector used by the discriminator network.
+Default is \code{c(60L, 60L)}.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{dropout}{Numeric. Dropout rate applied to adversarial hidden layers.}
+
+\item{latent_prior_scale}{Numeric. Standard deviation scale used to sample the latent prior.}
+
+\item{lr_encoder}{Optional numeric. Learning rate of the encoder reconstruction optimizer.}
+
+\item{lr_decoder}{Optional numeric. Learning rate of the decoder reconstruction optimizer.}
+
+\item{lr_generator}{Optional numeric. Learning rate of the encoder adversarial optimizer.}
+
+\item{lr_discriminator}{Optional numeric. Learning rate of the discriminator optimizer.}
+
+\item{batch_size}{Integer. Mini-batch size used during training. Default is 350.}
+
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
+
+\item{learning_rate}{Numeric. Base optimizer learning rate. Default is 0.001.}
 
 \item{validation_strategy}{Character. One of \code{static} or \code{dynamic}.}
 
@@ -57,24 +92,23 @@ autoenc_adv_ed(
 A \code{autoenc_adv_ed} object.
 }
 \description{
-Creates a deep learning adversarial autoencoder (AAE) that encodes and decodes
-sequences of observations. Wraps a PyTorch implementation.
-}
-\details{
-The adversarial loss constrains the latent distribution, improving sampling
-and reconstruction quality in some setups compared to a vanilla AE.
+Creates an adversarial autoencoder (AAE) that reconstructs observations
+while regularizing the latent space through a discriminator, using a Python/PyTorch backend.
 }
 \examples{
 \dontrun{
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-ae <- autoenc_adv_ed(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_adv_ed(
+  input_size = 20,
+  encoding_size = 5,
+  encoder_hidden_sizes = c(128L, 64L),
+  discriminator_hidden_sizes = c(64L, 32L),
+  latent_prior_scale = 2
+)
 ae <- daltoolbox::fit(ae, X)
-X_hat <- daltoolbox::transform(ae, X)  # reconstructions
-mean((X - X_hat)^2)
+X_hat <- daltoolbox::transform(ae, X)
 }
 
-# More details:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_ed.md
 }
 \references{
 Makhzani, A. et al. (2016). Adversarial Autoencoders.

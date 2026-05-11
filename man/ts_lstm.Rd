@@ -7,6 +7,13 @@
 ts_lstm(
   preprocess = NA,
   input_size = NA,
+  hidden_size = NULL,
+  sequence_length = 1L,
+  num_layers = 1L,
+  dropout = 0,
+  bidirectional = FALSE,
+  mlp_hidden_sizes = integer(0),
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
   epochs = 100L,
   lr = 0.001,
   validation_strategy = c("static", "dynamic"),
@@ -26,6 +33,22 @@ ts_lstm(
 \item{preprocess}{Optional preprocessing/normalization object.}
 
 \item{input_size}{Integer. Number of lagged inputs per training example.}
+
+\item{hidden_size}{Optional integer. Hidden size used inside the LSTM. If \code{NULL}, defaults to \code{input_size}.}
+
+\item{sequence_length}{Integer. Number of time steps represented by each row. \code{input_size}
+must be divisible by \code{sequence_length}. Default is \code{1L}.}
+
+\item{num_layers}{Integer. Number of LSTM layers.}
+
+\item{dropout}{Numeric. Recurrent dropout applied between LSTM layers when \code{num_layers > 1}.}
+
+\item{bidirectional}{Logical. Whether the LSTM is bidirectional.}
+
+\item{mlp_hidden_sizes}{Integer vector. Hidden sizes of the dense head applied after the LSTM output.}
+
+\item{activation}{Character. Activation function used in the dense head. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
 
 \item{epochs}{Integer. Maximum number of training epochs. Default is \code{100L}.}
 
@@ -57,13 +80,25 @@ ts_lstm(
 A \code{ts_lstm} object.
 }
 \description{
-Time series forecaster using an LSTM neural network with unified
-training strategies.
-Wraps a PyTorch implementation via \code{reticulate}.
+Time-series forecaster using a configurable LSTM neural network with unified
+training strategies and a Python/PyTorch backend.
+}
+\details{
+The LSTM forecaster now supports multiple recurrent layers, dropout, bidirectionality,
+an optional dense head after the recurrent block, and explicit reshaping of each row into
+a sequence via \code{sequence_length}. Keeping \code{sequence_length = 1L} reproduces the previous behavior.
 }
 \examples{
 \dontrun{
 library(daltoolboxdp)
-model <- ts_lstm(input_size = 12, epochs = 100L)
+model <- ts_lstm(
+  input_size = 12,
+  hidden_size = 16L,
+  sequence_length = 4L,
+  num_layers = 2L,
+  dropout = 0.1,
+  mlp_hidden_sizes = c(16L, 8L),
+  epochs = 100L
+)
 }
 }

@@ -7,11 +7,11 @@
 skcla_gb(
   attribute,
   slevels,
-  loss = "log_loss",
+  loss = c("log_loss", "exponential"),
   learning_rate = 0.1,
   n_estimators = 100,
   subsample = 1,
-  criterion = "friedman_mse",
+  criterion = c("friedman_mse", "squared_error"),
   min_samples_split = 2,
   min_samples_leaf = 1,
   min_weight_fraction_leaf = 0,

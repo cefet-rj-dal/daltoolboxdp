@@ -9,6 +9,11 @@ torch_ts_mlp(
   input_size = NA,
   hidden_sizes = c(16L, 8L),
   dropout = 0,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+  output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+  normalization = c("none", "batch", "layer"),
+  init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform",
+    "kaiming_normal"),
   epochs = 100L,
   lr = 0.001,
   validation_strategy = c("static", "dynamic"),
@@ -32,6 +37,18 @@ torch_ts_mlp(
 \item{hidden_sizes}{Integer vector with hidden layer sizes.}
 
 \item{dropout}{Numeric. Dropout rate.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{output_activation}{Character. Output activation of the regression head. One of
+\code{"none"}, \code{"relu"}, \code{"sigmoid"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{normalization}{Character. Optional normalization after each hidden linear layer.
+One of \code{"none"}, \code{"batch"}, or \code{"layer"}.}
+
+\item{init_method}{Character. Weight initialization strategy. One of
+\code{"default"}, \code{"xavier_uniform"}, \code{"xavier_normal"}, \code{"kaiming_uniform"}, or \code{"kaiming_normal"}.}
 
 \item{epochs}{Integer. Maximum number of training epochs. Default is \code{100L}.}
 
@@ -63,13 +80,18 @@ torch_ts_mlp(
 A \code{torch_ts_mlp} object.
 }
 \description{
-Time series forecaster using a feedforward PyTorch MLP with unified
-training strategies.
-Wraps a PyTorch implementation via \code{reticulate}.
+Time-series forecaster using a configurable feedforward PyTorch MLP with unified
+training strategies and a Python backend.
 }
 \examples{
 \dontrun{
 library(daltoolboxdp)
-model <- torch_ts_mlp(input_size = 12, hidden_sizes = c(16L, 8L), epochs = 100L)
+model <- torch_ts_mlp(
+  input_size = 12,
+  hidden_sizes = c(32L, 16L),
+  normalization = "batch",
+  init_method = "kaiming_uniform",
+  epochs = 100L
+)
 }
 }

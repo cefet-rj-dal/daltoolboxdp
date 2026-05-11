@@ -7,8 +7,13 @@
 autoenc_lstm_ed(
   input_size,
   encoding_size,
+  lstm_hidden_size = NULL,
+  sequence_length = 1L,
+  num_layers = 1L,
+  dropout = 0,
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,9 +32,21 @@ autoenc_lstm_ed(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
+\item{lstm_hidden_size}{Optional integer. Hidden size used inside the encoder/decoder LSTMs.
+If \code{NULL}, it defaults to \code{encoding_size}.}
+
+\item{sequence_length}{Integer. Number of time steps represented by each row. \code{input_size}
+must be divisible by \code{sequence_length}. Default is \code{1L}, which preserves the previous behavior.}
+
+\item{num_layers}{Integer. Number of recurrent LSTM layers.}
+
+\item{dropout}{Numeric. Recurrent dropout applied between LSTM layers when \code{num_layers > 1}.}
+
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
@@ -57,20 +74,24 @@ autoenc_lstm_ed(
 A \code{autoenc_lstm_ed} object.
 }
 \description{
-Creates a deep learning LSTM-based autoencoder that encodes and decodes
-sequences of observations. Wraps a PyTorch implementation via \code{reticulate}.
+Creates an LSTM-based autoencoder that reconstructs observations
+after sequence-aware compression through a Python/PyTorch backend.
 }
 \examples{
 \dontrun{
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-ae <- autoenc_lstm_ed(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_lstm_ed(
+  input_size = 20,
+  encoding_size = 5,
+  lstm_hidden_size = 16,
+  sequence_length = 4,
+  num_layers = 2,
+  dropout = 0.1
+)
 ae <- daltoolbox::fit(ae, X)
-X_hat <- daltoolbox::transform(ae, X)  # reconstructions
-mean((X - X_hat)^2)
+X_hat <- daltoolbox::transform(ae, X)
 }
 
-# See:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_lstm_ed.md
 }
 \references{
 Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory.

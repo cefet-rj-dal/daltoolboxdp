@@ -7,7 +7,7 @@
 skcla_svc(
   attribute,
   slevels,
-  kernel = "rbf",
+  kernel = c("rbf", "linear", "poly", "sigmoid"),
   degree = 3,
   gamma = "scale",
   coef0 = 0,
@@ -19,7 +19,7 @@ skcla_svc(
   class_weight = NULL,
   verbose = FALSE,
   max_iter = -1,
-  decision_function_shape = "ovr",
+  decision_function_shape = c("ovr", "ovo"),
   break_ties = FALSE,
   random_state = NULL
 )

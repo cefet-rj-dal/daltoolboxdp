@@ -61,6 +61,11 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The curve plot below always shows `train_loss_hist`; it adds `val_loss_hist` when validation is active.
 
+Architecture variations
+- `activation` and `normalization` control the hidden blocks.
+- `output_activation` can restrict the prediction range when required by the domain.
+- `init_method` exposes the initialization strategy for deeper or more sensitive regressors.
+
 Training evaluation.
 ```{r}
 # Model adjustment

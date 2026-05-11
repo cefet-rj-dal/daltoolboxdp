@@ -7,8 +7,14 @@
 autoenc_e(
   input_size,
   encoding_size,
+  encoder_hidden_sizes = 64L,
+  decoder_hidden_sizes = NULL,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "selu", "tanh"),
+  output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+  negative_slope = 0.2,
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,9 +33,25 @@ autoenc_e(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
+\item{encoder_hidden_sizes}{Integer vector. Hidden sizes used by the encoder.
+Default is \code{64L}, matching the previous implementation.}
+
+\item{decoder_hidden_sizes}{Optional integer vector. Hidden sizes used by the
+decoder. If \code{NULL}, the decoder mirrors \code{encoder_hidden_sizes} in reverse order.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, \code{"selu"}, or \code{"tanh"}.}
+
+\item{output_activation}{Character. Output activation of the decoder. One of
+\code{"none"}, \code{"relu"}, \code{"sigmoid"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{negative_slope}{Numeric. Negative slope used when \code{activation = "leaky_relu"}.}
+
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
@@ -57,33 +79,30 @@ autoenc_e(
 A \code{autoenc_e} object.
 }
 \description{
-Creates a deep learning autoencoder that learns a latent representation (encoding)
-for a sequence of observations. Wraps a PyTorch implementation via the \code{reticulate} bridge.
+Creates a dense autoencoder that learns a latent representation
+for a sequence of observations through a Python/PyTorch backend.
 }
 \details{
-This encoder provides dimensionality reduction by training a neural network to
-compress inputs into a lower-dimensional bottleneck. The learned encoding can be used
-for downstream tasks such as clustering, visualization, or as features for predictive models.
+The dense autoencoder is now architecture-configurable. You can keep the
+original single hidden layer with \code{encoder_hidden_sizes = 64}, or define
+deeper asymmetric encoder/decoder stacks such as
+\code{encoder_hidden_sizes = c(128L, 64L, 32L)} and
+\code{decoder_hidden_sizes = c(32L, 64L, 128L)}.
 }
 \examples{
 \dontrun{
-# Requirements: Python with torch installed and reticulate configured.
-set.seed(123)
-
-# 1) Create a toy dataset with 100 samples and 20 features
 X <- matrix(rnorm(2000), nrow = 100, ncol = 20)
 
-# 2) Create and fit an encoder (5-D bottleneck)
-ae <- autoenc_e(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_e(
+  input_size = 20,
+  encoding_size = 5,
+  encoder_hidden_sizes = c(128L, 64L),
+  activation = "relu"
+)
 ae <- daltoolbox::fit(ae, X)
-
-# 3) Transform data to latent space
-Z <- daltoolbox::transform(ae, X)   # matrix with dimensions 100 x 5
-dim(Z)                              # c(100, 5)
+Z <- daltoolbox::transform(ae, X)
+dim(Z)
 }
-
-# See a more complete example at:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_e.md
 
 }
 \references{

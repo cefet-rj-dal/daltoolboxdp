@@ -3,9 +3,10 @@ Shared training utilities for daltoolboxdp autoencoders.
 """
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
+import torch.nn as nn
 from scipy.stats import ttest_ind
 
 
@@ -28,6 +29,61 @@ class AutoencTrainingConfig:
     test_window: int = 30
     p_value: float = 0.05
     seed: Optional[int] = 42
+
+
+def ensure_int_list(values, default: Optional[Sequence[int]] = None, allow_empty: bool = False) -> List[int]:
+    if values is None:
+        values = default if default is not None else []
+    if isinstance(values, (int, np.integer)):
+        values = [int(values)]
+    result = [int(v) for v in values]
+    if not allow_empty and not result:
+        raise ValueError("At least one integer value is required.")
+    return result
+
+
+def activation_module(name: str, negative_slope: float = 0.2) -> nn.Module:
+    name = str(name).lower()
+    if name == "relu":
+        return nn.ReLU(inplace=True)
+    if name == "leaky_relu":
+        return nn.LeakyReLU(float(negative_slope), inplace=True)
+    if name == "elu":
+        return nn.ELU(inplace=True)
+    if name == "gelu":
+        return nn.GELU()
+    if name == "selu":
+        return nn.SELU(inplace=True)
+    if name == "tanh":
+        return nn.Tanh()
+    if name == "sigmoid":
+        return nn.Sigmoid()
+    if name == "softplus":
+        return nn.Softplus()
+    if name in {"identity", "none"}:
+        return nn.Identity()
+    raise ValueError(f"Unsupported activation: {name}")
+
+
+def build_dense_stack(
+    input_dim: int,
+    hidden_sizes,
+    output_dim: int,
+    activation: str = "relu",
+    output_activation: str = "none",
+    negative_slope: float = 0.2,
+) -> nn.Sequential:
+    layers = []
+    prev = int(input_dim)
+    for hidden_size in ensure_int_list(hidden_sizes, allow_empty=True):
+        layers.append(nn.Linear(prev, int(hidden_size)))
+        layers.append(activation_module(activation, negative_slope=negative_slope))
+        prev = int(hidden_size)
+    layers.append(nn.Linear(prev, int(output_dim)))
+    output_activation = str(output_activation).lower()
+    if output_activation not in {"none", "identity"}:
+        layers.append(activation_module(output_activation, negative_slope=negative_slope))
+    return nn.Sequential(*layers)
 
 
 def validate_strategy(validation_strategy: str, stopping_rule: str) -> Tuple[str, str]:
@@ -64,7 +120,12 @@ class StopController:
         self.val_history: List[float] = []
 
     def clone_state(self, model):
-        return {k: v.detach().clone() for k, v in model.state_dict().items()}
+        def _clone(value):
+            if isinstance(value, dict):
+                return {k: _clone(v) for k, v in value.items()}
+            return value.detach().clone()
+
+        return {k: _clone(v) for k, v in model.state_dict().items()}
 
     def _h_improved(self) -> bool:
         if len(self.val_history) < 2 * self.test_window:

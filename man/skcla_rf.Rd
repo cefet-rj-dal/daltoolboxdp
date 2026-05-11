@@ -8,7 +8,7 @@ skcla_rf(
   attribute,
   slevels,
   n_estimators = 100,
-  criterion = "gini",
+  criterion = c("gini", "entropy", "log_loss"),
   max_depth = NULL,
   min_samples_split = 2,
   min_samples_leaf = 1,

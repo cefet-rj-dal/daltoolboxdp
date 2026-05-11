@@ -44,11 +44,12 @@
 #'# https://github.com/cefet-rj-dal/daltoolboxdp/blob/main/examples/skcla_rf.md
 #'@import daltoolbox
 #'@export
-skcla_rf <- function(attribute, slevels, n_estimators=100, criterion='gini', max_depth=NULL, min_samples_split=2,
+skcla_rf <- function(attribute, slevels, n_estimators=100, criterion = c("gini", "entropy", "log_loss"), max_depth=NULL, min_samples_split=2,
                    min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='sqrt', max_leaf_nodes=NULL,
                    min_impurity_decrease=0.0, bootstrap=TRUE, oob_score=FALSE, n_jobs=NULL, random_state=NULL,
                    verbose=0, warm_start=FALSE, class_weight=NULL, ccp_alpha=0.0, max_samples=NULL,
                    monotonic_cst=NULL) {
+  criterion <- match.arg(criterion)
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(

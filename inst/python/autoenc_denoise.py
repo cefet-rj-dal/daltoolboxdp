@@ -10,23 +10,67 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from autoenc_common import AutoencTrainingConfig, StopController, split_indices, validate_strategy
+from autoenc_common import AutoencTrainingConfig, StopController, build_dense_stack, split_indices, validate_strategy
 
 
 class DenoiseAutoencoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "relu",
+        output_activation: str = "none",
+        negative_slope: float = 0.2,
+    ):
         super().__init__()
-        self.encoder = nn.Sequential(nn.Linear(int(input_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(encoding_size)))
-        self.decoder = nn.Sequential(nn.Linear(int(encoding_size), 64), nn.ReLU(inplace=True), nn.Linear(64, int(input_size)))
+        encoder_hidden_sizes = [64] if encoder_hidden_sizes is None else encoder_hidden_sizes
+        decoder_hidden_sizes = list(reversed(list(encoder_hidden_sizes))) if decoder_hidden_sizes is None else decoder_hidden_sizes
+        self.encoder = build_dense_stack(
+            int(input_size),
+            encoder_hidden_sizes,
+            int(encoding_size),
+            activation=activation,
+            negative_slope=negative_slope,
+        )
+        self.decoder = build_dense_stack(
+            int(encoding_size),
+            decoder_hidden_sizes,
+            int(input_size),
+            activation=activation,
+            output_activation=output_activation,
+            negative_slope=negative_slope,
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.decoder(self.encoder(x))
 
 
 class DenoiseAutoencoderModel:
-    def __init__(self, input_size: int, encoding_size: int, noise_factor: float = 0.3, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(
+        self,
+        input_size: int,
+        encoding_size: int,
+        noise_factor: float = 0.3,
+        encoder_hidden_sizes=None,
+        decoder_hidden_sizes=None,
+        activation: str = "relu",
+        output_activation: str = "none",
+        negative_slope: float = 0.2,
+        validation_strategy: str = "static",
+        stopping_rule: str = "none",
+    ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.model = DenoiseAutoencoder(input_size, encoding_size).float()
+        self.model = DenoiseAutoencoder(
+            input_size,
+            encoding_size,
+            encoder_hidden_sizes=encoder_hidden_sizes,
+            decoder_hidden_sizes=decoder_hidden_sizes,
+            activation=activation,
+            output_activation=output_activation,
+            negative_slope=negative_slope,
+        ).float()
         self.noise_factor = float(noise_factor)
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
@@ -125,8 +169,30 @@ class DenoiseAutoencoderModel:
         return np.concatenate(outs, axis=0)
 
 
-def autoenc_denoise_create(input_size, encoding_size, noise_factor=0.3, validation_strategy="static", stopping_rule="none"):
-    return DenoiseAutoencoderModel(input_size, encoding_size, noise_factor=noise_factor, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def autoenc_denoise_create(
+    input_size,
+    encoding_size,
+    noise_factor=0.3,
+    encoder_hidden_sizes=None,
+    decoder_hidden_sizes=None,
+    activation="relu",
+    output_activation="none",
+    negative_slope=0.2,
+    validation_strategy="static",
+    stopping_rule="none",
+):
+    return DenoiseAutoencoderModel(
+        input_size,
+        encoding_size,
+        noise_factor=noise_factor,
+        encoder_hidden_sizes=encoder_hidden_sizes,
+        decoder_hidden_sizes=decoder_hidden_sizes,
+        activation=activation,
+        output_activation=output_activation,
+        negative_slope=negative_slope,
+        validation_strategy=validation_strategy,
+        stopping_rule=stopping_rule,
+    )
 
 
 def autoenc_denoise_fit(dns, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):

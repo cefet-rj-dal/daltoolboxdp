@@ -70,6 +70,9 @@ Constructor configuration
 - Dynamic early stopping: switch `validation_strategy = "dynamic"` and reuse the same stopping rules.
 - The loss plot below always shows `train_loss`; it adds `val_loss` when validation is active.
 
+Architecture variations
+- Use the same dense controls as `autoenc_denoise_e`, plus `output_activation` when reconstruction scale should be constrained.
+
 ```{r}
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {

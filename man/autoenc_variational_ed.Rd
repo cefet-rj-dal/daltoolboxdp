@@ -7,8 +7,15 @@
 autoenc_variational_ed(
   input_size,
   encoding_size,
+  encoder_hidden_sizes = c(64L, 32L),
+  decoder_hidden_sizes = NULL,
+  activation = c("leaky_relu", "relu", "elu", "gelu", "tanh"),
+  negative_slope = 0.2,
+  output_activation = c("sigmoid", "none", "relu", "tanh", "softplus"),
+  reconstruction_loss = c("bce", "mse"),
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,9 +34,28 @@ autoenc_variational_ed(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
+\item{encoder_hidden_sizes}{Integer vector used by the encoder backbone. Default is
+\code{c(64L, 32L)}, matching the previous implementation.}
+
+\item{decoder_hidden_sizes}{Optional integer vector used by the decoder backbone.
+If \code{NULL}, the decoder mirrors \code{encoder_hidden_sizes} in reverse order.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"leaky_relu"}, \code{"relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{negative_slope}{Numeric. Negative slope used when \code{activation = "leaky_relu"}.}
+
+\item{output_activation}{Character. Output activation of the decoder. One of
+\code{"sigmoid"}, \code{"none"}, \code{"relu"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{reconstruction_loss}{Character. Reconstruction term used in the ELBO. One of
+\code{"bce"} or \code{"mse"}.}
+
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
@@ -57,27 +83,22 @@ autoenc_variational_ed(
 A \code{autoenc_variational_ed} object.
 }
 \description{
-Creates a deep learning variational autoencoder (VAE) that encodes and decodes sequences
-of observations. Wraps a PyTorch implementation.
+Creates a variational autoencoder (VAE) that reconstructs observations
+from a probabilistic latent space through a Python/PyTorch backend.
 }
 \examples{
 \dontrun{
-# Requirements: Python with torch installed and reticulate configured.
-
-# 1) Sample data
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-
-# 2) Fit VAE encode-decode
-ae <- autoenc_variational_ed(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_variational_ed(
+  input_size = 20,
+  encoding_size = 5,
+  encoder_hidden_sizes = c(128L, 64L, 32L),
+  reconstruction_loss = "mse"
+)
 ae <- daltoolbox::fit(ae, X)
-
-# 3) Reconstruct inputs
 X_hat <- daltoolbox::transform(ae, X)
-mean((X - X_hat)^2)
 }
 
-# See:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_variational_ed.md
 }
 \references{
 Kingma, D. P., & Welling, M. (2014). Auto-Encoding Variational Bayes.

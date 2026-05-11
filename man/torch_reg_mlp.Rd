@@ -10,6 +10,11 @@ torch_reg_mlp(
   input_size,
   hidden_sizes,
   dropout = 0,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+  output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+  normalization = c("none", "batch", "layer"),
+  init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform",
+    "kaiming_normal"),
   epochs = 100L,
   lr = 0.001,
   validation_strategy = c("static", "dynamic"),
@@ -35,6 +40,18 @@ torch_reg_mlp(
 \item{hidden_sizes}{Integer vector with hidden layer sizes.}
 
 \item{dropout}{Numeric. Dropout rate.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{output_activation}{Character. Output activation of the regressor head. One of
+\code{"none"}, \code{"relu"}, \code{"sigmoid"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{normalization}{Character. Optional normalization after each hidden linear layer.
+One of \code{"none"}, \code{"batch"}, or \code{"layer"}.}
+
+\item{init_method}{Character. Weight initialization strategy. One of
+\code{"default"}, \code{"xavier_uniform"}, \code{"xavier_normal"}, \code{"kaiming_uniform"}, or \code{"kaiming_normal"}.}
 
 \item{epochs}{Integer. Maximum number of epochs. Default is \code{100L}.}
 
@@ -63,16 +80,18 @@ torch_reg_mlp(
 \item{seed}{Integer. Seed used by data splitting routines.}
 }
 \description{
-Regression model backed by a PyTorch MLP with unified training strategies.
+Regression model backed by a configurable PyTorch MLP with unified training strategies.
 }
 \examples{
 \dontrun{
 library(daltoolboxdp)
 model <- torch_reg_mlp(
- attribute = "target",
- input_size = 10,
- hidden_sizes = c(64L, 32L),
- epochs = 1000L
+  attribute = "target",
+  input_size = 10,
+  hidden_sizes = c(64L, 32L),
+  normalization = "layer",
+  output_activation = "none",
+  epochs = 1000L
 )
 }
 }

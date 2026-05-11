@@ -7,8 +7,19 @@
 autoenc_adv_e(
   input_size,
   encoding_size,
+  encoder_hidden_sizes = c(60L, 60L),
+  decoder_hidden_sizes = c(60L, 60L),
+  discriminator_hidden_sizes = c(60L, 60L),
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+  dropout = 0.4,
+  latent_prior_scale = 5,
+  lr_encoder = NULL,
+  lr_decoder = NULL,
+  lr_generator = NULL,
+  lr_discriminator = NULL,
   batch_size = 350,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,11 +38,35 @@ autoenc_adv_e(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
+\item{encoder_hidden_sizes}{Integer vector used by the encoder network. Default is \code{c(60L, 60L)}.}
+
+\item{decoder_hidden_sizes}{Integer vector used by the decoder network. Default is \code{c(60L, 60L)}.}
+
+\item{discriminator_hidden_sizes}{Integer vector used by the discriminator network.
+Default is \code{c(60L, 60L)}.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{dropout}{Numeric. Dropout rate applied to adversarial hidden layers.}
+
+\item{latent_prior_scale}{Numeric. Standard deviation scale used to sample the latent prior.}
+
+\item{lr_encoder}{Optional numeric. Learning rate of the encoder reconstruction optimizer.}
+
+\item{lr_decoder}{Optional numeric. Learning rate of the decoder reconstruction optimizer.}
+
+\item{lr_generator}{Optional numeric. Learning rate of the encoder adversarial optimizer.}
+
+\item{lr_discriminator}{Optional numeric. Learning rate of the discriminator optimizer.}
+
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 350.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
 
-\item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
+
+\item{learning_rate}{Numeric. Base optimizer learning rate. Default is 0.001.}
 
 \item{validation_strategy}{Character. One of \code{static} or \code{dynamic}.}
 
@@ -57,27 +92,30 @@ autoenc_adv_e(
 A \code{autoenc_adv_e} object.
 }
 \description{
-Creates a deep learning adversarial autoencoder (AAE) to encode sequences
-of observations. Wraps a PyTorch implementation.
+Creates an adversarial autoencoder (AAE) with configurable encoder,
+decoder and discriminator topologies through a Python/PyTorch backend.
 }
 \details{
-Adversarial autoencoders regularize the latent space using an adversarial
-training objective, encouraging the aggregated posterior to match a prior distribution.
-This can lead to more structured latent representations.
+The adversarial autoencoder exposes the latent prior scale, dropout, activation family,
+and optimizer learning rates for each adversarial component. If the component-specific
+learning rates are left as \code{NULL}, the wrapper derives them from \code{learning_rate}
+using the training defaults of the Python implementation.
 }
 \examples{
 \dontrun{
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-ae <- autoenc_adv_e(input_size = 20, encoding_size = 5, num_epochs = 100)
-ae <- daltoolbox::fit(ae, X)       # adversarially-regularized encoder
-Z  <- daltoolbox::transform(ae, X) # encodings
-dim(Z)
+ae <- autoenc_adv_e(
+  input_size = 20,
+  encoding_size = 5,
+  encoder_hidden_sizes = c(128L, 64L),
+  discriminator_hidden_sizes = c(64L, 32L),
+  latent_prior_scale = 2
+)
+ae <- daltoolbox::fit(ae, X)
+Z <- daltoolbox::transform(ae, X)
 }
 
-# See a complete example:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_adv_e.md
 }
 \references{
-Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2016).
-Adversarial Autoencoders.
+Makhzani, A., Shlens, J., Jaitly, N., Goodfellow, I., & Frey, B. (2016). Adversarial Autoencoders.
 }

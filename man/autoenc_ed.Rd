@@ -7,8 +7,14 @@
 autoenc_ed(
   input_size,
   encoding_size,
+  encoder_hidden_sizes = 64L,
+  decoder_hidden_sizes = NULL,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "selu", "tanh"),
+  output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
+  negative_slope = 0.2,
   batch_size = 32,
-  num_epochs = 100L,
+  epochs = 100L,
+  num_epochs = NULL,
   learning_rate = 0.001,
   validation_strategy = c("static", "dynamic"),
   stopping_rule = c("none", "patience", "sma", "ema", "h"),
@@ -27,9 +33,25 @@ autoenc_ed(
 
 \item{encoding_size}{Integer. Size of the latent (bottleneck) representation.}
 
+\item{encoder_hidden_sizes}{Integer vector. Hidden sizes used by the encoder.
+Default is \code{64L}, matching the previous implementation.}
+
+\item{decoder_hidden_sizes}{Optional integer vector. Hidden sizes used by the
+decoder. If \code{NULL}, the decoder mirrors \code{encoder_hidden_sizes} in reverse order.}
+
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, \code{"selu"}, or \code{"tanh"}.}
+
+\item{output_activation}{Character. Output activation of the decoder. One of
+\code{"none"}, \code{"relu"}, \code{"sigmoid"}, \code{"tanh"}, or \code{"softplus"}.}
+
+\item{negative_slope}{Numeric. Negative slope used when \code{activation = "leaky_relu"}.}
+
 \item{batch_size}{Integer. Mini-batch size used during training. Default is 32.}
 
-\item{num_epochs}{Integer. Maximum number of training epochs. Default is 100.}
+\item{epochs}{Integer. Maximum number of training epochs. Default is 100.}
+
+\item{num_epochs}{Deprecated compatibility alias for \code{epochs}. If informed, it overrides \code{epochs}.}
 
 \item{learning_rate}{Numeric. Optimizer learning rate. Default is 0.001.}
 
@@ -57,32 +79,28 @@ autoenc_ed(
 A \code{autoenc_ed} object.
 }
 \description{
-Creates a deep learning autoencoder that encodes and decodes sequences
-of observations. Wraps a PyTorch implementation via \code{reticulate}.
+Creates a dense autoencoder that compresses and reconstructs observations
+through a Python/PyTorch backend.
 }
 \details{
-This variant both compresses inputs into a latent representation and
-reconstructs them back to input space, allowing the reconstruction error to be used
-as a quality metric or for anomaly detection.
+This variant exposes the same architecture controls as \code{\link[=autoenc_e]{autoenc_e()}}, but the
+transformation returns reconstructions in the original input space. Use it when
+reconstruction quality is part of the analysis or when the autoencoder is used
+for anomaly detection.
 }
 \examples{
 \dontrun{
-# Requirements: Python with torch installed and reticulate configured.
-
-# 1) Create sample data (50 x 20)
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
-
-# 2) Fit encode-decode autoencoder (5-D bottleneck)
-ae <- autoenc_ed(input_size = 20, encoding_size = 5, num_epochs = 100)
+ae <- autoenc_ed(
+  input_size = 20,
+  encoding_size = 5,
+  encoder_hidden_sizes = c(128L, 64L),
+  decoder_hidden_sizes = c(64L, 128L)
+)
 ae <- daltoolbox::fit(ae, X)
-
-# 3) Reconstruct inputs and inspect reconstruction error
-X_hat <- daltoolbox::transform(ae, X)  # same dimensions as X
-mean((X - X_hat)^2)                    # simple MSE across all entries
+X_hat <- daltoolbox::transform(ae, X)
+mean((X - X_hat)^2)
 }
-
-# More examples:
-# https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_ed.md
 
 }
 \references{

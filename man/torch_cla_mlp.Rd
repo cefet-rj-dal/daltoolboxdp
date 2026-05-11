@@ -12,6 +12,10 @@ torch_cla_mlp(
   hidden_sizes,
   num_classes = length(slevels),
   dropout = 0,
+  activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
+  normalization = c("none", "batch", "layer"),
+  init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform",
+    "kaiming_normal"),
   epochs = 100L,
   lr = 0.001,
   validation_strategy = c("static", "dynamic"),
@@ -43,6 +47,15 @@ torch_cla_mlp(
 
 \item{dropout}{Numeric. Dropout rate.}
 
+\item{activation}{Character. Hidden activation function. One of
+\code{"relu"}, \code{"leaky_relu"}, \code{"elu"}, \code{"gelu"}, or \code{"tanh"}.}
+
+\item{normalization}{Character. Optional normalization after each hidden linear layer.
+One of \code{"none"}, \code{"batch"}, or \code{"layer"}.}
+
+\item{init_method}{Character. Weight initialization strategy. One of
+\code{"default"}, \code{"xavier_uniform"}, \code{"xavier_normal"}, \code{"kaiming_uniform"}, or \code{"kaiming_normal"}.}
+
 \item{epochs}{Integer. Maximum number of epochs. Default is \code{100L}.}
 
 \item{lr}{Numeric. Learning rate.}
@@ -70,20 +83,21 @@ torch_cla_mlp(
 \item{weight_decay}{Numeric. L2 regularization.}
 
 \item{seed}{Integer. Seed used by data splitting routines.}
-
 }
 \description{
-Classification model backed by a PyTorch MLP with unified training strategies.
+Classification model backed by a configurable PyTorch MLP with unified training strategies.
 }
 \examples{
 \dontrun{
 library(daltoolboxdp)
 model <- torch_cla_mlp(
- attribute = "class",
- slevels = c("A", "B"),
- input_size = 10,
- hidden_sizes = c(64L, 32L),
- epochs = 1000L
+  attribute = "class",
+  slevels = c("A", "B"),
+  input_size = 10,
+  hidden_sizes = c(64L, 32L),
+  normalization = "batch",
+  init_method = "kaiming_uniform",
+  epochs = 1000L
 )
 }
 }
