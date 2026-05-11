@@ -100,7 +100,7 @@ grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-6](fig/torch_cla_mlp/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6](fig/07_torch_cla_mlp/unnamed-chunk-6-1.png)
 
 Notes
 - By default, this example uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

@@ -111,7 +111,7 @@ print(train_eval$metrics)
 
 ```
 ##        mse     smape        R2
-## 1 11.91066 0.1250267 0.8676715
+## 1 11.74771 0.1285341 0.8694819
 ```
 
 Test evaluation.
@@ -127,7 +127,7 @@ print(test_eval$metrics)
 
 ```
 ##        mse     smape        R2
-## 1 26.05942 0.1511656 0.5669424
+## 1 20.74642 0.1489793 0.6552343
 ```
 
 Training curves.
@@ -149,7 +149,7 @@ grf <- plot_series(fit_loss, colors = colors)
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-8](fig/torch_reg_mlp/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](fig/01_torch_reg_mlp/unnamed-chunk-8-1.png)
 
 Notes
 - Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

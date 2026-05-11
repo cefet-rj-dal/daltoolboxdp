@@ -5,4 +5,7 @@ Deep-learning note
 
 These examples show Python-backed regression wrappers integrated into the `daltoolbox` workflow. The main use case here is numeric prediction with the same `fit` / `predict` pattern used by DAL learners.
 
-- [torch_reg_mlp.md](torch_reg_mlp.md) — PyTorch MLP regressor: nonlinear regression with a feedforward neural network and configurable static/dynamic validation strategies.
+PyTorch
+- [01_torch_reg_mlp.md](01_torch_reg_mlp.md) — Base PyTorch MLP regressor example for numeric prediction.
+- [02_torch_reg_mlp_static_patience.md](02_torch_reg_mlp_static_patience.md) — PyTorch MLP regressor with static validation and patience-based early stopping.
+- [03_torch_reg_mlp_dynamic_patience.md](03_torch_reg_mlp_dynamic_patience.md) — PyTorch MLP regressor with dynamic validation and patience-based early stopping.

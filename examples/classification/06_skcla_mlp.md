@@ -69,8 +69,8 @@ print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 11 19  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1        1 11 19  0  0         1      1           1           1  1
 ```
 
 References
