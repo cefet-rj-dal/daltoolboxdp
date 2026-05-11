@@ -32,3 +32,7 @@ Encoder-decoder
 - [15_autoenc_stacked_ed.md](15_autoenc_stacked_ed.md) — Stacked autoencoder (encode-decode) for deeper reconstruction pipelines.
 - [16_autoenc_variational_ed.md](16_autoenc_variational_ed.md) — Variational autoencoder (encode-decode) optimizing the ELBO for smooth latent spaces and reconstruction.
 - [17_autoenc_adv_ed.md](17_autoenc_adv_ed.md) — Adversarial autoencoder (encode-decode) combining reconstruction with adversarial latent regularization.
+
+Training regimes for the simple encoder-decoder
+- [21_autoenc_ed_static_patience.md](21_autoenc_ed_static_patience.md) — Simple autoencoder with static validation and patience-based early stopping.
+- [22_autoenc_ed_dynamic_patience.md](22_autoenc_ed_dynamic_patience.md) — Simple autoencoder with dynamic validation and patience-based early stopping.
