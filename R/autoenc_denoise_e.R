@@ -82,8 +82,8 @@ autoenc_denoise_e <- function(input_size, encoding_size,
   obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
-  obj$encoder_hidden_sizes <- encoder_hidden_sizes
-  obj$decoder_hidden_sizes <- decoder_hidden_sizes
+  obj$encoder_hidden_sizes <- normalize_hidden_sizes(encoder_hidden_sizes)
+  obj$decoder_hidden_sizes <- normalize_hidden_sizes(decoder_hidden_sizes)
   obj$activation <- activation
   obj$output_activation <- output_activation
   obj$negative_slope <- negative_slope

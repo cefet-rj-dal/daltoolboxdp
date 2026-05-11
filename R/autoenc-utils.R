@@ -7,3 +7,31 @@ resolve_autoenc_epochs <- function(epochs, num_epochs = NULL) {
 
   as.integer(epochs)
 }
+
+normalize_hidden_sizes <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  as.list(as.integer(x))
+}
+
+normalize_stage_hidden_sizes <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  if (is.list(x)) {
+    return(lapply(x, normalize_hidden_sizes))
+  }
+
+  normalize_hidden_sizes(x)
+}
+
+normalize_encoding_sizes <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  as.integer(x)
+}
