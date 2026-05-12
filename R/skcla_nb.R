@@ -60,7 +60,9 @@ fit.skcla_nb <- function(obj, data, ...) {
     }
   }
   
-  data <- adjust_data.frame(data)
+  prepared <- prepare_skcla_fit(obj, data)
+  obj <- prepared$obj
+  data <- prepared$data
   
   if (!obj$attribute %in% names(data)) {
     stop(paste("Attribute", obj$attribute, "not found in the data."))
@@ -95,22 +97,18 @@ predict.skcla_nb <- function(object, x, ...) {
   }
   
   # Prepare features for prediction
-  x <- adjust_data.frame(x)
-  
-  if (object$attribute %in% names(x)) {
-    x <- x[, !names(x) %in% object$attribute]
-  }
+  x <- prepare_skcla_predict_data(object, x)
   
   #message("Predicting with data dimensions: ", nrow(x), " x ", ncol(x))
   
-  prediction <- skcla_nb_predict(object$model, x)
+  prediction <- skcla_nb_predict_proba(object$model, x)
   
   if (is.null(prediction) || length(prediction) == 0) {
     warning("Prediction returned NULL or empty. Returning NA values.")
     prediction <- rep(NA, nrow(x))
   }
   
-  prediction <- adjust_class_label(prediction)
+  prediction <- skcla_as_probability(prediction, object$slevels, object$model$classes_)
   
   return(prediction)
 }

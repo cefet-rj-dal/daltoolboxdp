@@ -5,6 +5,8 @@ Deep-learning note
 
 These examples show how `daltoolboxdp` exposes Python classifiers, especially from the scikit-learn ecosystem, with the same training and prediction flow used in `daltoolbox`.
 
+Across these examples, `predict()` returns a class-score table with one row per case and one column per class. When the Python backend exposes probabilities, those are returned directly; otherwise the package falls back to a compatible score representation so `evaluate()` can be used in the same way.
+
 Use this section when you want to compare modeling behavior:
 
 - neighborhood-based classification (`KNN`)

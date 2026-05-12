@@ -5,6 +5,7 @@ R entry points (see R/skcla_gb.R):
   - skcla_gb_create(...hyperparams...) -> sklearn model
   - skcla_gb_fit(model, df_train, target_column) -> fitted model
   - skcla_gb_predict(model, df_test) -> list of labels
+  - skcla_gb_predict_proba(model, df_test) -> list of per-class probabilities
 """
 
 from sklearn.ensemble import GradientBoostingClassifier
@@ -48,6 +49,20 @@ def skcla_gb_predict(model, df_test):
         print(f"Error occurred: {e}")
     except Exception as e:
         print(f"Error occurred: {e}")
+        return []
+
+def skcla_gb_predict_proba(model, df_test):
+    """Predict class probabilities as a nested list to simplify R interop."""
+    try:
+        df_test = pd.DataFrame(df_test)
+        probabilities = model.predict_proba(df_test)
+        return probabilities.tolist()
+    except TypeError as e:
+        print(f"Error occurred: {e}")
+        return []
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return []
 
 def skcla_gb_fit(model, df_train, target_column, n_epochs=None, lr=None):
     """Entry from R to fit; delegates to skcla_gb_train."""

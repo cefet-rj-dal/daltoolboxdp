@@ -5,6 +5,7 @@ R entry points (see R/skcla_rf.R):
   - skcla_rf_create(...hyperparams...) -> sklearn model
   - skcla_rf_fit(model, df_train, target_column) -> fitted model
   - skcla_rf_predict(model, df_test) -> list of labels (for R compatibility)
+  - skcla_rf_predict_proba(model, df_test) -> list of per-class probabilities
 
 Data expectations: pandas.DataFrame; target_column is present in df_train and excluded for prediction.
 """
@@ -47,6 +48,19 @@ def skcla_rf_predict(model, df_test):
         print(f"Error occurred: {e}")
     except Exception as e:
         print(f"Error occurred: {e}")
+
+def skcla_rf_predict_proba(model, df_test):
+    """Predict class probabilities as a nested list to simplify R interop."""
+    try:
+        df_test = pd.DataFrame(df_test)
+        probabilities = model.predict_proba(df_test)
+        return probabilities.tolist()
+    except TypeError as e:
+        print(f"Error occurred: {e}")
+        return []
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return []
 
 def skcla_rf_fit(model, df_train, target_column):
     """Entry from R to fit; delegates to skcla_rf_train."""

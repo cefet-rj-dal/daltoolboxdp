@@ -81,7 +81,9 @@ fit.skcla_svc <- function(obj, data, ...) {
     )
   }
 
-  data <- adjust_data.frame(data)
+  prepared <- prepare_skcla_fit(obj, data)
+  obj <- prepared$obj
+  data <- prepared$data
   obj$model <- skcla_svc_fit(obj$model, data, obj$attribute, obj$slevels)
 
   obj
@@ -91,7 +93,7 @@ fit.skcla_svc <- function(obj, data, ...) {
 #' @import reticulate
 #' @export
 predict.skcla_svc <- function(object, x, ...) {
-  if (!exists("skcla_svc_predict")) {
+  if (!exists("skcla_svc_predict_proba")) {
     python_path <- system.file("python/skcla_svc.py", package = "daltoolboxdp")
     if (!file.exists(python_path)) {
       stop("Python source file not found. Please check package installation.")
@@ -99,11 +101,13 @@ predict.skcla_svc <- function(object, x, ...) {
     reticulate::source_python(python_path)
   }
 
-  x <- adjust_data.frame(x)
-  x <- x[, !names(x) %in% object$attribute]
+  x <- prepare_skcla_predict_data(object, x)
 
-  prediction <- skcla_svc_predict(object$model, x)
-  prediction <- adjust_class_label(prediction)
+  prediction <- skcla_svc_predict_proba(object$model, x)
+  if (length(prediction) == 0) {
+    prediction <- skcla_svc_predict(object$model, x)
+  }
+  prediction <- skcla_as_probability(prediction, object$slevels, object$model$classes_)
 
   prediction
 }

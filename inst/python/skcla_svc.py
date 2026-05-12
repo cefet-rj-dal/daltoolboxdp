@@ -5,6 +5,7 @@ R entry points (see R/skcla_svc.R):
   - skcla_svc_create(...hyperparams...) -> sklearn model
   - skcla_svc_fit(model, df_train, target_column, slevels=None) -> fitted model
   - skcla_svc_predict(model, df_test) -> list of labels
+  - skcla_svc_predict_proba(model, df_test) -> list of per-class probabilities
 """
 
 from sklearn.svm import SVC
@@ -51,6 +52,22 @@ def skcla_svc_predict(model, df_test):
         return []
     except Exception as e:
         print(f"Error occurred: {e}")
+        return []
+
+def skcla_svc_predict_proba(model, df_test):
+    """Predict class probabilities when available; otherwise return an empty list."""
+    try:
+        df_test = pd.DataFrame(df_test)
+        if not hasattr(model, "predict_proba"):
+            return []
+        probabilities = model.predict_proba(df_test)
+        return probabilities.tolist()
+    except TypeError as e:
+        print(f"Error occurred: {e}")
+        return []
+    except Exception as e:
+        if "predict_proba" not in str(e):
+            print(f"Error occurred: {e}")
         return []
 
 def skcla_svc_fit(model, df_train, target_column, slevels=None):

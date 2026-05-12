@@ -5,6 +5,7 @@ R entry points (see R/skcla_nb.R):
   - skcla_nb_create(priors=None, var_smoothing=1e-9)
   - skcla_nb_fit(model, df_train, target_column)
   - skcla_nb_predict(model, df_test)
+  - skcla_nb_predict_proba(model, df_test)
 
 All predictions are returned as Python lists for easy conversion on the R side.
 """
@@ -62,4 +63,21 @@ def skcla_nb_predict(model, df_test):
         return []
     except Exception as e:
         print(f"Error in skcla_nb_predict: {e}")
+        return []
+
+def skcla_nb_predict_proba(model, df_test):
+    """Predict class probabilities as a nested list to simplify R interop."""
+    try:
+        df_test = pd.DataFrame(df_test)
+
+        if df_test.isnull().values.any():
+            df_test = df_test.fillna(0)
+
+        probabilities = model.predict_proba(df_test)
+        return probabilities.tolist()
+    except TypeError as e:
+        print(f"TypeError in skcla_nb_predict_proba: {e}")
+        return []
+    except Exception as e:
+        print(f"Error in skcla_nb_predict_proba: {e}")
         return []

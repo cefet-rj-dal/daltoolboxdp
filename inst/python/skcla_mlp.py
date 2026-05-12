@@ -5,6 +5,7 @@ R entry points (see R/skcla_mlp.R):
   - skcla_mlp_create(...hyperparams...) -> sklearn model
   - skcla_mlp_fit(model, df_train, target_column) -> fitted model
   - skcla_mlp_predict(model, df_test) -> list of labels
+  - skcla_mlp_predict_proba(model, df_test) -> list of per-class probabilities
 """
 
 from sklearn.neural_network import MLPClassifier
@@ -50,3 +51,16 @@ def skcla_mlp_predict(model, df_test):
         print(f"Error occurred: {e}")
     except Exception as e:
         print(f"Error occurred: {e}")
+
+def skcla_mlp_predict_proba(model, df_test):
+    """Predict class probabilities as a nested list to simplify R interop."""
+    try:
+        df_test = pd.DataFrame(df_test)
+        probabilities = model.predict_proba(df_test)
+        return probabilities.tolist()
+    except TypeError as e:
+        print(f"Error occurred: {e}")
+        return []
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return []
