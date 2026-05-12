@@ -79,26 +79,10 @@ test  <- as.data.frame(samp$test)
 ``` r
 # Creating the VAE (encode-decode): 5 -> 3 -> 5 dimensions
 auto <- autoenc_variational_ed(5, 3)
-```
 
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 # Training the model
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -118,50 +102,15 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/16_autoenc_variational_ed/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -182,43 +131,24 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.8361146 0.8678831 0.8898737 0.8962840 0.8810740
+## [2,] 0.8751203 0.9023057 0.9209335 0.9260809 0.9127672
+## [3,] 0.8638426 0.8919942 0.9111780 0.9174908 0.9023609
+## [4,] 0.8788490 0.9052813 0.9234102 0.9287359 0.9150946
+## [5,] 0.8437570 0.8740610 0.8951190 0.9022860 0.8858017
+## [6,] 0.8282056 0.8608513 0.8832158 0.8897986 0.8744712
 ```
 
 
 ``` r
 # Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 names(result) <- names(test)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 r2 <- c()
 mape <- c()
 for (col in names(test)){
@@ -231,8 +161,11 @@ for (col in names(test)){
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+## [1] "t4 R2 test: 0.323041230586438 MAPE: 0.184624552842777"
+## [1] "t3 R2 test: 0.877024191523189 MAPE: 0.107305879037912"
+## [1] "t2 R2 test: 0.954397377796044 MAPE: 0.0463696776965238"
+## [1] "t1 R2 test: 0.894677765299157 MAPE: 0.146209630806807"
+## [1] "t0 R2 test: 0.835773427632447 MAPE: 0.345443868341311"
 ```
 
 ``` r
@@ -240,15 +173,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## Warning in mean.default(r2): argument is not numeric or logical: returning NA
-```
-
-```
-## Warning in mean.default(mape): argument is not numeric or logical: returning NA
-```
-
-```
-## [1] "Means R2 test: NA MAPE: NA"
+## [1] "Means R2 test: 0.776982798567455 MAPE: 0.165990721745066"
 ```
 
 References

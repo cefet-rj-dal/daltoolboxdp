@@ -89,25 +89,8 @@ test <- as.data.frame(samp$test)
 ``` r
 # Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_denoise_e(5, 3)
-```
-
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -124,50 +107,16 @@ Architecture variations
 
 ``` r
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
 
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/02_autoenc_denoise_e/unnamed-chunk-7-1.png)
  
 
 ``` r
@@ -193,20 +142,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]      [,2]       [,3]
+## [1,] -0.8350621 -1.071074 -1.0281448
+## [2,] -0.9005475 -1.147488 -1.0691060
+## [3,] -0.9395213 -1.187313 -1.0770078
+## [4,] -0.9511775 -1.190684 -1.0474008
+## [5,] -0.9376242 -1.154549 -0.9817704
+## [6,] -0.9021609 -1.092368 -0.8943465
 ```
 
 References

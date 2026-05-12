@@ -28,8 +28,7 @@ torch_cla_mlp(
   ema_alpha = 0.2,
   test_window = 30L,
   p_value = 0.05,
-  weight_decay = 0,
-  seed = 42L
+  weight_decay = 0
 )
 }
 \arguments{
@@ -81,8 +80,6 @@ One of \code{"none"}, \code{"batch"}, or \code{"layer"}.}
 \item{p_value}{Numeric. Significance threshold used by \code{h}.}
 
 \item{weight_decay}{Numeric. L2 regularization.}
-
-\item{seed}{Integer. Seed used by data splitting routines.}
 }
 \description{
 Classification model backed by a configurable PyTorch MLP with unified training strategies.

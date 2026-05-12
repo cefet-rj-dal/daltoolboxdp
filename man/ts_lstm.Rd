@@ -25,8 +25,7 @@ ts_lstm(
   sma_window = 5L,
   ema_alpha = 0.2,
   test_window = 30L,
-  p_value = 0.05,
-  seed = 42L
+  p_value = 0.05
 )
 }
 \arguments{
@@ -73,8 +72,6 @@ must be divisible by \code{sequence_length}. Default is \code{1L}.}
 \item{test_window}{Integer. Window size used by \code{h}.}
 
 \item{p_value}{Numeric. Significance threshold used by \code{h}.}
-
-\item{seed}{Integer. Seed used by data splitting routines.}
 }
 \value{
 A \code{ts_lstm} object.

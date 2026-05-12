@@ -83,26 +83,10 @@ test  <- as.data.frame(samp$test)
 ``` r
 # Creating the adversarial autoencoder (encode-decode): 5 -> 3 -> 5 dimensions
 auto <- autoenc_adv_ed(5, 3, batch_size = 3)
-```
 
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 # Training the model
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -121,50 +105,15 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/17_autoenc_adv_ed/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -185,20 +134,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.7794902 0.8273298 0.8512459 0.8680506 0.8498483
+## [2,] 0.8045566 0.8553756 0.8777972 0.8926172 0.8759151
+## [3,] 0.8155333 0.8671611 0.8887999 0.9024494 0.8866860
+## [4,] 0.8142961 0.8656413 0.8873851 0.9011503 0.8852156
+## [5,] 0.7992076 0.8489379 0.8716589 0.8868195 0.8697568
+## [6,] 0.7687861 0.8138834 0.8371044 0.8547913 0.8358473
 ```
 
 
@@ -206,23 +152,7 @@ print(head(result))
 # Reconstruction metrics per column: R2 and MAPE
 # Note: MAPE can be sensitive to values close to zero.
 result <- as.data.frame(result)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 names(result) <- names(test)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 r2 <- c()
 mape <- c()
 for (col in names(test)){
@@ -235,8 +165,11 @@ for (col in names(test)){
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+## [1] "t4 R2 test: 0.311742567456236 MAPE: 0.194679349282425"
+## [1] "t3 R2 test: 0.879715872669124 MAPE: 0.137592650386552"
+## [1] "t2 R2 test: 0.992287395581508 MAPE: 0.0654849130561628"
+## [1] "t1 R2 test: 0.951286000912721 MAPE: 0.154873398247592"
+## [1] "t0 R2 test: 0.893938747598008 MAPE: 0.329569244951906"
 ```
 
 ``` r
@@ -244,15 +177,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## Warning in mean.default(r2): argument is not numeric or logical: returning NA
-```
-
-```
-## Warning in mean.default(mape): argument is not numeric or logical: returning NA
-```
-
-```
-## [1] "Means R2 test: NA MAPE: NA"
+## [1] "Means R2 test: 0.805794116843519 MAPE: 0.176439911184928"
 ```
 
 References

@@ -52,29 +52,8 @@ auto <- autoenc_ed(
   patience = 20L,
   val_ratio = 0.2
 )
-```
-
-```
-## Warning: restarting interrupted promise evaluation
-```
-
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Training configuration
@@ -89,58 +68,23 @@ print(length(auto$train_loss))
 ```
 
 ```
-## Error:
-## ! object 'auto' not found
+## [1] 217
 ```
 
 
 ``` r
 # Training and validation curves
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
 
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-6](fig/21_autoenc_ed_static_patience/unnamed-chunk-6-1.png)
 
 
 ``` r
@@ -160,38 +104,19 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 result <- as.data.frame(result)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 names(result) <- names(test)
-```
-
-```
-## Error:
-## ! object 'result' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##          t4        t3        t2        t1        t0
+## 1 0.7271389 0.8246011 0.9184817 0.9726678 0.9908471
+## 2 0.8273045 0.9100403 0.9845648 0.9941374 0.9863150
+## 3 0.9076661 0.9726489 1.0202101 0.9856001 0.9558180
+## 4 0.9611175 1.0017823 1.0172803 0.9494610 0.9003392
+## 5 0.9886617 0.9983674 0.9759524 0.8880239 0.8161210
+## 6 0.9881241 0.9678354 0.9041160 0.8027674 0.7136117
 ```
 
 
@@ -209,8 +134,11 @@ for (col in names(test)){
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+## [1] "t4 R2 test: 0.997085120006719 MAPE: 0.00726166392328703"
+## [1] "t3 R2 test: 0.996070822533045 MAPE: 0.00940937043228177"
+## [1] "t2 R2 test: 0.999767055622891 MAPE: 0.021413788876571"
+## [1] "t1 R2 test: 0.999494778729496 MAPE: 0.0093613003254165"
+## [1] "t0 R2 test: 0.999036353989898 MAPE: 0.0151927887458487"
 ```
 
 ``` r
@@ -218,15 +146,7 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## Warning in mean.default(r2): argument is not numeric or logical: returning NA
-```
-
-```
-## Warning in mean.default(mape): argument is not numeric or logical: returning NA
-```
-
-```
-## [1] "Means R2 test: NA MAPE: NA"
+## [1] "Means R2 test: 0.99829082617641 MAPE: 0.012527782460681"
 ```
 
 Notes

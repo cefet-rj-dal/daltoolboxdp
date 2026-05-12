@@ -84,26 +84,10 @@ test  <- as.data.frame(samp$test)
 # Creating the VAE: reduce from 5 -> 3 dimensions (p -> k)
 # - the default number of epochs is used
 auto <- autoenc_variational_e(5, 3)
-```
 
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 # Training the model
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -125,50 +109,15 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/06_autoenc_variational_e/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -189,20 +138,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]       [,2]       [,3]        [,4]          [,5]          [,6]
+## [1,] -0.1587287 -0.2147984 -0.2149044 -0.02928344 -1.133420e-03  0.0001546256
+## [2,] -0.1840510 -0.2540534 -0.2568787 -0.03164933  3.829911e-03 -0.0018734634
+## [3,] -0.1951965 -0.2730957 -0.2802375 -0.03364404  6.409667e-03 -0.0035988595
+## [4,] -0.1882526 -0.2688529 -0.2819935 -0.03513510  5.773678e-03 -0.0045520756
+## [5,] -0.1660521 -0.2429923 -0.2612343 -0.03403335  3.712982e-03 -0.0059001483
+## [6,] -0.1323544 -0.1988099 -0.2207219 -0.03155528  4.784018e-05 -0.0069676861
 ```
 
 References

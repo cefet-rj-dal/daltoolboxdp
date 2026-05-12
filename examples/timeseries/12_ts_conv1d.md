@@ -39,14 +39,10 @@ ts_head(ts, 3)
 ```
 
 ```
-##             t9        t8        t7        t6        t5        t4        t3
-## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
-## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
-## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
-##             t2        t1        t0
-## [1,] 0.9839859 0.9092974 0.7780732
-## [2,] 0.9092974 0.7780732 0.5984721
-## [3,] 0.7780732 0.5984721 0.3816610
+##             t9        t8        t7        t6        t5        t4        t3        t2        t1        t0
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721 0.3816610
 ```
 
 Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
@@ -77,25 +73,8 @@ This step trains the Conv1D model.
 # Training the Conv1D model
 
 model <- ts_conv1d(ts_norm_gminmax(), input_size = 4)
-```
-
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 set_example_seed()
 model <- fit(model, x = io_train$input, y = io_train$output)
-```
-
-```
-## Error:
-## ! object 'model' not found
 ```
 
 Constructor configuration
@@ -116,39 +95,14 @@ We first evaluate the in-sample fit so the model adjustment can be compared with
 # Fit evaluation (train)
 
 adjust <- predict(model, io_train$input)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 adjust <- as.vector(adjust)
-```
-
-```
-## Error:
-## ! object 'adjust' not found
-```
-
-``` r
 output <- as.vector(io_train$output)
 ev_adjust <- evaluate(model, output, adjust)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 ev_adjust$mse
 ```
 
 ```
-## Error:
-## ! object 'ev_adjust' not found
+## [1] 0.0001007099
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -158,39 +112,31 @@ We now forecast the test set and compare the predicted values with the observed 
 # Forecast on test set
 
 prediction <- predict(model, x = io_test$input[1, ], steps_ahead = 5)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 prediction <- as.vector(prediction)
-```
-
-```
-## Error:
-## ! object 'prediction' not found
-```
-
-``` r
 output <- as.vector(io_test$output)
 ev_test <- evaluate(model, output, prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 ev_test
 ```
 
 ```
-## Error:
-## ! object 'ev_test' not found
+## $values
+## [1]  0.41211849  0.17388949 -0.07515112 -0.31951919 -0.54402111
+## 
+## $prediction
+## [1]  0.43476895  0.21081667 -0.02554476 -0.26861302 -0.48919488
+## 
+## $smape
+## [1] 0.3019954
+## 
+## $mse
+## [1] 0.001986961
+## 
+## $R2
+## [1] 0.9828385
+## 
+## $metrics
+##           mse     smape        R2
+## 1 0.001986961 0.3019954 0.9828385
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -203,10 +149,7 @@ yvalues <- c(io_train$output, io_test$output)
 plot_ts_pred(y = yvalues, yadj = adjust, ypre = prediction) + theme(text = element_text(size = 16))
 ```
 
-```
-## Error:
-## ! object 'adjust' not found
-```
+![plot of chunk unnamed-chunk-9](fig/12_ts_conv1d/unnamed-chunk-9-1.png)
 
 The additional plot below shows the training curve and, when enabled, the validation curve used by the unified early-stopping strategies.
 
@@ -218,50 +161,17 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-10](fig/12_ts_conv1d/unnamed-chunk-10-1.png)
 
 Notes
 - The default configuration is `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

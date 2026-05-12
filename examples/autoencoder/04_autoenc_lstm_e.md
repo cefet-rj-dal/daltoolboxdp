@@ -90,26 +90,10 @@ auto <- autoenc_lstm_e(
   lstm_hidden_size = 16L,
   epochs = 200L
 )
-```
 
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 # Training the model
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -131,50 +115,15 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/04_autoenc_lstm_e/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -195,20 +144,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##          [,1]     [,2]       [,3]
+## [1,] 1.623646 1.132362 -0.5565819
+## [2,] 1.720915 1.196988 -0.5996022
+## [3,] 1.773435 1.231892 -0.6222906
+## [4,] 1.784624 1.239586 -0.6262597
+## [5,] 1.754847 1.220451 -0.6114599
+## [6,] 1.680419 1.172078 -0.5757307
 ```
 
 References

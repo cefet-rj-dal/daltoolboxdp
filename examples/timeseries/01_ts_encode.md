@@ -64,11 +64,6 @@ set_example_seed()
 auto <- fit(auto, train)
 ```
 
-```
-## Error in `autoenc_fit()`:
-## ! unused argument (seed = obj$seed)
-```
-
 Encoding evaluation (train)
 
 
@@ -88,33 +83,17 @@ print(head(train))                    # original windows (p columns)
 
 ``` r
 result <- transform(auto, train)      # encodings (k columns)
-```
-
-```
-## Warning in transform(auto, train): restarting interrupted promise evaluation
-```
-
-```
-## Warning in get(method, envir = home): restarting interrupted promise evaluation
-```
-
-```
-## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
-## libdeflate
-```
-
-```
-## Error in `get()`:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]       [,2]       [,3]
+## [1,] -0.1182066 -0.3719499 -0.7841629
+## [2,] -0.3636969 -0.6521246 -0.9437860
+## [3,] -0.5672154 -0.8605942 -1.0504243
+## [4,] -0.7133046 -0.9978968 -1.0842316
+## [5,] -0.8060740 -1.0653565 -1.0469444
+## [6,] -0.8490413 -1.0682272 -0.9438766
 ```
 
 Encoding of the test set
@@ -135,33 +114,16 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Warning in transform(auto, test): restarting interrupted promise evaluation
-```
-
-```
-## Warning in get(method, envir = home): restarting interrupted promise evaluation
-```
-
-```
-## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
-## libdeflate
-```
-
-```
-## Error in `get()`:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##             [,1]        [,2]         [,3]
+## [1,] -0.78321987 -0.90169656 -0.617454708
+## [2,] -0.68448418 -0.70963740 -0.367719769
+## [3,] -0.50289148 -0.41860643  0.007311214
+## [4,] -0.25193313 -0.09249599  0.240453750
+## [5,] -0.06743492  0.18064062  0.340119630
 ```
 
 References

@@ -79,22 +79,10 @@ test  <- as.data.frame(samp$test)
 ``` r
 # Creating the stacked autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 auto <- autoenc_stacked_e(5, 3)
-```
 
-```
-## Error:
-## ! cannot allocate vector of size 3.8 Gb
-```
-
-``` r
 # Training the model
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -114,50 +102,15 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-7](fig/05_autoenc_stacked_e/unnamed-chunk-7-1.png)
 
 
 ``` r
@@ -178,20 +131,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]      [,2]      [,3]
+## [1,] -0.2930435 0.8482231 0.4212879
+## [2,] -0.3307444 0.9131165 0.4447812
+## [3,] -0.3476301 0.9421132 0.4557045
+## [4,] -0.3471685 0.9412640 0.4554250
+## [5,] -0.3303329 0.9124998 0.4447338
+## [6,] -0.2912646 0.8457237 0.4214774
 ```
 
 References

@@ -12,8 +12,7 @@ skcla_rf(
   min_samples_split = 2,
   min_samples_leaf = 1,
   max_features = "sqrt",
-  class_weight = NULL,
-  random_state = NULL
+  class_weight = NULL
 )
 }
 \arguments{
@@ -32,8 +31,6 @@ skcla_rf(
 \item{max_features}{Number of features to consider at each split. Use \code{"sqrt"}, \code{"log2"}, \code{NULL}, or a numeric value.}
 
 \item{class_weight}{Optional weights associated with classes.}
-
-\item{random_state}{Optional seed for reproducibility.}
 }
 \value{
 A \code{skcla_rf} classifier object.

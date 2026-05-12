@@ -39,14 +39,10 @@ ts_head(ts, 3)
 ```
 
 ```
-##             t9        t8        t7        t6        t5        t4        t3
-## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
-## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
-## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
-##             t2        t1        t0
-## [1,] 0.9839859 0.9092974 0.7780732
-## [2,] 0.9092974 0.7780732 0.5984721
-## [3,] 0.7780732 0.5984721 0.3816610
+##             t9        t8        t7        t6        t5        t4        t3        t2        t1        t0
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721 0.3816610
 ```
 
 Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
@@ -86,25 +82,8 @@ model <- ts_lstm(
   stopping_rule = "patience",
   patience = 20L
 )
-```
-
-```
-## Warning: restarting interrupted promise evaluation
-```
-
-```
-## Error:
-## ! read failed on C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb
-```
-
-``` r
 set_example_seed()
 model <- fit(model, x = io_train$input, y = io_train$output)
-```
-
-```
-## Error:
-## ! object 'model' not found
 ```
 
 Constructor configuration
@@ -127,39 +106,14 @@ We first evaluate the in-sample fit so the model adjustment can be compared with
 # Fit evaluation (train)
 
 adjust <- predict(model, io_train$input)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 adjust <- as.vector(adjust)
-```
-
-```
-## Error:
-## ! object 'adjust' not found
-```
-
-``` r
 output <- as.vector(io_train$output)
 ev_adjust <- evaluate(model, output, adjust)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 ev_adjust$mse
 ```
 
 ```
-## Error:
-## ! object 'ev_adjust' not found
+## [1] 1.039852
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -170,23 +124,8 @@ We now forecast the test set and compare the predicted values with the observed 
 
 steps_ahead <- 1
 prediction <- predict(model, x = io_test$input, steps_ahead = steps_ahead)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 prediction <- as.vector(prediction)
-```
 
-```
-## Error:
-## ! object 'prediction' not found
-```
-
-``` r
 output <- as.vector(io_test$output)
 if (steps_ahead > 1)
   output <- output[1:steps_ahead]
@@ -195,8 +134,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## Error:
-## ! object 'prediction' not found
+## [1] "0.41, -0.51"  "0.17, -0.52"  "-0.08, -0.55" "-0.32, -0.59" "-0.54, -0.64"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -206,20 +144,12 @@ This chunk evaluates the custom component on the held-out test segment.
 # Test evaluation
 
 ev_test <- evaluate(model, output, prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 print(head(ev_test$metrics))
 ```
 
 ```
-## Error:
-## ! object 'ev_test' not found
+##         mse    smape        R2
+## 1 0.3307838 1.255083 -1.856997
 ```
 
 ``` r
@@ -227,8 +157,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## Error:
-## ! object 'ev_test' not found
+## [1] "smape: 125.51"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -241,10 +170,7 @@ yvalues <- c(io_train$output, io_test$output)
 plot_ts_pred(y = yvalues, yadj = adjust, ypre = prediction) + theme(text = element_text(size = 16))
 ```
 
-```
-## Error:
-## ! object 'adjust' not found
-```
+![plot of chunk unnamed-chunk-10](fig/22_ts_lstm_dynamic_patience/unnamed-chunk-10-1.png)
 
 The additional plot below shows the training curve and, when enabled, the validation curve used by the unified early-stopping strategies.
 
@@ -256,50 +182,17 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-11](fig/22_ts_lstm_dynamic_patience/unnamed-chunk-11-1.png)
 
 
 ``` r
@@ -308,8 +201,7 @@ print(model$epochs_done)
 ```
 
 ```
-## Error:
-## ! object 'model' not found
+## [1] 33
 ```
 
 Notes

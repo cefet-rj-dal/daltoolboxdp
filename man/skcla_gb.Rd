@@ -13,8 +13,7 @@ skcla_gb(
   subsample = 1,
   min_samples_split = 2,
   min_samples_leaf = 1,
-  loss = c("log_loss", "exponential"),
-  random_state = NULL
+  loss = c("log_loss", "exponential")
 )
 }
 \arguments{
@@ -35,8 +34,6 @@ skcla_gb(
 \item{min_samples_leaf}{Minimum number of samples required to be at a leaf node.}
 
 \item{loss}{Loss function to be optimized. One of \code{"log_loss"} or \code{"exponential"}.}
-
-\item{random_state}{Optional random number generator seed.}
 }
 \value{
 A \code{skcla_gb} classifier object.

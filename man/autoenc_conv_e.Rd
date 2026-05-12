@@ -19,8 +19,7 @@ autoenc_conv_e(
   sma_window = 5L,
   ema_alpha = 0.2,
   test_window = 30L,
-  p_value = 0.05,
-  seed = 42L
+  p_value = 0.05
 )
 }
 \arguments{
@@ -53,8 +52,6 @@ autoenc_conv_e(
 \item{test_window}{Integer. Window size used by \code{h}. Default is 30.}
 
 \item{p_value}{Numeric. Significance threshold used by \code{h}. Default is 0.05.}
-
-\item{seed}{Integer. Seed used by data splitting routines. Default is 42.}
 }
 \value{
 A \code{autoenc_conv_e} object.
@@ -76,5 +73,5 @@ Z  <- daltoolbox::transform(ae, X)   # 50 x 5 encodings
 # https://github.com/cefet-rj-dal/daltoolbox/blob/main/autoencoder/autoenc_conv_e.md
 }
 \references{
-Masci, J., Meier, U., Cireşan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
+Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 }

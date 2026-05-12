@@ -25,8 +25,7 @@ autoenc_variational_e(
   sma_window = 5L,
   ema_alpha = 0.2,
   test_window = 30L,
-  p_value = 0.05,
-  seed = 42L
+  p_value = 0.05
 )
 }
 \arguments{
@@ -76,8 +75,6 @@ If \code{NULL}, the decoder mirrors \code{encoder_hidden_sizes} in reverse order
 \item{test_window}{Integer. Window size used by \code{h}. Default is 30.}
 
 \item{p_value}{Numeric. Significance threshold used by \code{h}. Default is 0.05.}
-
-\item{seed}{Integer. Seed used by data splitting routines. Default is 42.}
 }
 \value{
 A \code{autoenc_variational_e} object.

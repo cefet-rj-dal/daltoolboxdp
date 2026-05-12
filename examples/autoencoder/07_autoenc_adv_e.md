@@ -93,16 +93,6 @@ set_example_seed()
 auto <- fit(auto, train)
 ```
 
-```
-## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
-## libdeflate
-```
-
-```
-## Error in `get()`:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
@@ -150,20 +140,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! cannot allocate vector of size 3.8 Gb
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]     [,2]     [,3]
+## [1,] -1.1387396 8.018703 5.419394
+## [2,] -1.5612270 8.567384 5.842404
+## [3,] -1.7594186 8.841612 6.028757
+## [4,] -1.7324317 8.829659 5.974619
+## [5,] -1.4328672 8.521087 5.658907
+## [6,] -0.8912865 7.937541 5.106960
 ```
 
 References

@@ -60,29 +60,8 @@ Train the model (encode-decode)
 
 ``` r
 auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
-```
-
-```
-## Warning: restarting interrupted promise evaluation
-```
-
-```
-## Warning: internal error 1 in R_decompress1 with libdeflate
-```
-
-```
-## Error:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error:
-## ! object 'auto' not found
 ```
 
 Reconstruction evaluation (train)
@@ -104,20 +83,17 @@ print(head(train))                    # original windows (p columns)
 
 ``` r
 result <- transform(auto, train)      # reconstructed windows (p columns)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.1737699 0.3528315 0.4219284 0.5866906 0.6866236
+## [2,] 0.4188232 0.5779814 0.6642898 0.7816799 0.8236263
+## [3,] 0.6210196 0.7504283 0.8578256 0.9102328 0.9160316
+## [4,] 0.7572393 0.8593854 0.9720352 0.9815363 0.9478498
+## [5,] 0.8397456 0.9144131 1.0092331 0.9905427 0.9162860
+## [6,] 0.8624422 0.9146932 0.9777943 0.9532256 0.8295609
 ```
 
 Reconstruction of the test set
@@ -138,20 +114,16 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Error:
-## ! object 'auto' not found
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]       [,2]       [,3]         [,4]        [,5]
+## [1,] 0.75561529 0.80974257 0.78036916  0.739842951  0.55398911
+## [2,] 0.61527532 0.68745744 0.58861226  0.547835588  0.33978754
+## [3,] 0.43230015 0.46701068 0.35987493  0.262289554  0.07695113
+## [4,] 0.23522390 0.24550679 0.17915291  0.006133974 -0.12694584
+## [5,] 0.05097514 0.04747196 0.03879585 -0.161284864 -0.25191396
 ```
 
 References

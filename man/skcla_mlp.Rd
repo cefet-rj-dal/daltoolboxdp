@@ -14,8 +14,7 @@ skcla_mlp(
   batch_size = "auto",
   learning_rate_init = 0.001,
   max_iter = 200,
-  early_stopping = FALSE,
-  random_state = NULL
+  early_stopping = FALSE
 )
 }
 \arguments{
@@ -39,8 +38,6 @@ skcla_mlp(
 \item{max_iter}{Maximum number of iterations.}
 
 \item{early_stopping}{Whether to use early stopping.}
-
-\item{random_state}{Optional seed for random number generation.}
 }
 \value{
 A \code{skcla_mlp} classifier object.

@@ -26,8 +26,7 @@ torch_reg_mlp(
   sma_window = 5L,
   ema_alpha = 0.2,
   test_window = 30L,
-  p_value = 0.05,
-  seed = 42L
+  p_value = 0.05
 )
 }
 \arguments{
@@ -76,8 +75,6 @@ One of \code{"none"}, \code{"batch"}, or \code{"layer"}.}
 \item{test_window}{Integer. Window size used by \code{h}.}
 
 \item{p_value}{Numeric. Significance threshold used by \code{h}.}
-
-\item{seed}{Integer. Seed used by data splitting routines.}
 }
 \description{
 Regression model backed by a configurable PyTorch MLP with unified training strategies.

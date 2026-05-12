@@ -18,20 +18,6 @@ Steps
 
 ``` r
 source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
-```
-
-```
-## Warning in readLines(file, warn = FALSE): cannot open URL
-## 'https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R':
-## HTTP status was '404 Not Found'
-```
-
-```
-## Error in `readLines()`:
-## ! cannot open the connection to 'https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R'
-```
-
-``` r
 # Vanilla autoencoder transformation (encode)
 
 # Considering a dataset with $p$ numerical attributes. 
@@ -50,10 +36,6 @@ library(daltoolbox)
 ```
 
 ```
-## Warning: package 'daltoolbox' was built under R version 4.5.3
-```
-
-```
 ## 
 ## Attaching package: 'daltoolbox'
 ```
@@ -67,20 +49,7 @@ library(daltoolbox)
 ``` r
 library(tspredit)
 library(daltoolboxdp)
-set_example_seed()
-```
-
-```
-## Error in `set_example_seed()`:
-## ! could not find function "set_example_seed"
-```
-
-``` r
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 4.5.3
 ```
 
 
@@ -108,6 +77,7 @@ ts_head(ts)
 ``` r
 # Normalization (min-max by group) to stabilize training
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -136,13 +106,8 @@ test <- as.data.frame(samp$test)
 ``` r
 # Creating and training the autoencoder (reduce from 5 to 3 dimensions)
 auto <- autoenc_e(5, 3)
+set_example_seed()
 auto <- fit(auto, train)
-```
-
-```
-## Error in `py_call_impl()`:
-## ! TypeError: AutoencTrainingConfig.__init__() got an unexpected keyword argument 'seed'
-## Run `reticulate::py_last_error()` for details.
 ```
 
 Constructor configuration
@@ -190,25 +155,17 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
-```
-
-```
-## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
-## libdeflate
-```
-
-```
-## Error in `get()`:
-## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
-```
-
-``` r
 print(head(result))
 ```
 
 ```
-## Error:
-## ! object 'result' not found
+##            [,1]       [,2]       [,3]
+## [1,] -0.8076045 -0.9357777 -1.0908371
+## [2,] -0.8834542 -1.0363986 -1.1289582
+## [3,] -0.9292879 -1.0998564 -1.1295601
+## [4,] -0.9427536 -1.1235946 -1.0916647
+## [5,] -0.9279286 -1.1109335 -1.0202658
+## [6,] -0.8858334 -1.0626917 -0.9198178
 ```
 
 References
