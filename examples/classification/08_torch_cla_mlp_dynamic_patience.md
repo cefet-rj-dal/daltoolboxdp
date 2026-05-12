@@ -73,7 +73,7 @@ print(train_eval$metrics)
 
 ```
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.6833333 39 81  0  0         1      1           1           1  1
+## 1 0.9583333 39 81  0  0         1      1           1           1  1
 ```
 
 
@@ -86,8 +86,8 @@ print(test_eval$metrics)
 ```
 
 ```
-##   accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1      0.6 11 19  0  0         1      1           1           1  1
+##    accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1 0.9666667 11 19  0  0         1      1           1           1  1
 ```
 
 
@@ -97,7 +97,7 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 110
+## [1] 207
 ```
 
 
