@@ -10,6 +10,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Loading required packages
 library(daltoolbox)
 ```
@@ -59,7 +60,29 @@ Train the model (encode-decode)
 
 ``` r
 auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
+```
+
+```
+## Warning: restarting interrupted promise evaluation
+```
+
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error:
+## ! object 'auto' not found
 ```
 
 Reconstruction evaluation (train)
@@ -81,17 +104,20 @@ print(head(train))                    # original windows (p columns)
 
 ``` r
 result <- transform(auto, train)      # reconstructed windows (p columns)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##             [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] -0.00675039 0.3144473 0.5369650 0.6467962 0.8037730
-## [2,]  0.24005219 0.5332720 0.7222347 0.8097209 0.9351729
-## [3,]  0.45920840 0.7013658 0.8450642 0.8884892 0.9963930
-## [4,]  0.67386049 0.8554488 0.9303247 0.9299266 0.9692301
-## [5,]  0.86409807 0.9575740 0.9607112 0.9432069 0.8992014
-## [6,]  0.98816168 0.9942968 0.9299460 0.9085716 0.7825539
+## Error:
+## ! object 'result' not found
 ```
 
 Reconstruction of the test set
@@ -112,16 +138,20 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##           [,1]       [,2]       [,3]        [,4]       [,5]
-## [1,] 1.0229124  0.8798418  0.7362882  0.73188686  0.4574116
-## [2,] 0.9220788  0.7197322  0.5729905  0.58139384  0.2561637
-## [3,] 0.8403827  0.4674396  0.2239445  0.24409267 -0.1848854
-## [4,] 0.5306146  0.1906195  0.0217180 -0.05321822 -0.3908328
-## [5,] 0.1433797 -0.1271850 -0.2227965 -0.37598518 -0.5834533
+## Error:
+## ! object 'result' not found
 ```
 
 References

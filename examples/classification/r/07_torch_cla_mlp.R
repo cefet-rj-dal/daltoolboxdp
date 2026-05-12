@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installation (if needed)
 #install.packages("daltoolboxdp")
 
@@ -25,6 +26,7 @@ model <- torch_cla_mlp(
   epochs = 1000L  
 )
 
+set_example_seed()
 model <- fit(model, iris_train)
 train_prediction <- predict(model, iris_train)
 

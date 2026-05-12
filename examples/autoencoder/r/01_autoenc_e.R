@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Vanilla autoencoder transformation (encode)
 
 # Considering a dataset with $p$ numerical attributes. 
@@ -24,6 +25,7 @@ ts_head(ts)
 
 # Normalization (min-max by group) to stabilize training
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -36,6 +38,7 @@ test <- as.data.frame(samp$test)
 
 # Creating and training the autoencoder (reduce from 5 to 3 dimensions)
 auto <- autoenc_e(5, 3)
+set_example_seed()
 auto <- fit(auto, train)
 
 # Visualizing loss curves

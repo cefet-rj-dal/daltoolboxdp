@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Time Series Regression - LSTM
 
 # Installing packages (if needed)
@@ -37,6 +38,7 @@ model <- ts_lstm(
   stopping_rule = "patience",
   patience = 20L
 )
+set_example_seed()
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

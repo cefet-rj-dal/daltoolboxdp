@@ -14,6 +14,7 @@ Quick notes
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Denoising Autoencoder transformation (encode)
 
 # Considering a dataset with $p$ numerical attributes. 
@@ -59,6 +60,7 @@ ts_head(ts)
 ``` r
 # Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -87,7 +89,25 @@ test <- as.data.frame(samp$test)
 ``` r
 # Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_denoise_e(5, 3)
+```
+
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error:
+## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -104,16 +124,50 @@ Architecture variations
 
 ``` r
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
+```
 
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-7](fig/02_autoenc_denoise_e/unnamed-chunk-7-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
  
 
 ``` r
@@ -139,17 +193,20 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##          [,1]     [,2]      [,3]
-## [1,] 1.144002 1.086805 -1.218257
-## [2,] 1.195701 1.141863 -1.316908
-## [3,] 1.216952 1.165608 -1.377211
-## [4,] 1.206436 1.156563 -1.395417
-## [5,] 1.164806 1.115636 -1.369654
-## [6,] 1.089796 1.041549 -1.304700
+## Error:
+## ! object 'result' not found
 ```
 
 References

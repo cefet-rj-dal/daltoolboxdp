@@ -7,6 +7,7 @@ Didactic goal: read this example as the same numeric-prediction workflow used by
 Environment setup.
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Regression MLP with PyTorch
 
 # installation
@@ -28,10 +29,10 @@ print(t(sapply(Boston, class)))
 ```
 
 ```
-##      crim      zn        indus     chas      nox       rm        age       dis       rad       tax       ptratio  
-## [1,] "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric" "numeric" "integer" "numeric" "numeric"
-##      black     lstat     medv     
-## [1,] "numeric" "numeric" "numeric"
+##      crim      zn        indus     chas      nox       rm        age      
+## [1,] "numeric" "numeric" "numeric" "integer" "numeric" "numeric" "numeric"
+##      dis       rad       tax       ptratio   black     lstat     medv     
+## [1,] "numeric" "integer" "numeric" "numeric" "numeric" "numeric" "numeric"
 ```
 
 ``` r
@@ -39,13 +40,20 @@ head(Boston)
 ```
 
 ```
-##      crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat medv
-## 1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98 24.0
-## 2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14 21.6
-## 3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03 34.7
-## 4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94 33.4
-## 5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33 36.2
-## 6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21 28.7
+##      crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat
+## 1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
+## 2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
+## 3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03
+## 4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94
+## 5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33
+## 6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21
+##   medv
+## 1 24.0
+## 2 21.6
+## 3 34.7
+## 4 33.4
+## 5 36.2
+## 6 28.7
 ```
 
 Optional conversion to matrix.
@@ -77,7 +85,25 @@ model <- torch_reg_mlp(
   hidden_sizes = c(16L, 8L),
   epochs = 1000L  
 )
+```
+
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
+set_example_seed()
 model <- fit(model, boston_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
 ```
 
 Constructor configuration
@@ -97,14 +123,30 @@ Training evaluation.
 # Model adjustment
 
 train_prediction <- predict(model, boston_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 boston_train_predictand <- boston_train[, "medv"]
 train_eval <- evaluate(model, boston_train_predictand, train_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##        mse     smape        R2
-## 1 11.74771 0.1285341 0.8694819
+## Error:
+## ! object 'train_eval' not found
 ```
 
 Test evaluation.
@@ -113,14 +155,30 @@ Test evaluation.
 # Test
 
 test_prediction <- predict(model, boston_test)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 boston_test_predictand <- boston_test[, "medv"]
 test_eval <- evaluate(model, boston_test_predictand, test_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##        mse     smape        R2
-## 1 20.74641 0.1489793 0.6552345
+## Error:
+## ! object 'test_eval' not found
 ```
 
 Training curves.
@@ -132,17 +190,50 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-8](fig/01_torch_reg_mlp/unnamed-chunk-8-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 Notes
 - Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

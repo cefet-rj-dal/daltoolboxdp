@@ -11,6 +11,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Install required packages (if not already installed)
 #install.packages("daltoolboxdp")
 ```
@@ -47,18 +48,54 @@ iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 # 1) Train
 model <- skcla_rf("species_encoded", slevels)
-model <- fit(model, iris_train_label)
+```
 
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
+set_example_seed()
+model <- fit(model, iris_train_label)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 # 2) Evaluate on train
 train_prediction <- predict(model, iris_train_label)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # original labels
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##   accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1        1 39 81  0  0         1      1           1           1  1
+## Error:
+## ! object 'train_eval' not found
 ```
 
 ``` r
@@ -66,15 +103,30 @@ print(train_eval$metrics)
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 11 19  0  0         1      1           1           1  1
+## Error:
+## ! object 'test_eval' not found
 ```
 
 References

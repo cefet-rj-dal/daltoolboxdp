@@ -26,7 +26,6 @@
 #' @param test_window Integer. Window size used by `h`.
 #' @param p_value Numeric. Significance threshold used by `h`.
 #' @param weight_decay Numeric. L2 regularization.
-#' @param seed Integer. Seed used by data splitting routines.
 #' @examples
 #' \dontrun{
 #' library(daltoolboxdp)
@@ -65,8 +64,7 @@ torch_cla_mlp <- function(attribute,
                           ema_alpha = 0.2,
                           test_window = 30L,
                           p_value = 0.05,
-                          weight_decay = 0,
-                          seed = 42L) {
+                          weight_decay = 0) {
   activation <- match.arg(activation)
   normalization <- match.arg(normalization)
   init_method <- match.arg(init_method)
@@ -96,7 +94,6 @@ torch_cla_mlp <- function(attribute,
     test_window = as.integer(test_window),
     p_value = as.numeric(p_value),
     weight_decay = as.numeric(weight_decay),
-    seed = if (is.null(seed)) NULL else as.integer(seed),
     model = NULL,
     classes_ = NULL
   )
@@ -145,8 +142,7 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
     test_window = obj$test_window,
     p_value = obj$p_value,
     weight_decay = obj$weight_decay,
-    classes_ = obj$slevels,
-    seed = obj$seed
+    classes_ = obj$slevels
   )
 
   obj$classes_ <- obj$model$classes_

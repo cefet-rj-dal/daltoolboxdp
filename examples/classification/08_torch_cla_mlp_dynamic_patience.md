@@ -8,6 +8,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installation (if needed)
 #install.packages("daltoolboxdp")
 ```
@@ -51,8 +52,29 @@ model <- torch_cla_mlp(
   patience = 20L,
   val_ratio = 0.2
 )
+```
 
+```
+## Warning: restarting interrupted promise evaluation
+```
+
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
+set_example_seed()
 model <- fit(model, iris_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
 ```
 
 Training configuration
@@ -64,28 +86,60 @@ Training configuration
 ``` r
 # Training evaluation
 train_prediction <- predict(model, iris_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
 train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.6916667 39 81  0  0         1      1           1           1  1
+## Error:
+## ! object 'train_eval' not found
 ```
 
 
 ``` r
 # Test evaluation
 test_prediction <- predict(model, iris_test)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
 test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.6333333 11 19  0  0         1      1           1           1  1
+## Error:
+## ! object 'test_eval' not found
 ```
 
 
@@ -95,7 +149,8 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 151
+## Error:
+## ! object 'model' not found
 ```
 
 
@@ -105,17 +160,50 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-9](fig/08_torch_cla_mlp_dynamic_patience/unnamed-chunk-9-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 Notes
 - This example is useful when a fixed validation partition feels too brittle on smaller datasets.

@@ -16,11 +16,10 @@
 #'@param ema_alpha Numeric. Smoothing factor used by `ema`. Default is 0.2.
 #'@param test_window Integer. Window size used by `h`. Default is 30.
 #'@param p_value Numeric. Significance threshold used by `h`. Default is 0.05.
-#'@param seed Integer. Seed used by data splitting routines. Default is 42.
 #'@return A `autoenc_conv_e` object.
 #'
 #'@references
-#' Masci, J., Meier, U., Cireşan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
+#' Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 #'@examples
 #'\dontrun{
 #'# Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
@@ -39,7 +38,7 @@ autoenc_conv_e <- function(input_size, encoding_size, batch_size = 32, epochs = 
                            validation_strategy = c("static", "dynamic"),
                            stopping_rule = c("none", "patience", "sma", "ema", "h"),
                            val_ratio = 0.3, patience = 100L, min_delta = 1e-4,
-                           sma_window = 5L, ema_alpha = 0.2, test_window = 30L, p_value = 0.05, seed = 42L) {
+                           sma_window = 5L, ema_alpha = 0.2, test_window = 30L, p_value = 0.05) {
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
@@ -58,7 +57,6 @@ autoenc_conv_e <- function(input_size, encoding_size, batch_size = 32, epochs = 
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
-  obj$seed <- seed
   class(obj) <- append("autoenc_conv_e", class(obj))
 
   return(obj)
@@ -75,7 +73,7 @@ fit.autoenc_conv_e <- function(obj, data, return_loss=FALSE, ...) {
   result <- autoenc_conv_fit(obj$model, data, batch_size = obj$batch_size, num_epochs = obj$epochs, learning_rate = obj$learning_rate,
                              validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule, val_ratio = obj$val_ratio,
                              patience = obj$patience, min_delta = obj$min_delta, sma_window = obj$sma_window, ema_alpha = obj$ema_alpha,
-                             test_window = obj$test_window, p_value = obj$p_value, seed = obj$seed)
+                             test_window = obj$test_window, p_value = obj$p_value)
 
   obj$model <- result[[1]]
   obj$train_loss <- result[[2]]

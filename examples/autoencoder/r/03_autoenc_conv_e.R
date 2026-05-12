@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Convolutional Autoencoder transformation (encode)
 
 # Considering a dataset with $p$ numerical attributes. 
@@ -24,6 +25,7 @@ ts_head(ts)
 
 # Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -36,6 +38,7 @@ test <- as.data.frame(samp$test)
 
 # Training autoencoder (reduce 5 -> 3)
 auto <- autoenc_conv_e(5, 3, epochs = 200L)
+set_example_seed()
 auto <- fit(auto, train)
 
 fit_loss <- data.frame(x = seq_along(auto$train_loss), train_loss = auto$train_loss)

@@ -2,7 +2,7 @@
 SMOTE + TomekLinks combined resampling wrapper used by daltoolboxdp via reticulate.
 
 Intended R entry points:
-  - inbalanced_create_model(random_state=42) -> SMOTETomek instance
+  - inbalanced_create_model() -> SMOTETomek instance
   - fit_resample(select_method, df_train, target_column) -> (X_resampled, y_resampled)
 
 Data expectations:
@@ -14,9 +14,9 @@ Data expectations:
 from imblearn.combine import SMOTETomek
 
 
-def inbalanced_create_model(random_state=42):
-    """Create a SMOTETomek resampler with a fixed random_state for reproducibility."""
-    stomek = SMOTETomek(random_state=int(random_state))
+def inbalanced_create_model():
+    """Create a SMOTETomek resampler without configuring random state."""
+    stomek = SMOTETomek()
     return stomek
 
 

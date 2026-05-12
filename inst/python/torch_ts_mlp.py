@@ -29,7 +29,6 @@ class _TrainingConfig:
     ema_alpha: float = 0.2
     test_window: int = 30
     p_value: float = 0.05
-    seed: Optional[int] = 42
 
 
 def _activation_module(name: str) -> nn.Module:
@@ -239,12 +238,18 @@ class TorchTsMLPModel:
         return torch.from_numpy(X), torch.from_numpy(y).unsqueeze(-1)
 
     @staticmethod
-    def _split_indices(n_samples: int, val_ratio: float, seed: Optional[int]) -> Tuple[np.ndarray, np.ndarray]:
-        rng = np.random.default_rng(seed)
+    def _split_indices(n_samples: int, val_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
+        rng = np.random.default_rng()
         idx = np.arange(n_samples)
         rng.shuffle(idx)
         n_val = max(1, int(n_samples * float(val_ratio)))
         return idx[n_val:], idx[:n_val]
+
+    @staticmethod
+    def _static_split_indices(n_samples: int, val_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
+        n_val = max(1, int(n_samples * float(val_ratio)))
+        idx = np.arange(n_samples)
+        return idx[:-n_val], idx[-n_val:]
 
     def _epoch(self, loader: DataLoader, optimizer: Optional[torch.optim.Optimizer], criterion: nn.Module) -> float:
         losses: List[float] = []
@@ -268,9 +273,6 @@ class TorchTsMLPModel:
         return float(np.mean(losses)) if losses else 0.0
 
     def fit(self, df_train: pd.DataFrame, config: _TrainingConfig):
-        if config.seed is not None:
-            np.random.seed(int(config.seed))
-            torch.manual_seed(int(config.seed))
 
         X_all, y_all = self._prep_xy(df_train)
         criterion = nn.MSELoss()
@@ -282,7 +284,7 @@ class TorchTsMLPModel:
         self.epochs_done = 0
 
         if self.validation_strategy == "static" and self.stopping_rule != "none":
-            train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio, config.seed)
+            train_idx, val_idx = self._static_split_indices(X_all.shape[0], config.val_ratio)
             train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
             val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
         elif self.validation_strategy == "static":
@@ -295,7 +297,7 @@ class TorchTsMLPModel:
         for epoch in range(int(config.epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
                 train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
                 val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
 
@@ -360,7 +362,6 @@ def torch_ts_mlp_fit(
     ema_alpha: float = 0.2,
     test_window: int = 30,
     p_value: float = 0.05,
-    seed: Optional[int] = 42,
 ):
     model.validation_strategy = str(validation_strategy).lower()
     model.stopping_rule = str(stopping_rule).lower()
@@ -375,7 +376,6 @@ def torch_ts_mlp_fit(
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
-        seed=None if seed is None else int(seed),
     )
     return model.fit(df_train, config)
 

@@ -11,7 +11,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 import pandas as pd
 
 def skcla_gb_create(n_estimators=100, learning_rate=0.1, max_depth=3, subsample=1.0,
-                  min_samples_split=2, min_samples_leaf=1, loss='log_loss', random_state=None):
+                  min_samples_split=2, min_samples_leaf=1, loss='log_loss'):
     
     model = GradientBoostingClassifier(
         n_estimators=n_estimators,
@@ -21,7 +21,6 @@ def skcla_gb_create(n_estimators=100, learning_rate=0.1, max_depth=3, subsample=
         min_samples_split=min_samples_split,
         min_samples_leaf=min_samples_leaf,
         loss=loss,
-        random_state=random_state,
     )
     
     return model

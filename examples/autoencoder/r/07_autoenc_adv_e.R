@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing example dependencies (if needed)
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -19,6 +20,7 @@ ts_head(ts)                       # preview first rows
 # Normalization (min-max by group)
 # Keeps each column (window step) on the same [0,1] scale
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -35,6 +37,7 @@ test  <- as.data.frame(samp$test)
 auto <- autoenc_adv_e(5, 3, batch_size = 3)
 
 # Training the model on the train set
+set_example_seed()
 auto <- fit(auto, train)
 
 # Learning curves

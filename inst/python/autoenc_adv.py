@@ -189,9 +189,6 @@ class AdversarialAutoencoderModel:
         self.D_gauss.load_state_dict(state["D"])
 
     def fit(self, data, config: AutoencTrainingConfig):
-        if config.seed is not None:
-            np.random.seed(int(config.seed))
-            torch.manual_seed(int(config.seed))
 
         if float(config.learning_rate) > 0:
             base_lr = float(config.learning_rate)
@@ -212,7 +209,7 @@ class AdversarialAutoencoderModel:
         self.epochs_done = 0
 
         if self.validation_strategy == "static" and self.stopping_rule != "none":
-            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
             train_loader = self._loader(array[train_idx], config.batch_size, True)
             val_loader = self._loader(array[val_idx], config.batch_size, False)
         elif self.validation_strategy == "static":
@@ -225,7 +222,7 @@ class AdversarialAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
                 train_loader = self._loader(array[train_idx], config.batch_size, True)
                 val_loader = self._loader(array[val_idx], config.batch_size, False)
             self.train_loss.append(self._train_epoch(train_loader))
@@ -304,7 +301,7 @@ def autoenc_adv_create(
     )
 
 
-def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
     aae.validation_strategy, aae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -319,7 +316,6 @@ def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.0
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
-        seed=None if seed is None else int(seed),
     )
     aae.fit(data, config)
     return aae, np.array(aae.train_loss), np.array(aae.val_loss)

@@ -62,7 +62,7 @@ test_that("skcla_nb fits and predicts", {
 test_that("skcla_rf fits and predicts", {
   skip_if_no_sklearn()
   df <- make_skcla_data()
-  model <- skcla_rf("class", c("a", "b"), n_estimators = 10L, random_state = 1L)
+  model <- skcla_rf("class", c("a", "b"), n_estimators = 10L)
   fitted <- fit.skcla_rf(model, df)
   pred <- predict.skcla_rf(fitted, df[, c("x1", "x2")])
 
@@ -73,7 +73,7 @@ test_that("skcla_rf fits and predicts", {
 test_that("skcla_gb fits and predicts", {
   skip_if_no_sklearn()
   df <- make_skcla_data()
-  model <- skcla_gb("class", c("a", "b"), n_estimators = 10L, random_state = 1L)
+  model <- skcla_gb("class", c("a", "b"), n_estimators = 10L)
   fitted <- fit.skcla_gb(model, df)
   pred <- predict.skcla_gb(fitted, df[, c("x1", "x2")])
 
@@ -84,7 +84,7 @@ test_that("skcla_gb fits and predicts", {
 test_that("skcla_svc fits and predicts", {
   skip_if_no_sklearn()
   df <- make_skcla_data()
-  model <- skcla_svc("class", c("a", "b"), kernel = "linear", random_state = 1L)
+  model <- skcla_svc("class", c("a", "b"), kernel = "linear")
   fitted <- fit.skcla_svc(model, df)
   pred <- predict.skcla_svc(fitted, df[, c("x1", "x2")])
 
@@ -95,7 +95,7 @@ test_that("skcla_svc fits and predicts", {
 test_that("skcla_mlp fits and predicts", {
   skip_if_no_sklearn()
   df <- make_skcla_data()
-  model <- skcla_mlp("class", c("a", "b"), hidden_layer_sizes = c(4L), max_iter = 20L, random_state = 1L)
+  model <- skcla_mlp("class", c("a", "b"), hidden_layer_sizes = c(4L), max_iter = 20L)
   fitted <- fit.skcla_mlp(model, df)
   pred <- predict.skcla_mlp(fitted, df[, c("x1", "x2")])
 

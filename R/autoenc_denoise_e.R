@@ -31,7 +31,6 @@
 #' @param ema_alpha Numeric. Smoothing factor used by `ema`. Default is 0.2.
 #' @param test_window Integer. Window size used by `h`. Default is 30.
 #' @param p_value Numeric. Significance threshold used by `h`. Default is 0.05.
-#' @param seed Integer. Seed used by data splitting routines. Default is 42.
 #' @return A `autoenc_denoise_e` object.
 #'
 #' @references
@@ -73,8 +72,7 @@ autoenc_denoise_e <- function(input_size, encoding_size,
                               sma_window = 5L,
                               ema_alpha = 0.2,
                               test_window = 30L,
-                              p_value = 0.05,
-                              seed = 42L) {
+                              p_value = 0.05) {
   activation <- match.arg(activation)
   output_activation <- match.arg(output_activation)
   validation_strategy <- match.arg(validation_strategy)
@@ -101,7 +99,6 @@ autoenc_denoise_e <- function(input_size, encoding_size,
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
-  obj$seed <- seed
   class(obj) <- append("autoenc_denoise_e", class(obj))
 
   obj
@@ -141,8 +138,7 @@ fit.autoenc_denoise_e <- function(obj, data, ...) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value,
-    seed = obj$seed
+    p_value = obj$p_value
   )
 
   obj$model <- result[[1]]

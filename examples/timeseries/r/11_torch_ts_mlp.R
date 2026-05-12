@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Time Series Regression - PyTorch MLP
 
 # Installing packages (if needed)
@@ -33,6 +34,7 @@ model <- torch_ts_mlp(
   epochs = 1000L,
   batch_size = 16L
 )
+set_example_seed()
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Install required packages (if not already installed)
 #install.packages("daltoolboxdp")
 
@@ -24,6 +25,7 @@ iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 # 1) Train
 model <- skcla_rf("species_encoded", slevels)
+set_example_seed()
 model <- fit(model, iris_train_label)
 
 # 2) Evaluate on train

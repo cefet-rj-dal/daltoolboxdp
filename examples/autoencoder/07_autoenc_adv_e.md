@@ -15,6 +15,7 @@ Quick notes
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing example dependencies (if needed)
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -55,6 +56,7 @@ ts_head(ts)                       # preview first rows
 # Normalization (min-max by group)
 # Keeps each column (window step) on the same [0,1] scale
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -87,7 +89,18 @@ test  <- as.data.frame(samp$test)
 auto <- autoenc_adv_e(5, 3, batch_size = 3)
 
 # Training the model on the train set
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
+## libdeflate
+```
+
+```
+## Error in `get()`:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
 ```
 
 Constructor configuration
@@ -137,17 +150,20 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! cannot allocate vector of size 3.8 Gb
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##           [,1]      [,2]      [,3]
-## [1,] -3.806250 -5.618673 -4.721063
-## [2,] -3.906807 -6.257061 -5.072360
-## [3,] -3.934368 -6.610751 -5.265086
-## [4,] -3.891577 -6.660998 -5.278861
-## [5,] -3.761101 -6.442945 -5.120848
-## [6,] -3.566899 -5.913779 -4.790864
+## Error:
+## ! object 'result' not found
 ```
 
 References

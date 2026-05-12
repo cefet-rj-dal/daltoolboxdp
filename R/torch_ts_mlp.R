@@ -26,7 +26,6 @@
 #' @param ema_alpha Numeric. Smoothing factor used by `ema`.
 #' @param test_window Integer. Window size used by `h`.
 #' @param p_value Numeric. Significance threshold used by `h`.
-#' @param seed Integer. Seed used by data splitting routines.
 #' @return A `torch_ts_mlp` object.
 #' @examples
 #' \dontrun{
@@ -61,8 +60,7 @@ torch_ts_mlp <- function(preprocess = NA,
                          sma_window = 5L,
                          ema_alpha = 0.2,
                          test_window = 30L,
-                         p_value = 0.05,
-                         seed = 42L) {
+                         p_value = 0.05) {
   activation <- match.arg(activation)
   output_activation <- match.arg(output_activation)
   normalization <- match.arg(normalization)
@@ -89,7 +87,6 @@ torch_ts_mlp <- function(preprocess = NA,
   obj$ema_alpha <- as.numeric(ema_alpha)
   obj$test_window <- as.integer(test_window)
   obj$p_value <- as.numeric(p_value)
-  obj$seed <- if (is.null(seed)) NULL else as.integer(seed)
   class(obj) <- append("torch_ts_mlp", class(obj))
 
   obj
@@ -132,8 +129,7 @@ do_fit.torch_ts_mlp <- function(obj, x, y) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value,
-    seed = obj$seed
+    p_value = obj$p_value
   )
 
   obj$train_loss_hist <- obj$model$train_loss_hist

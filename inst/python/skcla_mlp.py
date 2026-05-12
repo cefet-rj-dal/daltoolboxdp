@@ -11,7 +11,7 @@ from sklearn.neural_network import MLPClassifier
 import pandas as pd
 
 def skcla_mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.0001, batch_size='auto',
-               learning_rate_init=0.001, max_iter=200, early_stopping=False, random_state=None):
+               learning_rate_init=0.001, max_iter=200, early_stopping=False):
 
     if activation is None:
         activation = 'relu'  
@@ -28,7 +28,6 @@ def skcla_mlp_create(hidden_layer_sizes=(100,), activation='relu', solver='adam'
         learning_rate_init=learning_rate_init,
         max_iter=max_iter,
         early_stopping=early_stopping,
-        random_state=random_state,
     )
     return model
 

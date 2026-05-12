@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Regression MLP with PyTorch
 
 # installation
@@ -32,6 +33,7 @@ model <- torch_reg_mlp(
   hidden_sizes = c(16L, 8L),
   epochs = 1000L  
 )
+set_example_seed()
 model <- fit(model, boston_train)
 
 # Model adjustment

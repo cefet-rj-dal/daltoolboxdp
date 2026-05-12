@@ -44,8 +44,7 @@ autoenc_variational_ed <- function(input_size, encoding_size,
                                    sma_window = 5L,
                                    ema_alpha = 0.2,
                                    test_window = 30L,
-                                   p_value = 0.05,
-                                   seed = 42L) {
+                                   p_value = 0.05) {
   activation <- match.arg(activation)
   output_activation <- match.arg(output_activation)
   reconstruction_loss <- match.arg(reconstruction_loss)
@@ -73,7 +72,6 @@ autoenc_variational_ed <- function(input_size, encoding_size,
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
-  obj$seed <- seed
   class(obj) <- append("autoenc_variational_ed", class(obj))
 
   obj
@@ -113,8 +111,7 @@ fit.autoenc_variational_ed <- function(obj, data, ...) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value,
-    seed = obj$seed
+    p_value = obj$p_value
   )
 
   obj$model <- result[[1]]

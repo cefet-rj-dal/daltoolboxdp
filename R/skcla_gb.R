@@ -11,7 +11,6 @@
 #' @param min_samples_split Minimum number of samples required to split an internal node.
 #' @param min_samples_leaf Minimum number of samples required to be at a leaf node.
 #' @param loss Loss function to be optimized. One of `"log_loss"` or `"exponential"`.
-#' @param random_state Optional random number generator seed.
 #' @return A `skcla_gb` classifier object.
 #'
 #' @references
@@ -38,8 +37,7 @@ skcla_gb <- function(attribute, slevels,
                      subsample = 1,
                      min_samples_split = 2,
                      min_samples_leaf = 1,
-                     loss = c("log_loss", "exponential"),
-                     random_state = NULL) {
+                     loss = c("log_loss", "exponential")) {
   loss <- match.arg(loss)
 
   obj <- classification(attribute, slevels)
@@ -51,8 +49,7 @@ skcla_gb <- function(attribute, slevels,
     subsample = as.numeric(subsample),
     min_samples_split = as.integer(min_samples_split),
     min_samples_leaf = as.integer(min_samples_leaf),
-    loss = loss,
-    random_state = if (!is.null(random_state)) as.integer(random_state) else NULL
+    loss = loss
   )
   obj <- c(obj, objex)
   class(obj) <- c("skcla_gb", cobj)
@@ -77,8 +74,7 @@ fit.skcla_gb <- function(obj, data, ...) {
       subsample = obj$subsample,
       min_samples_split = obj$min_samples_split,
       min_samples_leaf = obj$min_samples_leaf,
-      loss = obj$loss,
-      random_state = obj$random_state
+      loss = obj$loss
     )
   }
 

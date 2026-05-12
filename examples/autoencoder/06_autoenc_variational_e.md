@@ -14,6 +14,7 @@ Quick notes
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing example dependencies (if needed)
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -53,6 +54,7 @@ ts_head(ts)
 ``` r
 # Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -82,9 +84,26 @@ test  <- as.data.frame(samp$test)
 # Creating the VAE: reduce from 5 -> 3 dimensions (p -> k)
 # - the default number of epochs is used
 auto <- autoenc_variational_e(5, 3)
+```
 
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
 # Training the model
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error:
+## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -106,15 +125,50 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-7](fig/06_autoenc_variational_e/unnamed-chunk-7-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 
 ``` r
@@ -135,17 +189,20 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##              [,1]       [,2]      [,3]       [,4]         [,5]        [,6]
-## [1,] -0.090390243 -0.2746773 0.2619953 0.05519932  0.018213168 -0.01911818
-## [2,] -0.044205926 -0.2996333 0.3299381 0.05406546  0.016730636 -0.02071471
-## [3,]  0.007998351 -0.3009213 0.3756418 0.05000445  0.013096467 -0.02301618
-## [4,]  0.057877213 -0.2797590 0.3943878 0.04487964  0.007571995 -0.02626612
-## [5,]  0.105991349 -0.2374633 0.3871393 0.03753505  0.002021387 -0.02749852
-## [6,]  0.148972183 -0.1765156 0.3551162 0.02769797 -0.002698153 -0.02655106
+## Error:
+## ! object 'result' not found
 ```
 
 References

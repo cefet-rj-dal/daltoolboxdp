@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing packages
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -15,6 +16,7 @@ sw_size <- 5
 ts <- ts_data(tsd$y, sw_size)
 
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -31,6 +33,7 @@ auto <- autoenc_ed(
   patience = 20L,
   val_ratio = 0.2
 )
+set_example_seed()
 auto <- fit(auto, train)
 
 # Effective training duration

@@ -28,7 +28,6 @@ class AutoencTrainingConfig:
     ema_alpha: float = 0.2
     test_window: int = 30
     p_value: float = 0.05
-    seed: Optional[int] = 42
 
 
 def ensure_int_list(values, default: Optional[Sequence[int]] = None, allow_empty: bool = False) -> List[int]:
@@ -96,8 +95,8 @@ def validate_strategy(validation_strategy: str, stopping_rule: str) -> Tuple[str
     return validation_strategy, stopping_rule
 
 
-def split_indices(n_samples: int, val_ratio: float, seed: Optional[int]) -> Tuple[np.ndarray, np.ndarray]:
-    rng = np.random.default_rng(seed)
+def split_indices(n_samples: int, val_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
+    rng = np.random.default_rng()
     idx = np.arange(n_samples)
     rng.shuffle(idx)
     n_val = max(1, int(n_samples * float(val_ratio)))

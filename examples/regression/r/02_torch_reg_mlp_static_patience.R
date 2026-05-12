@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # installation
 #install.packages("daltoolboxdp")
 
@@ -27,6 +28,7 @@ model <- torch_reg_mlp(
   patience = 20L,
   val_ratio = 0.2
 )
+set_example_seed()
 model <- fit(model, boston_train)
 
 # Training evaluation

@@ -10,6 +10,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Loading required packages
 library(daltoolbox)
 ```
@@ -59,7 +60,13 @@ Train the model
 
 ``` r
 auto <- autoenc_e(5, 3)              # reduce from 5 -> 3 dimensions (p -> k)
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error in `autoenc_fit()`:
+## ! unused argument (seed = obj$seed)
 ```
 
 Encoding evaluation (train)
@@ -81,17 +88,33 @@ print(head(train))                    # original windows (p columns)
 
 ``` r
 result <- transform(auto, train)      # encodings (k columns)
+```
+
+```
+## Warning in transform(auto, train): restarting interrupted promise evaluation
+```
+
+```
+## Warning in get(method, envir = home): restarting interrupted promise evaluation
+```
+
+```
+## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
+## libdeflate
+```
+
+```
+## Error in `get()`:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##           [,1]       [,2]      [,3]
-## [1,] 0.2456403 -0.8723114 0.8151503
-## [2,] 0.4980628 -0.9283935 1.0356350
-## [3,] 0.7426872 -0.9265829 1.1776589
-## [4,] 0.9493715 -0.8864425 1.2562702
-## [5,] 1.0966260 -0.7913646 1.2639163
-## [6,] 1.1752948 -0.6472606 1.2001222
+## Error:
+## ! object 'result' not found
 ```
 
 Encoding of the test set
@@ -112,16 +135,33 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Warning in transform(auto, test): restarting interrupted promise evaluation
+```
+
+```
+## Warning in get(method, envir = home): restarting interrupted promise evaluation
+```
+
+```
+## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
+## libdeflate
+```
+
+```
+## Error in `get()`:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##              [,1]        [,2]       [,3]
-## [1,]  1.125126958 -0.27973640  0.9065947
-## [2,]  0.997480989 -0.07659477  0.6732195
-## [3,]  0.813451290  0.30583853  0.1819962
-## [4,]  0.333993822  0.46745139 -0.1350486
-## [5,] -0.002483837  0.58430237 -0.4633084
+## Error:
+## ! object 'result' not found
 ```
 
 References

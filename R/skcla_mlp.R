@@ -13,7 +13,6 @@
 #' @param learning_rate_init Initial learning rate used by stochastic solvers.
 #' @param max_iter Maximum number of iterations.
 #' @param early_stopping Whether to use early stopping.
-#' @param random_state Optional seed for random number generation.
 #' @return A `skcla_mlp` classifier object.
 #'
 #' @references
@@ -41,8 +40,7 @@ skcla_mlp <- function(attribute, slevels,
                       batch_size = "auto",
                       learning_rate_init = 0.001,
                       max_iter = 200,
-                      early_stopping = FALSE,
-                      random_state = NULL) {
+                      early_stopping = FALSE) {
   activation <- match.arg(activation)
   solver <- match.arg(solver)
 
@@ -56,8 +54,7 @@ skcla_mlp <- function(attribute, slevels,
     batch_size = batch_size,
     learning_rate_init = as.numeric(learning_rate_init),
     max_iter = as.integer(max_iter),
-    early_stopping = early_stopping,
-    random_state = if (!is.null(random_state)) as.integer(random_state) else NULL
+    early_stopping = early_stopping
   )
 
   obj <- c(obj, objex)
@@ -84,8 +81,7 @@ fit.skcla_mlp <- function(obj, data, ...) {
       batch_size = obj$batch_size,
       learning_rate_init = obj$learning_rate_init,
       max_iter = obj$max_iter,
-      early_stopping = obj$early_stopping,
-      random_state = obj$random_state
+      early_stopping = obj$early_stopping
     )
   }
 

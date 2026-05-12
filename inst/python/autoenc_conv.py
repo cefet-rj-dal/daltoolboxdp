@@ -72,9 +72,6 @@ class ConvAutoencoderModel:
         return float(np.mean(losses)) if losses else 0.0
 
     def fit(self, data, config: AutoencTrainingConfig):
-        if config.seed is not None:
-            np.random.seed(int(config.seed))
-            torch.manual_seed(int(config.seed))
         array = self._array(data)
         criterion = nn.MSELoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
@@ -84,7 +81,7 @@ class ConvAutoencoderModel:
         self.epochs_done = 0
 
         if self.validation_strategy == "static" and self.stopping_rule != "none":
-            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
             train_loader = self._loader(array[train_idx], config.batch_size, True)
             val_loader = self._loader(array[val_idx], config.batch_size, False)
         elif self.validation_strategy == "static":
@@ -97,7 +94,7 @@ class ConvAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
                 train_loader = self._loader(array[train_idx], config.batch_size, True)
                 val_loader = self._loader(array[val_idx], config.batch_size, False)
             self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
@@ -135,7 +132,7 @@ def autoenc_conv_create(input_size, encoding_size, validation_strategy="static",
     return ConvAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
 
 
-def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
     cae.validation_strategy, cae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -150,7 +147,6 @@ def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.0
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
-        seed=None if seed is None else int(seed),
     )
     cae.fit(data, config)
     return cae, np.array(cae.train_loss), np.array(cae.val_loss)

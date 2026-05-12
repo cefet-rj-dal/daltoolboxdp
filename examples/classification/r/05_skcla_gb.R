@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Gradient Boosting Classifier
 
 # Installation (if needed)
@@ -26,6 +27,7 @@ iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
 # 1) Train
 model <- skcla_gb("species_encoded", slevels)
+set_example_seed()
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
 

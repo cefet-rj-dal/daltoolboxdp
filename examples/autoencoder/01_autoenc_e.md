@@ -17,6 +17,21 @@ Steps
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
+```
+
+```
+## Warning in readLines(file, warn = FALSE): cannot open URL
+## 'https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R':
+## HTTP status was '404 Not Found'
+```
+
+```
+## Error in `readLines()`:
+## ! cannot open the connection to 'https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R'
+```
+
+``` r
 # Vanilla autoencoder transformation (encode)
 
 # Considering a dataset with $p$ numerical attributes. 
@@ -32,9 +47,40 @@ Steps
 ``` r
 # Loading required packages
 library(daltoolbox)
+```
+
+```
+## Warning: package 'daltoolbox' was built under R version 4.5.3
+```
+
+```
+## 
+## Attaching package: 'daltoolbox'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     transform
+```
+
+``` r
 library(tspredit)
 library(daltoolboxdp)
+set_example_seed()
+```
+
+```
+## Error in `set_example_seed()`:
+## ! could not find function "set_example_seed"
+```
+
+``` r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 4.5.3
 ```
 
 
@@ -93,6 +139,12 @@ auto <- autoenc_e(5, 3)
 auto <- fit(auto, train)
 ```
 
+```
+## Error in `py_call_impl()`:
+## ! TypeError: AutoencTrainingConfig.__init__() got an unexpected keyword argument 'seed'
+## Run `reticulate::py_last_error()` for details.
+```
+
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value and keep `validation_strategy = "static"` with `stopping_rule = "none"`.
 - Static early stopping: keep `validation_strategy = "static"` and choose `stopping_rule = "patience"`, `"sma"`, `"ema"`, or `"h"`.
@@ -138,17 +190,25 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Warning in get(method, envir = home): internal error 1 in R_decompress1 with
+## libdeflate
+```
+
+```
+## Error in `get()`:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##            [,1]      [,2]       [,3]
-## [1,] -0.8496088 0.9715996 -0.7870337
-## [2,] -0.8944652 1.0527227 -0.8533332
-## [3,] -0.9118177 1.1005423 -0.8889802
-## [4,] -0.8968036 1.1074293 -0.8888928
-## [5,] -0.8491573 1.0694983 -0.8489845
-## [6,] -0.7756076 0.9994130 -0.7784725
+## Error:
+## ! object 'result' not found
 ```
 
 References

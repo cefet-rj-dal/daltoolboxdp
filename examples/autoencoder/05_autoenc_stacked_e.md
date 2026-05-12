@@ -10,6 +10,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing example dependencies (if needed)
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -49,6 +50,7 @@ ts_head(ts)
 ``` r
 # Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -77,9 +79,22 @@ test  <- as.data.frame(samp$test)
 ``` r
 # Creating the stacked autoencoder: reduce from 5 -> 3 dimensions (p -> k)
 auto <- autoenc_stacked_e(5, 3)
+```
 
+```
+## Error:
+## ! cannot allocate vector of size 3.8 Gb
+```
+
+``` r
 # Training the model
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error:
+## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -99,15 +114,50 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-7](fig/05_autoenc_stacked_e/unnamed-chunk-7-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 
 ``` r
@@ -128,17 +178,20 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##          [,1]      [,2]      [,3]
-## [1,] 1.063763 -1.286977 -1.789592
-## [2,] 1.112706 -1.370241 -1.901208
-## [3,] 1.139156 -1.415405 -1.963008
-## [4,] 1.142125 -1.420023 -1.970339
-## [5,] 1.121404 -1.383690 -1.922564
-## [6,] 1.077206 -1.307398 -1.820995
+## Error:
+## ! object 'result' not found
 ```
 
 References

@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Time Series Regression - 1D CNN (Conv1D)
 
 # Installing packages (if needed)
@@ -28,6 +29,7 @@ io_test <- ts_projection(samp$test)
 # Training the Conv1D model
 
 model <- ts_conv1d(ts_norm_gminmax(), input_size = 4)
+set_example_seed()
 model <- fit(model, x = io_train$input, y = io_train$output)
 
 # Fit evaluation (train)

@@ -8,6 +8,7 @@ Prerequisites
 
 
 ``` r
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installing example dependencies (if needed)
 #install.packages("tspredit")
 #install.packages("daltoolboxdp")
@@ -47,6 +48,7 @@ ts_head(ts)
 ``` r
 # Normalization (min-max by group)
 preproc <- ts_norm_gminmax()
+set_example_seed()
 preproc <- fit(preproc, ts)
 ts <- transform(preproc, ts)
 
@@ -81,9 +83,26 @@ auto <- autoenc_lstm_ed(
   lstm_hidden_size = 16L,
   epochs = 200L
 )
+```
 
+```
+## Warning: internal error 1 in R_decompress1 with libdeflate
+```
+
+```
+## Error:
+## ! lazy-load database 'C:/R/R-4.5.0/library/daltoolboxdp/R/daltoolboxdp.rdb' is corrupt
+```
+
+``` r
 # Training the model
+set_example_seed()
 auto <- fit(auto, train)
+```
+
+```
+## Error:
+## ! object 'auto' not found
 ```
 
 Constructor configuration
@@ -102,15 +121,50 @@ fit_loss <- data.frame(
   x = seq_along(auto$train_loss),
   train_loss = auto$train_loss
 )
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 if (!is.null(auto$val_loss) && length(auto$val_loss) > 0) {
   fit_loss$val_loss <- auto$val_loss
 }
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-7](fig/14_autoenc_lstm_ed/unnamed-chunk-7-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 
 ``` r
@@ -131,24 +185,43 @@ print(head(test))
 
 ``` r
 result <- transform(auto, test)
+```
+
+```
+## Error:
+## ! object 'auto' not found
+```
+
+``` r
 print(head(result))
 ```
 
 ```
-##           [,1]      [,2]      [,3]      [,4]      [,5]
-## [1,] 0.8040059 0.9103663 0.9085211 0.8938085 0.8827338
-## [2,] 0.8382092 0.9515531 0.9487075 0.9324941 0.9207430
-## [3,] 0.8542729 0.9706618 0.9672009 0.9502169 0.9381310
-## [4,] 0.8543822 0.9702017 0.9664368 0.9494026 0.9373508
-## [5,] 0.8388515 0.9505527 0.9468001 0.9304248 0.9187636
-## [6,] 0.8060559 0.9098929 0.9065513 0.8915296 0.8805629
+## Error:
+## ! object 'result' not found
 ```
 
 
 ``` r
 # Reconstruction metrics per column: R2 and MAPE
 result <- as.data.frame(result)
+```
+
+```
+## Error:
+## ! object 'result' not found
+```
+
+``` r
 names(result) <- names(test)
+```
+
+```
+## Error:
+## ! object 'result' not found
+```
+
+``` r
 r2 <- c()
 mape <- c()
 for (col in names(test)){
@@ -161,11 +234,8 @@ for (col in names(test)){
 ```
 
 ```
-## [1] "t4 R2 test: 0.353552305338186 MAPE: 0.176903235597001"
-## [1] "t3 R2 test: 0.9046898873966 MAPE: 0.0708696365648956"
-## [1] "t2 R2 test: 0.988419697570328 MAPE: 0.0285374904846622"
-## [1] "t1 R2 test: 0.931850891356267 MAPE: 0.14507371199229"
-## [1] "t0 R2 test: 0.857872041959809 MAPE: 0.338666710881192"
+## Error:
+## ! object 'result' not found
 ```
 
 ``` r
@@ -173,7 +243,15 @@ print(paste('Means R2 test:', mean(r2), 'MAPE:', mean(mape)))
 ```
 
 ```
-## [1] "Means R2 test: 0.807276964724238 MAPE: 0.152010157104008"
+## Warning in mean.default(r2): argument is not numeric or logical: returning NA
+```
+
+```
+## Warning in mean.default(mape): argument is not numeric or logical: returning NA
+```
+
+```
+## [1] "Means R2 test: NA MAPE: NA"
 ```
 
 ### Method

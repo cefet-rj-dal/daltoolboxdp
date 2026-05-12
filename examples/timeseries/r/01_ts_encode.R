@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Loading required packages
 library(daltoolbox)
 
@@ -17,6 +18,7 @@ train <- as.data.frame(samp$train)
 test  <- as.data.frame(samp$test)
 
 auto <- autoenc_e(5, 3)              # reduce from 5 -> 3 dimensions (p -> k)
+set_example_seed()
 auto <- fit(auto, train)
 
 print(head(train))                    # original windows (p columns)

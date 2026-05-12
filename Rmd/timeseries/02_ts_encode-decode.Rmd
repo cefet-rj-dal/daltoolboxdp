@@ -9,6 +9,7 @@ Prerequisites
 - Python with PyTorch accessible via reticulate (backend called internally)
 
 ```{r}
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Loading required packages
 library(daltoolbox)
 ```
@@ -44,6 +45,7 @@ Train the model (encode-decode)
 
 ```{r}
 auto <- autoenc_ed(5, 3)             # 5 -> 3 -> 5 dimensions
+set_example_seed()
 auto <- fit(auto, train)
 ```
 

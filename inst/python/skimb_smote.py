@@ -2,7 +2,7 @@
 SMOTE oversampling wrapper used by daltoolboxdp via reticulate.
 
 Intended R entry points (names on the R side may differ slightly):
-  - inbalanced_create_model(random_state=42) -> SMOTE instance
+  - inbalanced_create_model() -> SMOTE instance
   - fit_resample(select_method, df_train, target_column) -> (X_resampled, y_resampled)
 
 Data expectations:
@@ -14,9 +14,9 @@ Data expectations:
 from imblearn.over_sampling import SMOTE
 
 
-def inbalanced_create_model(random_state=42):
-    """Create a SMOTE oversampler with a fixed random_state for reproducibility."""
-    smote = SMOTE(random_state=int(random_state))
+def inbalanced_create_model():
+    """Create a SMOTE oversampler without configuring random state."""
+    smote = SMOTE()
     return smote
 
 

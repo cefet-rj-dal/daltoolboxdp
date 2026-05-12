@@ -13,14 +13,13 @@ from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
 def skcla_rf_create(n_estimators=100, max_depth=None, min_samples_split=2,
-                  min_samples_leaf=1, max_features='sqrt', class_weight=None, random_state=None):
+                  min_samples_leaf=1, max_features='sqrt', class_weight=None):
     model = RandomForestClassifier(
         n_estimators=int(n_estimators),
         max_depth=max_depth,
         min_samples_split=int(min_samples_split),
         min_samples_leaf=int(min_samples_leaf),
         max_features=max_features,
-        random_state=random_state,
         class_weight=class_weight,
     )
     return model

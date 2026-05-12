@@ -31,7 +31,6 @@ class _TrainingConfig:
     test_window: int = 30
     p_value: float = 0.05
     weight_decay: float = 0.0
-    seed: Optional[int] = 42
 
 
 def _activation_module(name: str) -> nn.Module:
@@ -226,8 +225,8 @@ class TorchMLPClassifier:
         return torch.from_numpy(X), torch.from_numpy(y), classes_
 
     @staticmethod
-    def _split_indices(n_samples: int, val_ratio: float, seed: Optional[int]) -> Tuple[np.ndarray, np.ndarray]:
-        rng = np.random.default_rng(seed)
+    def _split_indices(n_samples: int, val_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
+        rng = np.random.default_rng()
         idx = np.arange(n_samples)
         rng.shuffle(idx)
         n_val = max(1, int(n_samples * float(val_ratio)))
@@ -255,9 +254,6 @@ class TorchMLPClassifier:
         return float(np.mean(losses)) if losses else 0.0
 
     def fit(self, df_train: pd.DataFrame, target_column: str, config: _TrainingConfig, classes_: Optional[List] = None):
-        if config.seed is not None:
-            np.random.seed(int(config.seed))
-            torch.manual_seed(int(config.seed))
 
         X_all, y_all, self.classes_ = self._prepare_xy(df_train, target_column, classes_)
         criterion = nn.CrossEntropyLoss()
@@ -269,7 +265,7 @@ class TorchMLPClassifier:
         self.epochs_done = 0
 
         if self.validation_strategy == "static" and self.stopping_rule != "none":
-            train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio, config.seed)
+            train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
             train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
             val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
         elif self.validation_strategy == "static":
@@ -282,7 +278,7 @@ class TorchMLPClassifier:
         for epoch in range(int(config.epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
                 train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
                 val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
 
@@ -357,7 +353,6 @@ def torch_cla_mlp_fit(
     p_value: float = 0.05,
     weight_decay: float = 0.0,
     classes_: Optional[List] = None,
-    seed: Optional[int] = 42,
 ):
     model.validation_strategy = str(validation_strategy).lower()
     model.stopping_rule = str(stopping_rule).lower()
@@ -373,7 +368,6 @@ def torch_cla_mlp_fit(
         test_window=int(test_window),
         p_value=float(p_value),
         weight_decay=float(weight_decay),
-        seed=None if seed is None else int(seed),
     )
     return model.fit(df_train, target_column=target_column, config=config, classes_=classes_)
 

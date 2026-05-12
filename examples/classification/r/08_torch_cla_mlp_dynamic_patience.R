@@ -1,3 +1,4 @@
+source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/examples/seed.R"))
 # Installation (if needed)
 #install.packages("daltoolboxdp")
 
@@ -30,6 +31,7 @@ model <- torch_cla_mlp(
   val_ratio = 0.2
 )
 
+set_example_seed()
 model <- fit(model, iris_train)
 
 # Training evaluation

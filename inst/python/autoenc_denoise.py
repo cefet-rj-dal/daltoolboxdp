@@ -109,9 +109,6 @@ class DenoiseAutoencoderModel:
         return float(np.mean(losses)) if losses else 0.0
 
     def fit(self, data, config: AutoencTrainingConfig):
-        if config.seed is not None:
-            np.random.seed(int(config.seed))
-            torch.manual_seed(int(config.seed))
         array = self._array(data)
         criterion = nn.MSELoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=float(config.learning_rate))
@@ -121,7 +118,7 @@ class DenoiseAutoencoderModel:
         self.epochs_done = 0
 
         if self.validation_strategy == "static" and self.stopping_rule != "none":
-            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, config.seed)
+            train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
             train_loader = self._loader(array[train_idx], config.batch_size, True)
             val_loader = self._loader(array[val_idx], config.batch_size, False)
         elif self.validation_strategy == "static":
@@ -134,7 +131,7 @@ class DenoiseAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio, None if config.seed is None else int(config.seed) + epoch)
+                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
                 train_loader = self._loader(array[train_idx], config.batch_size, True)
                 val_loader = self._loader(array[val_idx], config.batch_size, False)
             self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
@@ -195,7 +192,7 @@ def autoenc_denoise_create(
     )
 
 
-def autoenc_denoise_fit(dns, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, seed=42):
+def autoenc_denoise_fit(dns, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
     dns.validation_strategy, dns.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -210,7 +207,6 @@ def autoenc_denoise_fit(dns, data, batch_size=32, num_epochs=100, learning_rate=
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
-        seed=None if seed is None else int(seed),
     )
     dns.fit(data, config)
     return dns, np.array(dns.train_loss), np.array(dns.val_loss)

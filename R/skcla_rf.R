@@ -10,7 +10,6 @@
 #' @param min_samples_leaf Minimum samples needed at a leaf node.
 #' @param max_features Number of features to consider at each split. Use `"sqrt"`, `"log2"`, `NULL`, or a numeric value.
 #' @param class_weight Optional weights associated with classes.
-#' @param random_state Optional seed for reproducibility.
 #' @return A `skcla_rf` classifier object.
 #'
 #' @references
@@ -36,8 +35,7 @@ skcla_rf <- function(attribute, slevels,
                      min_samples_split = 2,
                      min_samples_leaf = 1,
                      max_features = "sqrt",
-                     class_weight = NULL,
-                     random_state = NULL) {
+                     class_weight = NULL) {
   obj <- classification(attribute, slevels)
   cobj <- class(obj)
   objex <- list(
@@ -46,8 +44,7 @@ skcla_rf <- function(attribute, slevels,
     min_samples_split = as.integer(min_samples_split),
     min_samples_leaf = as.integer(min_samples_leaf),
     max_features = max_features,
-    class_weight = class_weight,
-    random_state = if (!is.null(random_state)) as.integer(random_state) else NULL
+    class_weight = class_weight
   )
 
   obj <- c(obj, objex)
@@ -72,8 +69,7 @@ fit.skcla_rf <- function(obj, data, ...) {
       min_samples_split = obj$min_samples_split,
       min_samples_leaf = obj$min_samples_leaf,
       max_features = obj$max_features,
-      class_weight = obj$class_weight,
-      random_state = obj$random_state
+      class_weight = obj$class_weight
     )
   }
 
