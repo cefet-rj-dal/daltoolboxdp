@@ -35,7 +35,6 @@ boston_test <- sr$test
 # Static validation with patience-based early stopping
 model <- torch_reg_mlp(
   attribute = "medv",
-  input_size = ncol(Boston) - 1L,
   hidden_sizes = c(16L, 8L),
   epochs = 300L,
   validation_strategy = "static",
@@ -51,6 +50,7 @@ Training configuration
 - `validation_strategy = "static"` keeps the same validation partition during the whole training run.
 - `stopping_rule = "patience"` stops training when the validation loss stops improving for a chosen number of epochs.
 - `epochs = 300L` acts as an upper bound; the effective number of epochs is determined by early stopping.
+- `input_size` is inferred from the fitted predictors unless you provide it explicitly as a consistency check.
 
 ```{r}
 # Training evaluation

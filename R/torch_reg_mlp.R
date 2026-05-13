@@ -2,7 +2,8 @@
 #' @description Regression model backed by a configurable PyTorch MLP with unified training strategies.
 #' @param attribute Target attribute name.
 #' @param preprocess Optional preprocessing object.
-#' @param input_size Integer. Number of input attributes.
+#' @param input_size Optional integer. Number of input attributes. When omitted,
+#'   it is inferred from the training data and validated against the learned predictor set.
 #' @param hidden_sizes Integer vector with hidden layer sizes.
 #' @param dropout Numeric. Dropout rate.
 #' @param activation Character. Hidden activation function. One of
@@ -30,7 +31,6 @@
 #' library(daltoolboxdp)
 #' model <- torch_reg_mlp(
 #'   attribute = "target",
-#'   input_size = 10,
 #'   hidden_sizes = c(64L, 32L),
 #'   normalization = "layer",
 #'   output_activation = "none",
@@ -42,7 +42,7 @@
 #' @export
 torch_reg_mlp <- function(attribute,
                           preprocess = NA,
-                          input_size,
+                          input_size = NA,
                           hidden_sizes,
                           dropout = 0,
                           activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
@@ -71,7 +71,7 @@ torch_reg_mlp <- function(attribute,
   cobj <- class(obj)
   objex <- list(
     preprocess = preprocess,
-    input_size = as.integer(input_size),
+    input_size = if (length(input_size) == 1 && !is.na(input_size)) as.integer(input_size) else NA_integer_,
     hidden_sizes = as.integer(hidden_sizes),
     dropout = as.numeric(dropout),
     activation = activation,
@@ -90,17 +90,52 @@ torch_reg_mlp <- function(attribute,
     ema_alpha = as.numeric(ema_alpha),
     test_window = as.integer(test_window),
     p_value = as.numeric(p_value),
-    model = NULL
+    model = NULL,
+    preprocess_model = NULL
   )
   obj <- c(obj, objex)
   class(obj) <- c("torch_reg_mlp", cobj)
   obj
 }
 
+torch_reg_has_preprocess <- function(obj) {
+  !(length(obj$preprocess) == 1 && is.atomic(obj$preprocess) && is.na(obj$preprocess))
+}
+
+torch_reg_prepare_features <- function(obj, data, fit_preprocess = FALSE) {
+  x <- data[, obj$x, drop = FALSE]
+  if (!torch_reg_has_preprocess(obj)) {
+    return(list(obj = obj, x = x))
+  }
+
+  if (fit_preprocess || is.null(obj$preprocess_model)) {
+    obj$preprocess_model <- fit(obj$preprocess, x)
+  }
+  x <- transform(obj$preprocess_model, x)
+  list(obj = obj, x = adjust_data.frame(x))
+}
+
 #' @exportS3Method fit torch_reg_mlp
 fit.torch_reg_mlp <- function(obj, data, ...) {
   if (!exists("torch_reg_mlp_create"))
     reticulate::source_python(system.file("python", "torch_reg_mlp.py", package = "daltoolboxdp"))
+
+  df_train <- adjust_data.frame(data)
+  obj <- fit.predictor(obj, df_train)
+  prepared <- torch_reg_prepare_features(obj, df_train, fit_preprocess = TRUE)
+  obj <- prepared$obj
+  x_train <- prepared$x
+  inferred_input_size <- ncol(x_train)
+
+  if (is.na(obj$input_size)) {
+    obj$input_size <- as.integer(inferred_input_size)
+  } else if (obj$input_size != inferred_input_size) {
+    stop(sprintf(
+      "torch_reg_mlp: input_size = %s, but the fitted predictor set has %s attributes.",
+      obj$input_size,
+      inferred_input_size
+    ), call. = FALSE)
+  }
 
   if (is.null(obj$model)) {
     obj$model <- torch_reg_mlp_create(
@@ -116,11 +151,10 @@ fit.torch_reg_mlp <- function(obj, data, ...) {
     )
   }
 
-  df_train <- adjust_data.frame(data)
-  obj$x <- setdiff(colnames(df_train), obj$attribute)
+  train_data <- cbind(x_train, df_train[, obj$attribute, drop = FALSE])
   obj$model <- torch_reg_mlp_fit(
     obj$model,
-    df_train,
+    train_data,
     target_col = obj$attribute,
     epochs = obj$epochs,
     lr = obj$lr,
@@ -149,5 +183,8 @@ predict.torch_reg_mlp <- function(object, x, ...) {
 
   df_test <- adjust_data.frame(x)
   df_test <- df_test[, object$x, drop = FALSE]
+  prepared <- torch_reg_prepare_features(object, df_test, fit_preprocess = FALSE)
+  object <- prepared$obj
+  df_test <- prepared$x
   as.numeric(torch_reg_mlp_predict(object$model, df_test, target_col = object$attribute))
 }

@@ -49,13 +49,16 @@ Train MLP: define the hidden architecture and training controls.
 
 model <- torch_reg_mlp(
   attribute = "medv",
-  input_size = ncol(Boston) - 1L,
   hidden_sizes = c(16L, 8L),
   epochs = 1000L  
 )
 set_example_seed()
 model <- fit(model, boston_train)
 ```
+
+Contract note
+- `torch_reg_mlp` now infers `input_size` from the fitted predictor set. You can still pass `input_size` explicitly, but then it is treated as a consistency check against the training data.
+- If `preprocess` is configured in the object, it is fitted on the predictor columns during `fit()` and reused during `predict()`.
 
 Constructor configuration
 - Fixed-epoch baseline: omit `epochs` to use the default value of `100L`, keep `validation_strategy = "static"`, and `stopping_rule = "none"`.

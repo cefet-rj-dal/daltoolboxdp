@@ -35,7 +35,6 @@ boston_test <- sr$test
 # Dynamic validation with patience-based early stopping
 model <- torch_reg_mlp(
   attribute = "medv",
-  input_size = ncol(Boston) - 1L,
   hidden_sizes = c(16L, 8L),
   epochs = 300L,
   validation_strategy = "dynamic",
@@ -51,6 +50,7 @@ Training configuration
 - `validation_strategy = "dynamic"` redraws the train/validation split at each epoch.
 - `stopping_rule = "patience"` stops training when recent validation values stop improving enough.
 - `epochs = 300L` is only the ceiling; the realized length is shown by `epochs_done`.
+- `input_size` is inferred from the fitted predictors unless you provide it explicitly as a consistency check.
 
 ```{r}
 # Training evaluation
