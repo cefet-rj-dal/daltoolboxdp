@@ -30,10 +30,10 @@ model <- skcla_gb("species_encoded", slevels)
 set_example_seed()
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
+head(train_prediction)
 
 # 2) Evaluate on train
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # original labels
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 
 # 3) Evaluate on test
@@ -41,6 +41,5 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)

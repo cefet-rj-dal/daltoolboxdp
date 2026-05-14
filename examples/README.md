@@ -5,7 +5,7 @@ This directory contains the source `Rmd` files used to generate the example page
 The topics are organized to answer different questions:
 
 - Which Python-backed autoencoder should I use for representation only versus reconstruction-aware workflows?
-- Which classification examples are grouped under scikit-learn and PyTorch neural models?
+- Which classification examples are grouped under scikit-learn and PyTorch neural models, now using the same class-score output contract as `daltoolbox`?
 - Which PyTorch regression examples are available for base, static-validation, and dynamic-validation workflows?
 - How do the time-series examples separate representation/preprocessing, direct prediction, and LSTM training regimes?
 

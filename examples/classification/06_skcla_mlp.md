@@ -2,7 +2,7 @@
 
 A Multi-Layer Perceptron is a feed-forward neural network with one or more hidden layers. Neurons apply an affine transformation followed by a nonlinearity. The network is trained to minimize a loss via backpropagation and gradient-based optimization, enabling nonlinear decision boundaries.
 
-This example uses MLP (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
+This example uses MLP (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict class scores, and evaluate.
 
 Prerequisites
 - R packages: daltoolbox, daltoolboxdp
@@ -49,9 +49,21 @@ model <- skcla_mlp("species_encoded", slevels, max_iter = 1000)  # increase max_
 set_example_seed()
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
+head(train_prediction)
+```
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+##         setosa   versicolor    virginica
+## 1 2.664553e-03 0.9966572999 6.781475e-04
+## 2 1.207529e-07 0.0017677301 9.982321e-01
+## 3 9.987958e-01 0.0012042335 1.206694e-13
+## 4 9.991387e-01 0.0008613225 6.899299e-14
+## 5 7.127878e-04 0.9983984188 8.887933e-04
+## 6 1.121794e-03 0.8636579654 1.352202e-01
+```
+
+``` r
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 ```
 
@@ -65,8 +77,7 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 ```
 

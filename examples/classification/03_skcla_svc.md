@@ -2,7 +2,7 @@
 
 Support Vector Machines find a maximum-margin hyperplane separating classes in a (possibly) high-dimensional feature space. Using kernels, SVMs implicitly map inputs to a feature space where linear separation is easier. The margin is controlled by a regularization parameter that trades off margin width and classification errors.
 
-This example uses SVM (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict, and evaluate.
+This example uses SVM (scikit-learn via reticulate) to classify the Iris dataset. Workflow: split train/test, train, predict class scores, and evaluate.
 
 Prerequisites
 - R packages: daltoolbox, daltoolboxdp
@@ -45,19 +45,31 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-model <- skcla_svc("species_encoded", slevels)
+model <- skcla_svc("species_encoded", slevels, probability = TRUE)
 set_example_seed()
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
+head(train_prediction)
+```
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+##        setosa  versicolor   virginica
+## 1 0.014935939 0.981461148 0.003602913
+## 2 0.007765275 0.005611677 0.986623049
+## 3 0.972596071 0.017142937 0.010260992
+## 4 0.975868550 0.014102181 0.010029269
+## 5 0.016318477 0.924225228 0.059456295
+## 6 0.010142411 0.937662715 0.052194874
+```
+
+``` r
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9833333 39 81  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1    0.975 39 81  0  0         1      1           1           1  1
 ```
 
 ``` r
@@ -65,8 +77,7 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 ```
 

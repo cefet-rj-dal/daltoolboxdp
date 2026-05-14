@@ -23,19 +23,18 @@ iris_test <- sr$test
 iris_train$species_encoded <- as.integer(as.factor(iris_train$Species))
 iris_train_label <- iris_train[, !names(iris_train) %in% "Species"]
 
-model <- skcla_svc("species_encoded", slevels)
+model <- skcla_svc("species_encoded", slevels, probability = TRUE)
 set_example_seed()
 model <- fit(model, iris_train_label)
 train_prediction <- predict(model, iris_train_label)
+head(train_prediction)
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 
 iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)

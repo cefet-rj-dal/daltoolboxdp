@@ -36,14 +36,13 @@ model <- fit(model, iris_train)
 
 # Training evaluation
 train_prediction <- predict(model, iris_train)
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+head(train_prediction)
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 
 # Test evaluation
 test_prediction <- predict(model, iris_test)
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 
 # Effective training duration

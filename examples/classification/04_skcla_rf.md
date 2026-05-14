@@ -3,7 +3,7 @@
 Random Forest is an ensemble of decision trees trained on bootstrap samples, where each split considers a random subset of features. This decorrelates trees and reduces variance. For classification, predictions are obtained by majority vote across trees.
 
 This example uses Random Forest (scikit-learn via reticulate) to classify the Iris dataset.
-Workflow: split train/test, train, predict, and evaluate (classification metrics).
+Workflow: split train/test, train, predict class scores, and evaluate (classification metrics).
 
 Prerequisites
 - R packages: daltoolbox, daltoolboxdp
@@ -53,8 +53,21 @@ model <- fit(model, iris_train_label)
 
 # 2) Evaluate on train
 train_prediction <- predict(model, iris_train_label)
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])  # original labels
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+head(train_prediction)
+```
+
+```
+##   setosa versicolor virginica
+## 1   0.00       1.00      0.00
+## 2   0.00       0.00      1.00
+## 3   1.00       0.00      0.00
+## 4   1.00       0.00      0.00
+## 5   0.00       0.99      0.01
+## 6   0.01       0.99      0.00
+```
+
+``` r
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 ```
 
@@ -69,8 +82,7 @@ iris_test$species_encoded <- as.integer(as.factor(iris_test$Species))
 iris_test_label <- iris_test[, !names(iris_test) %in% "Species"]
 test_prediction <- predict(model, iris_test_label)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 ```
 
