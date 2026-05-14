@@ -74,24 +74,12 @@ Train MLP: define the hidden architecture and training controls.
 
 model <- torch_reg_mlp(
   attribute = "medv",
+  input_size = sum(colnames(boston_train) != "medv"),
   hidden_sizes = c(16L, 8L),
   epochs = 1000L  
 )
-```
-
-```
-## Error in `torch_reg_mlp()`:
-## ! argument "input_size" is missing, with no default
-```
-
-``` r
 set_example_seed()
 model <- fit(model, boston_train)
-```
-
-```
-## Error:
-## ! object 'model' not found
 ```
 
 Contract note
@@ -115,30 +103,14 @@ Training evaluation.
 # Model adjustment
 
 train_prediction <- predict(model, boston_train)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 boston_train_predictand <- boston_train[, "medv"]
 train_eval <- evaluate(model, boston_train_predictand, train_prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 print(train_eval$metrics)
 ```
 
 ```
-## Error:
-## ! object 'train_eval' not found
+##        mse    smape       R2
+## 1 12.71051 0.122361 0.858785
 ```
 
 Test evaluation.
@@ -147,30 +119,14 @@ Test evaluation.
 # Test
 
 test_prediction <- predict(model, boston_test)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 boston_test_predictand <- boston_test[, "medv"]
 test_eval <- evaluate(model, boston_test_predictand, test_prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 print(test_eval$metrics)
 ```
 
 ```
-## Error:
-## ! object 'test_eval' not found
+##        mse     smape      R2
+## 1 24.09664 0.1437476 0.59956
 ```
 
 Training curves.
@@ -182,50 +138,17 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-8](fig/01_torch_reg_mlp/unnamed-chunk-8-1.png)
 
 Notes
 - Default configuration uses `validation_strategy = "static"` and `stopping_rule = "none"`, so only the training curve is shown.

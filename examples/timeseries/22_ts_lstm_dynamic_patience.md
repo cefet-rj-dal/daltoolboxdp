@@ -113,7 +113,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.4524872
+## [1] 0.3130296
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -134,7 +134,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.27"  "0.17, 0.26"  "-0.08, 0.22" "-0.32, 0.15" "-0.54, 0.06"
+## [1] "0.41, 0.46"  "0.17, 0.42"  "-0.08, 0.36" "-0.32, 0.27" "-0.54, 0.16"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -149,7 +149,7 @@ print(head(ev_test$metrics))
 
 ```
 ##         mse    smape         R2
-## 1 0.1397182 1.360763 -0.2067533
+## 1 0.2181843 1.389196 -0.8844694
 ```
 
 ``` r
@@ -157,7 +157,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 136.08"
+## [1] "smape: 138.92"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -201,7 +201,7 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 42
+## [1] 65
 ```
 
 Notes

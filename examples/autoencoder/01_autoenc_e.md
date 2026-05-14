@@ -33,27 +33,9 @@ source(url("https://raw.githubusercontent.com/cefet-rj-dal/daltoolboxdp/main/exa
 ``` r
 # Loading required packages
 library(daltoolbox)
-```
-
-```
-## 
-## Attaching package: 'daltoolbox'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     transform
-```
-
-``` r
 library(tspredit)
 library(daltoolboxdp)
 library(ggplot2)
-```
-
-```
-## Need help getting started? Try the R Graphics Cookbook: https://r-graphics.org
 ```
 
 

@@ -29,6 +29,7 @@ boston_test <- sr$test
 
 model <- torch_reg_mlp(
   attribute = "medv",
+  input_size = sum(colnames(boston_train) != "medv"),
   hidden_sizes = c(16L, 8L),
   epochs = 1000L  
 )

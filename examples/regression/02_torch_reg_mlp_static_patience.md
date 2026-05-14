@@ -39,6 +39,7 @@ boston_test <- sr$test
 # Static validation with patience-based early stopping
 model <- torch_reg_mlp(
   attribute = "medv",
+  input_size = sum(colnames(boston_train) != "medv"),
   hidden_sizes = c(16L, 8L),
   epochs = 300L,
   validation_strategy = "static",
@@ -46,21 +47,8 @@ model <- torch_reg_mlp(
   patience = 20L,
   val_ratio = 0.2
 )
-```
-
-```
-## Error in `torch_reg_mlp()`:
-## ! argument "input_size" is missing, with no default
-```
-
-``` r
 set_example_seed()
 model <- fit(model, boston_train)
-```
-
-```
-## Error:
-## ! object 'model' not found
 ```
 
 Training configuration
@@ -73,60 +61,28 @@ Training configuration
 ``` r
 # Training evaluation
 train_prediction <- predict(model, boston_train)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 boston_train_predictand <- boston_train[, "medv"]
 train_eval <- evaluate(model, boston_train_predictand, train_prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 print(train_eval$metrics)
 ```
 
 ```
-## Error:
-## ! object 'train_eval' not found
+##        mse     smape        R2
+## 1 37.73479 0.1874689 0.5807629
 ```
 
 
 ``` r
 # Test evaluation
 test_prediction <- predict(model, boston_test)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 boston_test_predictand <- boston_test[, "medv"]
 test_eval <- evaluate(model, boston_test_predictand, test_prediction)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 print(test_eval$metrics)
 ```
 
 ```
-## Error:
-## ! object 'test_eval' not found
+##        mse     smape        R2
+## 1 28.74318 0.2097574 0.5223435
 ```
 
 
@@ -136,8 +92,7 @@ print(model$epochs_done)
 ```
 
 ```
-## Error:
-## ! object 'model' not found
+## [1] 300
 ```
 
 
@@ -147,50 +102,17 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
-```
 
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 grf <- plot_series(fit_loss, colors = colors)
-```
-
-```
-## Error:
-## ! object 'fit_loss' not found
-```
-
-``` r
 plot(grf)
 ```
 
-```
-## Error:
-## ! object 'grf' not found
-```
+![plot of chunk unnamed-chunk-8](fig/02_torch_reg_mlp_static_patience/unnamed-chunk-8-1.png)
 
 Notes
 - This setup is easier to interpret because all epochs are judged against the same validation subset.
