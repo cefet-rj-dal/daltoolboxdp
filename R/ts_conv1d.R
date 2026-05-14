@@ -10,6 +10,8 @@
 #'
 #' @param preprocess Optional preprocessing/normalization object.
 #' @param input_size Integer. Number of lagged inputs per training example.
+#' @param input_map Lag-selection strategy object, typically created by
+#'   `tspredit::ts_lagmap()`.
 #' @param in_channels Integer. Number of channels used to reshape each example before the convolution.
 #'   `input_size` must equal `in_channels * sequence_length`.
 #' @param sequence_length Optional integer. Temporal length after reshaping. If `NULL`, it is inferred
@@ -42,6 +44,7 @@
 #' library(daltoolboxdp)
 #' model <- ts_conv1d(
 #'   input_size = 12,
+#'   input_map = tspredit::ts_lagmap("acf"),
 #'   in_channels = 1L,
 #'   conv_channels = c(32L, 64L),
 #'   dense_hidden_sizes = c(64L, 16L),
@@ -53,6 +56,7 @@
 #' @export
 ts_conv1d <- function(preprocess = NA,
                       input_size = NA,
+                      input_map = tspredit::ts_lagmap(),
                       in_channels = 1L,
                       sequence_length = NULL,
                       conv_channels = 64L,
@@ -79,7 +83,7 @@ ts_conv1d <- function(preprocess = NA,
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
 
-  obj <- tspredit::ts_regsw(preprocess, input_size)
+  obj <- tspredit::ts_regsw(preprocess, input_size, input_map)
   obj$in_channels <- as.integer(in_channels)
   obj$sequence_length <- if (is.null(sequence_length)) NULL else as.integer(sequence_length)
   obj$conv_channels <- as.integer(conv_channels)

@@ -7,7 +7,7 @@
 torch_reg_mlp(
   attribute,
   preprocess = NA,
-  input_size,
+  input_size = NA,
   hidden_sizes,
   dropout = 0,
   activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
@@ -34,7 +34,8 @@ torch_reg_mlp(
 
 \item{preprocess}{Optional preprocessing object.}
 
-\item{input_size}{Integer. Number of input attributes.}
+\item{input_size}{Optional integer. Number of input attributes. When omitted,
+it is inferred from the training data and validated against the learned predictor set.}
 
 \item{hidden_sizes}{Integer vector with hidden layer sizes.}
 
@@ -84,7 +85,6 @@ Regression model backed by a configurable PyTorch MLP with unified training stra
 library(daltoolboxdp)
 model <- torch_reg_mlp(
   attribute = "target",
-  input_size = 10,
   hidden_sizes = c(64L, 32L),
   normalization = "layer",
   output_activation = "none",

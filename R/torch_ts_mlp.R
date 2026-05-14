@@ -4,6 +4,8 @@
 #'
 #' @param preprocess Optional preprocessing/normalization object.
 #' @param input_size Integer. Number of lagged inputs per training example.
+#' @param input_map Lag-selection strategy object, typically created by
+#'   `tspredit::ts_lagmap()`.
 #' @param hidden_sizes Integer vector with hidden layer sizes.
 #' @param dropout Numeric. Dropout rate.
 #' @param activation Character. Hidden activation function. One of
@@ -32,6 +34,7 @@
 #' library(daltoolboxdp)
 #' model <- torch_ts_mlp(
 #'   input_size = 12,
+#'   input_map = tspredit::ts_lagmap("pacf"),
 #'   hidden_sizes = c(32L, 16L),
 #'   normalization = "batch",
 #'   init_method = "kaiming_uniform",
@@ -43,6 +46,7 @@
 #' @export
 torch_ts_mlp <- function(preprocess = NA,
                          input_size = NA,
+                         input_map = tspredit::ts_lagmap(),
                          hidden_sizes = c(16L, 8L),
                          dropout = 0,
                          activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
@@ -68,7 +72,7 @@ torch_ts_mlp <- function(preprocess = NA,
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
 
-  obj <- tspredit::ts_regsw(preprocess, input_size)
+  obj <- tspredit::ts_regsw(preprocess, input_size, input_map)
   obj$hidden_sizes <- as.integer(hidden_sizes)
   obj$dropout <- as.numeric(dropout)
   obj$activation <- activation

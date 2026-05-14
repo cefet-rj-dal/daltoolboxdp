@@ -9,6 +9,8 @@
 #'
 #' @param preprocess Optional preprocessing/normalization object.
 #' @param input_size Integer. Number of lagged inputs per training example.
+#' @param input_map Lag-selection strategy object, typically created by
+#'   `tspredit::ts_lagmap()`.
 #' @param hidden_size Optional integer. Hidden size used inside the LSTM. If `NULL`, defaults to `input_size`.
 #' @param sequence_length Integer. Number of time steps represented by each row. `input_size`
 #'   must be divisible by `sequence_length`. Default is `1L`.
@@ -36,6 +38,7 @@
 #' library(daltoolboxdp)
 #' model <- ts_lstm(
 #'   input_size = 12,
+#'   input_map = tspredit::ts_lagmap("seasonal", seasonality = 4),
 #'   hidden_size = 16L,
 #'   sequence_length = 3L,
 #'   num_layers = 2L,
@@ -49,6 +52,7 @@
 #' @export
 ts_lstm <- function(preprocess = NA,
                     input_size = NA,
+                    input_map = tspredit::ts_lagmap(),
                     hidden_size = NULL,
                     sequence_length = 1L,
                     num_layers = 1L,
@@ -72,7 +76,7 @@ ts_lstm <- function(preprocess = NA,
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
 
-  obj <- tspredit::ts_regsw(preprocess, input_size)
+  obj <- tspredit::ts_regsw(preprocess, input_size, input_map)
   obj$hidden_size <- if (is.null(hidden_size)) as.integer(input_size) else as.integer(hidden_size)
   obj$sequence_length <- as.integer(sequence_length)
   obj$num_layers <- as.integer(num_layers)

@@ -7,6 +7,7 @@
 ts_lstm(
   preprocess = NA,
   input_size = NA,
+  input_map = tspredit::ts_lagmap(),
   hidden_size = NULL,
   sequence_length = 1L,
   num_layers = 1L,
@@ -32,6 +33,9 @@ ts_lstm(
 \item{preprocess}{Optional preprocessing/normalization object.}
 
 \item{input_size}{Integer. Number of lagged inputs per training example.}
+
+\item{input_map}{Lag-selection strategy object, typically created by
+\code{tspredit::ts_lagmap()}.}
 
 \item{hidden_size}{Optional integer. Hidden size used inside the LSTM. If \code{NULL}, defaults to \code{input_size}.}
 
@@ -90,6 +94,7 @@ a sequence via \code{sequence_length}. Keeping \code{sequence_length = 1L} repro
 library(daltoolboxdp)
 model <- ts_lstm(
   input_size = 12,
+  input_map = tspredit::ts_lagmap("seasonal", seasonality = 4),
   hidden_size = 16L,
   sequence_length = 3L,
   num_layers = 2L,
