@@ -29,16 +29,15 @@ model <- torch_cla_mlp(
 set_example_seed()
 model <- fit(model, iris_train)
 train_prediction <- predict(model, iris_train)
+head(train_prediction)
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 
 # Test prediction and evaluation
 test_prediction <- predict(model, iris_test)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 
 # Training and validation curves

@@ -66,28 +66,40 @@ Training configuration
 ``` r
 # Training evaluation
 train_prediction <- predict(model, iris_train)
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+head(train_prediction)
+```
+
+```
+##       setosa versicolor  virginica
+## 1 0.10695051 0.37456807 0.51848143
+## 2 0.02304006 0.34351370 0.63344622
+## 3 0.80785841 0.09845348 0.09368815
+## 4 0.80818331 0.09828376 0.09353290
+## 5 0.08064344 0.36132410 0.55803245
+## 6 0.06654857 0.37768784 0.55576360
+```
+
+``` r
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 ```
 
 ```
 ##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9583333 39 81  0  0         1      1           1           1  1
+## 1 0.6833333 39 81  0  0         1      1           1           1  1
 ```
 
 
 ``` r
 # Test evaluation
 test_prediction <- predict(model, iris_test)
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 ```
 
 ```
-##    accuracy TP TN FP FN precision recall sensitivity specificity f1
-## 1 0.9666667 11 19  0  0         1      1           1           1  1
+##   accuracy TP TN FP FN precision recall sensitivity specificity f1
+## 1      0.6 11 19  0  0         1      1           1           1  1
 ```
 
 
@@ -97,7 +109,7 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 207
+## [1] 102
 ```
 
 

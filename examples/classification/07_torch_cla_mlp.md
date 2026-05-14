@@ -1,6 +1,6 @@
 ## PyTorch Multi-Layer Perceptron (MLP) Classifier
 
-This example uses the PyTorch-backed MLP classifier exposed by `daltoolboxdp` to classify the Iris dataset. The workflow mirrors the scikit-learn MLP example: split train/test, train, predict, and evaluate.
+This example uses the PyTorch-backed MLP classifier exposed by `daltoolboxdp` to classify the Iris dataset. The workflow mirrors the scikit-learn MLP example: split train/test, train, predict class scores, and evaluate.
 
 Prerequisites
 - R packages: daltoolbox, daltoolboxdp
@@ -48,9 +48,21 @@ model <- torch_cla_mlp(
 set_example_seed()
 model <- fit(model, iris_train)
 train_prediction <- predict(model, iris_train)
+head(train_prediction)
+```
 
-iris_train_predictand <- adjust_class_label(iris_train[, "Species"])
-train_eval <- evaluate(model, iris_train_predictand, train_prediction)
+```
+##         setosa   versicolor    virginica
+## 1 1.100573e-03 0.9988613129 3.816258e-05
+## 2 3.800236e-12 0.0002998599 9.997002e-01
+## 3 9.995492e-01 0.0004508100 7.027206e-17
+## 4 9.995773e-01 0.0004226966 9.663944e-17
+## 5 9.445624e-05 0.9998113513 9.424398e-05
+## 6 2.291011e-05 0.9434505105 5.652662e-02
+```
+
+``` r
+train_eval <- evaluate(model, iris_train[, "Species"], train_prediction)
 print(train_eval$metrics)
 ```
 
@@ -75,8 +87,7 @@ Architecture variations
 # Test prediction and evaluation
 test_prediction <- predict(model, iris_test)
 
-iris_test_predictand <- adjust_class_label(iris_test[, "Species"])
-test_eval <- evaluate(model, iris_test_predictand, test_prediction)
+test_eval <- evaluate(model, iris_test[, "Species"], test_prediction)
 print(test_eval$metrics)
 ```
 
