@@ -52,6 +52,10 @@ library(daltoolboxdp)
 library(ggplot2)
 ```
 
+```
+## Need help getting started? Try the R Graphics Cookbook: https://r-graphics.org
+```
+
 
 ``` r
 # Example dataset (time series and windows)

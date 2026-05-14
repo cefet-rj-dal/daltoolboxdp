@@ -20,7 +20,6 @@ boston_test <- sr$test
 # Dynamic validation with patience-based early stopping
 model <- torch_reg_mlp(
   attribute = "medv",
-  input_size = ncol(Boston) - 1L,
   hidden_sizes = c(16L, 8L),
   epochs = 300L,
   validation_strategy = "dynamic",

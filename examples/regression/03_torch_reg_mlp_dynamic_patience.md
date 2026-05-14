@@ -39,7 +39,6 @@ boston_test <- sr$test
 # Dynamic validation with patience-based early stopping
 model <- torch_reg_mlp(
   attribute = "medv",
-  input_size = ncol(Boston) - 1L,
   hidden_sizes = c(16L, 8L),
   epochs = 300L,
   validation_strategy = "dynamic",
@@ -47,41 +46,87 @@ model <- torch_reg_mlp(
   patience = 20L,
   val_ratio = 0.2
 )
+```
+
+```
+## Error in `torch_reg_mlp()`:
+## ! argument "input_size" is missing, with no default
+```
+
+``` r
 set_example_seed()
 model <- fit(model, boston_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
 ```
 
 Training configuration
 - `validation_strategy = "dynamic"` redraws the train/validation split at each epoch.
 - `stopping_rule = "patience"` stops training when recent validation values stop improving enough.
 - `epochs = 300L` is only the ceiling; the realized length is shown by `epochs_done`.
+- `input_size` is inferred from the fitted predictors unless you provide it explicitly as a consistency check.
 
 
 ``` r
 # Training evaluation
 train_prediction <- predict(model, boston_train)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 boston_train_predictand <- boston_train[, "medv"]
 train_eval <- evaluate(model, boston_train_predictand, train_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(train_eval$metrics)
 ```
 
 ```
-##        mse    smape        R2
-## 1 60.51809 0.238227 0.3276383
+## Error:
+## ! object 'train_eval' not found
 ```
 
 
 ``` r
 # Test evaluation
 test_prediction <- predict(model, boston_test)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 boston_test_predictand <- boston_test[, "medv"]
 test_eval <- evaluate(model, boston_test_predictand, test_prediction)
+```
+
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 print(test_eval$metrics)
 ```
 
 ```
-##        mse     smape        R2
-## 1 42.69571 0.2590366 0.2904793
+## Error:
+## ! object 'test_eval' not found
 ```
 
 
@@ -91,7 +136,8 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 94
+## Error:
+## ! object 'model' not found
 ```
 
 
@@ -101,17 +147,50 @@ fit_loss <- data.frame(
   x = seq_along(model$train_loss_hist),
   train_loss = model$train_loss_hist
 )
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 if (!is.null(model$val_loss_hist) && length(model$val_loss_hist) > 0) {
   fit_loss$val_loss <- model$val_loss_hist
 }
+```
 
+```
+## Error:
+## ! object 'model' not found
+```
+
+``` r
 colors <- if ("val_loss" %in% names(fit_loss)) c("Blue", "Orange") else c("Blue")
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 grf <- plot_series(fit_loss, colors = colors)
+```
+
+```
+## Error:
+## ! object 'fit_loss' not found
+```
+
+``` r
 plot(grf)
 ```
 
-![plot of chunk unnamed-chunk-8](fig/03_torch_reg_mlp_dynamic_patience/unnamed-chunk-8-1.png)
+```
+## Error:
+## ! object 'grf' not found
+```
 
 Notes
 - Dynamic validation can make the monitored curve noisier than the static counterpart.
