@@ -66,6 +66,10 @@ io_train <- ts_projection(samp$train)
 io_test <- ts_projection(samp$test)
 ```
 
+Contract note
+- `fit()` consumes the supervised projection `x = io_train$input` and `y = io_train$output`.
+- `predict()` is interpreted here as the numeric forecast path; `as.vector()` keeps that explicit for downstream code.
+
 We now train the LSTM model with dynamic validation and patience-based early stopping.
 
 
@@ -113,7 +117,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.3130296
+## [1] 0.3700092
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -134,7 +138,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.46"  "0.17, 0.42"  "-0.08, 0.36" "-0.32, 0.27" "-0.54, 0.16"
+## [1] "0.41, 0.50"  "0.17, 0.47"  "-0.08, 0.42" "-0.32, 0.34" "-0.54, 0.24"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -148,8 +152,8 @@ print(head(ev_test$metrics))
 ```
 
 ```
-##         mse    smape         R2
-## 1 0.2181843 1.389196 -0.8844694
+##         mse    smape        R2
+## 1 0.2797123 1.421294 -1.415889
 ```
 
 ``` r
@@ -157,7 +161,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 138.92"
+## [1] "smape: 142.13"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -201,7 +205,7 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 65
+## [1] 53
 ```
 
 Notes

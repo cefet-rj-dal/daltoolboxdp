@@ -66,6 +66,10 @@ io_train <- ts_projection(samp$train)
 io_test <- ts_projection(samp$test)
 ```
 
+Contract note
+- `fit()` consumes the supervised projection `x = io_train$input` and `y = io_train$output`.
+- `predict()` is interpreted here as the numeric forecast path; `as.vector()` keeps that explicit for downstream code.
+
 We now train the LSTM model on the prepared training data.
 
 
