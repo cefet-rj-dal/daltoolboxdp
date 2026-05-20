@@ -121,7 +121,7 @@ fit.torch_reg_mlp <- function(obj, data, ...) {
     reticulate::source_python(system.file("python", "torch_reg_mlp.py", package = "daltoolboxdp"))
 
   df_train <- adjust_data.frame(data)
-  obj <- fit.predictor(obj, df_train)
+  obj <- daltoolbox:::fit.predictor(obj, df_train)
   prepared <- torch_reg_prepare_features(obj, df_train, fit_preprocess = TRUE)
   obj <- prepared$obj
   x_train <- prepared$x
