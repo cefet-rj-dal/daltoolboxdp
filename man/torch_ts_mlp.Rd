@@ -84,6 +84,12 @@ A \code{torch_ts_mlp} object.
 Time-series forecaster using a configurable feedforward PyTorch MLP with unified
 training strategies and a Python backend.
 }
+\details{
+The object follows the \code{tspredit::ts_regsw()} contract: \code{fit()}
+receives supervised lag matrices and \code{predict()} returns a plain numeric
+vector, even when upstream time-series wrappers attach auxiliary metadata to
+forecast objects.
+}
 \examples{
 \dontrun{
 library(daltoolboxdp)

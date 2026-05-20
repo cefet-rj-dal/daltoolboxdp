@@ -8,6 +8,11 @@
 #' preserve the original single-channel behavior, or define architectures such as
 #' `conv_channels = c(32L, 64L)` and `dense_hidden_sizes = c(64L, 16L)`.
 #'
+#' The object follows the `tspredit::ts_regsw()` contract: `fit()` receives
+#' supervised lag matrices and `predict()` returns a plain numeric vector, even
+#' when upstream time-series wrappers attach auxiliary metadata to forecast
+#' objects.
+#'
 #' @param preprocess Optional preprocessing/normalization object.
 #' @param input_size Integer. Number of lagged inputs per training example.
 #' @param input_map Lag-selection strategy object, typically created by
@@ -133,6 +138,7 @@ do_fit.ts_conv1d <- function(obj, x, y) {
   }
 
   df_train <- as.data.frame(x)
+  # Keep the target column as a plain vector for the Python backend.
   df_train$t0 <- as.vector(y)
 
   obj$model <- ts_conv1d_fit(
@@ -166,5 +172,7 @@ do_predict.ts_conv1d <- function(obj, x) {
 
   x_values <- as.data.frame(x)
   x_values$t0 <- 0
-  ts_conv1d_predict(obj$model, x_values, batch_size = obj$batch_size)
+  # Return only the numeric forecast path expected by tspredit and downstream
+  # wrappers such as harbinger.
+  as.vector(ts_conv1d_predict(obj$model, x_values, batch_size = obj$batch_size))
 }

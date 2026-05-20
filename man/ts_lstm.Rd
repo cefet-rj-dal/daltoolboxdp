@@ -88,6 +88,11 @@ training strategies and a Python/PyTorch backend.
 The LSTM forecaster now supports multiple recurrent layers, dropout, bidirectionality,
 an optional dense head after the recurrent block, and explicit reshaping of each row into
 a sequence via \code{sequence_length}. Keeping \code{sequence_length = 1L} reproduces the previous behavior.
+
+The object follows the \code{tspredit::ts_regsw()} contract: \code{fit()} receives
+supervised lag matrices and \code{predict()} returns a plain numeric vector, even
+when upstream time-series wrappers attach auxiliary metadata to forecast
+objects.
 }
 \examples{
 \dontrun{

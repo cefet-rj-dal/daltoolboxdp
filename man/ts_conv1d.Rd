@@ -98,6 +98,11 @@ The Conv1D forecaster now supports multiple convolutional blocks, explicit chann
 reshaping, optional pooling, and a configurable dense prediction head. Keep the defaults to
 preserve the original single-channel behavior, or define architectures such as
 \code{conv_channels = c(32L, 64L)} and \code{dense_hidden_sizes = c(64L, 16L)}.
+
+The object follows the \code{tspredit::ts_regsw()} contract: \code{fit()} receives
+supervised lag matrices and \code{predict()} returns a plain numeric vector, even
+when upstream time-series wrappers attach auxiliary metadata to forecast
+objects.
 }
 \examples{
 \dontrun{
