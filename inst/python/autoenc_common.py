@@ -96,9 +96,8 @@ def validate_strategy(validation_strategy: str, stopping_rule: str) -> Tuple[str
 
 
 def split_indices(n_samples: int, val_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
-    rng = np.random.default_rng()
     idx = np.arange(n_samples)
-    rng.shuffle(idx)
+    np.random.shuffle(idx)
     n_val = max(1, int(n_samples * float(val_ratio)))
     return idx[n_val:], idx[:n_val]
 
