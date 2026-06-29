@@ -1,5 +1,9 @@
 """
 Unified convolutional autoencoder used by daltoolboxdp via reticulate.
+
+The model follows the common Conv1D convention for univariate windows:
+inputs are reshaped to (n_samples, 1, input_size), where the single channel
+stores the observed series and input_size is the temporal length.
 """
 
 from typing import List, Optional
@@ -16,39 +20,59 @@ from autoenc_common import AutoencTrainingConfig, StopController, split_indices,
 class ConvAutoencoder(nn.Module):
     def __init__(self, input_size: int, encoding_size: int):
         super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv1d(int(input_size), 64, kernel_size=1),
+        self.input_size = int(input_size)
+        hidden_channels = 16
+        bottleneck_channels = 32
+        self.encoder_features = nn.Sequential(
+            nn.Conv1d(1, hidden_channels, kernel_size=3, padding=1),
             nn.LeakyReLU(),
+            nn.Conv1d(hidden_channels, bottleneck_channels, kernel_size=3, padding=1),
+            nn.LeakyReLU(),
+        )
+        self.encoder_projection = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(64, int(encoding_size)),
+            nn.Linear(bottleneck_channels * self.input_size, int(encoding_size)),
+        )
+        self.decoder_projection = nn.Sequential(
+            nn.Linear(int(encoding_size), bottleneck_channels * self.input_size),
+            nn.LeakyReLU(),
+            nn.Unflatten(1, (bottleneck_channels, self.input_size)),
         )
         self.decoder = nn.Sequential(
-            nn.Linear(int(encoding_size), 64),
+            nn.ConvTranspose1d(bottleneck_channels, hidden_channels, kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Unflatten(1, (64, 1)),
-            nn.ConvTranspose1d(64, int(input_size), kernel_size=1),
+            nn.ConvTranspose1d(hidden_channels, 1, kernel_size=3, padding=1),
             nn.Sigmoid(),
         )
 
+    def encode(self, x: torch.Tensor) -> torch.Tensor:
+        return self.encoder_projection(self.encoder_features(x))
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.decoder(self.encoder(x))
+        latent = self.encode(x)
+        decoded = self.decoder_projection(latent)
+        return self.decoder(decoded)
 
 
 class ConvAutoencoderModel:
     def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.model = ConvAutoencoder(input_size, encoding_size).float()
+        self.input_size = int(input_size)
+        self.model = ConvAutoencoder(self.input_size, encoding_size).float()
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
 
-    @staticmethod
-    def _array(data):
+    def _array(self, data):
         if isinstance(data, pd.DataFrame):
             array = data.to_numpy().astype(np.float32)
         else:
             array = np.asarray(data, dtype=np.float32)
-        return array[:, :, np.newaxis]
+        if array.ndim != 2:
+            raise ValueError("Conv autoencoder expects a 2D array with shape (n_samples, input_size).")
+        if array.shape[1] != self.input_size:
+            raise ValueError(f"Expected {self.input_size} input features, got {array.shape[1]}.")
+        return array[:, np.newaxis, :]
 
     def _loader(self, array: np.ndarray, batch_size: int, shuffle: bool):
         tensor = torch.from_numpy(array.astype(np.float32))
@@ -114,7 +138,7 @@ class ConvAutoencoderModel:
         self.model.eval()
         with torch.no_grad():
             for xb, _ in loader:
-                outs.append(self.model.encoder(xb.float()).detach().numpy())
+                outs.append(self.model.encode(xb.float()).detach().numpy())
         return np.concatenate(outs, axis=0)
 
     def encode_decode(self, data, batch_size=32):
@@ -124,7 +148,7 @@ class ConvAutoencoderModel:
         self.model.eval()
         with torch.no_grad():
             for xb, _ in loader:
-                outs.append(self.model(xb.float()).detach().numpy())
+                outs.append(self.model(xb.float()).detach().numpy().squeeze(1))
         return np.concatenate(outs, axis=0)
 
 

@@ -9,7 +9,7 @@ ts_lstm(
   input_size = NA,
   input_map = tspredit::ts_lagmap(),
   hidden_size = NULL,
-  sequence_length = 1L,
+  sequence_length = NULL,
   num_layers = 1L,
   dropout = 0,
   bidirectional = FALSE,
@@ -39,8 +39,8 @@ ts_lstm(
 
 \item{hidden_size}{Optional integer. Hidden size used inside the LSTM. If \code{NULL}, defaults to \code{input_size}.}
 
-\item{sequence_length}{Integer. Number of time steps represented by each row. \code{input_size}
-must be divisible by \code{sequence_length}. Default is \code{1L}.}
+\item{sequence_length}{Optional integer. Number of time steps represented by each row. \code{input_size}
+must be divisible by \code{sequence_length}. If \code{NULL}, it defaults to \code{input_size}.}
 
 \item{num_layers}{Integer. Number of LSTM layers.}
 
@@ -87,7 +87,9 @@ training strategies and a Python/PyTorch backend.
 \details{
 The LSTM forecaster now supports multiple recurrent layers, dropout, bidirectionality,
 an optional dense head after the recurrent block, and explicit reshaping of each row into
-a sequence via \code{sequence_length}. Keeping \code{sequence_length = 1L} reproduces the previous behavior.
+a sequence via \code{sequence_length}. By default, \code{sequence_length} is inferred as
+\code{input_size}, so each lagged value becomes its own time step. Set
+\code{sequence_length = 1L} to reproduce the previous behavior.
 
 The object follows the \code{tspredit::ts_regsw()} contract: \code{fit()} receives
 supervised lag matrices and \code{predict()} returns a plain numeric vector, even

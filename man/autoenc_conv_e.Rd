@@ -57,12 +57,13 @@ autoenc_conv_e(
 A \code{autoenc_conv_e} object.
 }
 \description{
-Creates a deep learning convolutional autoencoder (ConvAE) to encode sequences
-of observations. Wraps a PyTorch implementation.
+Creates a deep learning convolutional autoencoder (ConvAE) to encode
+observations after reshaping each row into a one-channel temporal sequence.
+Wraps a PyTorch implementation.
 }
 \examples{
 \dontrun{
-# Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
+# Conv1D-based encoder expects data reshaped internally to (n, 1, input_size)
 X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, epochs = 100)
 ae <- daltoolbox::fit(ae, X)

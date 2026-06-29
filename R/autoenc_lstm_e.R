@@ -12,8 +12,8 @@
 #' @param encoding_size Integer. Size of the latent (bottleneck) representation.
 #' @param lstm_hidden_size Optional integer. Hidden size used inside the encoder/decoder LSTMs.
 #'   If `NULL`, it defaults to `encoding_size`.
-#' @param sequence_length Integer. Number of time steps represented by each row. `input_size`
-#'   must be divisible by `sequence_length`. Default is `1L`, which preserves the previous behavior.
+#' @param sequence_length Optional integer. Number of time steps represented by each row. `input_size`
+#'   must be divisible by `sequence_length`. If `NULL`, it defaults to `input_size`.
 #' @param num_layers Integer. Number of recurrent LSTM layers.
 #' @param dropout Numeric. Recurrent dropout applied between LSTM layers when `num_layers > 1`.
 #' @param batch_size Integer. Mini-batch size used during training. Default is 32.
@@ -55,7 +55,7 @@
 #' @export
 autoenc_lstm_e <- function(input_size, encoding_size,
                            lstm_hidden_size = NULL,
-                           sequence_length = 1L,
+                           sequence_length = NULL,
                            num_layers = 1L,
                            dropout = 0,
                            batch_size = 32,
@@ -77,7 +77,7 @@ autoenc_lstm_e <- function(input_size, encoding_size,
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
   obj$lstm_hidden_size <- lstm_hidden_size
-  obj$sequence_length <- sequence_length
+  obj$sequence_length <- if (is.null(sequence_length)) NULL else as.integer(sequence_length)
   obj$num_layers <- num_layers
   obj$dropout <- dropout
   obj$batch_size <- batch_size

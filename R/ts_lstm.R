@@ -5,7 +5,9 @@
 #' @details
 #' The LSTM forecaster now supports multiple recurrent layers, dropout, bidirectionality,
 #' an optional dense head after the recurrent block, and explicit reshaping of each row into
-#' a sequence via `sequence_length`. Keeping `sequence_length = 1L` reproduces the previous behavior.
+#' a sequence via `sequence_length`. By default, `sequence_length` is inferred as
+#' `input_size`, so each lagged value becomes its own time step. Set
+#' `sequence_length = 1L` to reproduce the previous behavior.
 #'
 #' The object follows the `tspredit::ts_regsw()` contract: `fit()` receives
 #' supervised lag matrices and `predict()` returns a plain numeric vector, even
@@ -17,8 +19,8 @@
 #' @param input_map Lag-selection strategy object, typically created by
 #'   `tspredit::ts_lagmap()`.
 #' @param hidden_size Optional integer. Hidden size used inside the LSTM. If `NULL`, defaults to `input_size`.
-#' @param sequence_length Integer. Number of time steps represented by each row. `input_size`
-#'   must be divisible by `sequence_length`. Default is `1L`.
+#' @param sequence_length Optional integer. Number of time steps represented by each row. `input_size`
+#'   must be divisible by `sequence_length`. If `NULL`, it defaults to `input_size`.
 #' @param num_layers Integer. Number of LSTM layers.
 #' @param dropout Numeric. Recurrent dropout applied between LSTM layers when `num_layers > 1`.
 #' @param bidirectional Logical. Whether the LSTM is bidirectional.
@@ -59,7 +61,7 @@ ts_lstm <- function(preprocess = NA,
                     input_size = NA,
                     input_map = tspredit::ts_lagmap(),
                     hidden_size = NULL,
-                    sequence_length = 1L,
+                    sequence_length = NULL,
                     num_layers = 1L,
                     dropout = 0,
                     bidirectional = FALSE,
@@ -83,7 +85,7 @@ ts_lstm <- function(preprocess = NA,
 
   obj <- tspredit::ts_regsw(preprocess, input_size, input_map)
   obj$hidden_size <- if (is.null(hidden_size)) as.integer(input_size) else as.integer(hidden_size)
-  obj$sequence_length <- as.integer(sequence_length)
+  obj$sequence_length <- if (is.null(sequence_length)) NULL else as.integer(sequence_length)
   obj$num_layers <- as.integer(num_layers)
   obj$dropout <- as.numeric(dropout)
   obj$bidirectional <- as.logical(bidirectional)

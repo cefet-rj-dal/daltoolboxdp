@@ -8,7 +8,7 @@ autoenc_lstm_ed(
   input_size,
   encoding_size,
   lstm_hidden_size = NULL,
-  sequence_length = 1L,
+  sequence_length = NULL,
   num_layers = 1L,
   dropout = 0,
   batch_size = 32,
@@ -34,8 +34,8 @@ autoenc_lstm_ed(
 \item{lstm_hidden_size}{Optional integer. Hidden size used inside the encoder/decoder LSTMs.
 If \code{NULL}, it defaults to \code{encoding_size}.}
 
-\item{sequence_length}{Integer. Number of time steps represented by each row. \code{input_size}
-must be divisible by \code{sequence_length}. Default is \code{1L}, which preserves the previous behavior.}
+\item{sequence_length}{Optional integer. Number of time steps represented by each row. \code{input_size}
+must be divisible by \code{sequence_length}. If \code{NULL}, it defaults to \code{input_size}.}
 
 \item{num_layers}{Integer. Number of recurrent LSTM layers.}
 

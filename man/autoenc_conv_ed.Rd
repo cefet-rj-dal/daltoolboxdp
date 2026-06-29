@@ -58,7 +58,8 @@ A \code{autoenc_conv_ed} object.
 }
 \description{
 Creates a deep learning convolutional autoencoder (ConvAE) to encode and decode
-sequences of observations. Wraps a PyTorch implementation.
+observations after reshaping each row into a one-channel temporal sequence.
+Wraps a PyTorch implementation.
 }
 \examples{
 \dontrun{

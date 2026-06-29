@@ -174,7 +174,7 @@ class TsLSTMModel:
         self,
         hidden_size: int,
         input_dim: int,
-        sequence_length: int = 1,
+        sequence_length: Optional[int] = None,
         num_layers: int = 1,
         dropout: float = 0.0,
         bidirectional: bool = False,
@@ -193,7 +193,7 @@ class TsLSTMModel:
         self.validation_strategy = validation_strategy
         self.stopping_rule = stopping_rule
         self.input_dim = int(input_dim)
-        self.sequence_length = int(sequence_length)
+        self.sequence_length = self._resolve_sequence_length(self.input_dim, sequence_length)
         self.feature_dim = self._feature_dim(self.input_dim, self.sequence_length)
         self.network = TsLSTMNet(
             feature_dim=self.feature_dim,
@@ -211,6 +211,12 @@ class TsLSTMModel:
     @staticmethod
     def _device():
         return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    @staticmethod
+    def _resolve_sequence_length(input_dim: int, sequence_length: Optional[int]) -> int:
+        if sequence_length is None:
+            return int(input_dim)
+        return int(sequence_length)
 
     @staticmethod
     def _feature_dim(input_dim: int, sequence_length: int) -> int:
@@ -335,7 +341,7 @@ class TsLSTMModel:
         return torch.vstack(preds).squeeze(-1).numpy()
 
 
-def ts_lstm_create(hidden_size, input_dim, sequence_length=1, num_layers=1, dropout=0.0, bidirectional=False, mlp_hidden_sizes=None, activation="relu", validation_strategy="static", stopping_rule="none"):
+def ts_lstm_create(hidden_size, input_dim, sequence_length=None, num_layers=1, dropout=0.0, bidirectional=False, mlp_hidden_sizes=None, activation="relu", validation_strategy="static", stopping_rule="none"):
     return TsLSTMModel(
         int(hidden_size),
         int(input_dim),

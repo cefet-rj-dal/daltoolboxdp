@@ -10,6 +10,7 @@ Prerequisites
 
 Quick notes
 - Architecture: Conv1D layers in encoder/decoder to capture local patterns in each window.
+- Internal shape: each row is reshaped to `(n, 1, input_size)`, so the convolution runs across time with a single channel by default.
 - Useful when there are local structures (short trends, repeating patterns) within the window.
 
 ```{r}

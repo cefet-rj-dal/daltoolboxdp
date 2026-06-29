@@ -68,14 +68,14 @@ class LSTMAutoencoderModel:
         input_size: int,
         encoding_size: int,
         lstm_hidden_size: Optional[int] = None,
-        sequence_length: int = 1,
+        sequence_length: Optional[int] = None,
         num_layers: int = 1,
         dropout: float = 0.0,
         validation_strategy: str = "static",
         stopping_rule: str = "none",
     ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
-        self.sequence_length = int(sequence_length)
+        self.sequence_length = self._resolve_sequence_length(int(input_size), sequence_length)
         self.feature_dim = self._feature_dim(int(input_size), self.sequence_length)
         self.model = LSTMAutoencoder(
             feature_dim=self.feature_dim,
@@ -88,6 +88,12 @@ class LSTMAutoencoderModel:
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
+
+    @staticmethod
+    def _resolve_sequence_length(input_size: int, sequence_length: Optional[int]) -> int:
+        if sequence_length is None:
+            return int(input_size)
+        return int(sequence_length)
 
     @staticmethod
     def _feature_dim(input_size: int, sequence_length: int) -> int:
@@ -180,7 +186,7 @@ class LSTMAutoencoderModel:
         return np.concatenate(outs, axis=0)
 
 
-def autoenc_lstm_create(input_size, encoding_size, lstm_hidden_size=None, sequence_length=1, num_layers=1, dropout=0.0, validation_strategy="static", stopping_rule="none"):
+def autoenc_lstm_create(input_size, encoding_size, lstm_hidden_size=None, sequence_length=None, num_layers=1, dropout=0.0, validation_strategy="static", stopping_rule="none"):
     return LSTMAutoencoderModel(
         input_size,
         encoding_size,

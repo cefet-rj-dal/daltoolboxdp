@@ -106,7 +106,7 @@ Architecture variations
 - `sequence_length` reshapes each row into a longer temporal sequence before the recurrent encoder.
 - `lstm_hidden_size` decouples recurrent capacity from the latent bottleneck `encoding_size`.
 - `num_layers` and `dropout` enable deeper recurrent autoencoders.
-- For this example, `sequence_length = 5L` makes each window a true 5-step sequence, which is usually more informative than the degenerate `sequence_length = 1L`.
+- For this example, `sequence_length = 5L` makes each window a true 5-step sequence; this is also the default interpretation when `input_size = 5`.
 
 
 ``` r

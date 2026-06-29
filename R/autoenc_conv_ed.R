@@ -1,6 +1,7 @@
 #'@title Convolutional Autoencoder - Encode-Decode
 #'@description Creates a deep learning convolutional autoencoder (ConvAE) to encode and decode
-#' sequences of observations. Wraps a PyTorch implementation.
+#' observations after reshaping each row into a one-channel temporal sequence.
+#' Wraps a PyTorch implementation.
 #'@param input_size Integer. Number of input features per observation.
 #'@param encoding_size Integer. Size of the latent (bottleneck) representation.
 #'@param batch_size Integer. Mini-batch size used during training. Default is 32.

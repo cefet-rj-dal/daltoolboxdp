@@ -1,6 +1,7 @@
 #'@title Convolutional Autoencoder - Encode
-#'@description Creates a deep learning convolutional autoencoder (ConvAE) to encode sequences
-#' of observations. Wraps a PyTorch implementation.
+#'@description Creates a deep learning convolutional autoencoder (ConvAE) to encode
+#' observations after reshaping each row into a one-channel temporal sequence.
+#' Wraps a PyTorch implementation.
 #'@param input_size Integer. Number of input features per observation.
 #'@param encoding_size Integer. Size of the latent (bottleneck) representation.
 #'@param batch_size Integer. Mini-batch size used during training. Default is 32.
@@ -22,7 +23,7 @@
 #' Masci, J., Meier, U., Ciresan, D., & Schmidhuber, J. (2011). Stacked Convolutional Auto-Encoders.
 #'@examples
 #'\dontrun{
-#'# Conv1D-based encoder expects data reshaped internally to (n, input_size, 1)
+#'# Conv1D-based encoder expects data reshaped internally to (n, 1, input_size)
 #'X <- matrix(rnorm(1000), nrow = 50, ncol = 20)
 #'ae <- autoenc_conv_e(input_size = 20, encoding_size = 5, epochs = 100)
 #'ae <- daltoolbox::fit(ae, X)
