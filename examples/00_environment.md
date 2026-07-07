@@ -63,7 +63,26 @@ Use GPU 0:
 Sys.setenv(CUDA_VISIBLE_DEVICES = "0")
 ```
 
-## 4. Minimal DAL test with PyTorch
+## 4. Monitor CPU and GPU while the example runs
+
+CPU:
+
+```bash
+htop
+```
+
+GPU:
+
+```bash
+nvidia-smi -l 1
+```
+
+Interpretation
+- In `htop`, watch the Python process started by `reticulate`.
+- In `nvidia-smi -l 1`, watch GPU memory usage and `GPU-Util`.
+- If the model is using GPU, the Python process should appear in `nvidia-smi` and GPU memory usage should increase during training.
+
+## 5. Minimal DAL test with PyTorch
 
 This is the shortest end-to-end test using the Iris dataset and the PyTorch classifier.
 
@@ -96,7 +115,7 @@ pred <- predict(model, sr$test)
 evaluate(model, sr$test[, "Species"], pred)$metrics
 ```
 
-## 5. How `daltoolboxdp` chooses GPU or CPU
+## 6. How `daltoolboxdp` chooses GPU or CPU
 
 The PyTorch wrappers in `daltoolboxdp` choose the device automatically:
 
@@ -109,9 +128,8 @@ So the effective device depends on:
 - whether that environment has a CUDA-capable PyTorch build
 - whether the NVIDIA driver is available on the host
 
-## 6. Recommended next example
+## 7. Recommended next example
 
 After this check, start with:
 
 - [classification/07_torch_cla_mlp.md](classification/07_torch_cla_mlp.md)
-
