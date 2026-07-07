@@ -4,12 +4,13 @@ This directory contains the source `Rmd` files used to generate the example page
 
 The topics are organized to answer different questions:
 
+- How do I confirm that `reticulate` is using the expected Python environment and that PyTorch will run on GPU or CPU?
 - Which Python-backed autoencoder should I use for representation only versus reconstruction-aware workflows?
 - Which classification examples are grouped under scikit-learn and PyTorch neural models, now using the same class-score output contract as `daltoolbox`?
 - Which PyTorch regression examples are available for base, static-validation, and dynamic-validation workflows?
 - How do the time-series examples separate representation/preprocessing, direct prediction, and LSTM training regimes?
 
-- [00_environment.md](00_environment.md) — Select the Python environment used by `reticulate`, verify PyTorch visibility, and confirm whether the backend will run on GPU or CPU.
+- [gpu](gpu/README.md) — Environment checks for `reticulate`, PyTorch visibility, and GPU versus CPU execution.
 - [autoencoder](autoencoder/README.md) — Autoencoder examples split between encoder-only use cases and encoder-decoder reconstruction workflows.
 - [classification](classification/README.md) — Classification examples grouped into scikit-learn (`01`-`06`) and PyTorch (`07`-`08`) blocks.
 - [regression](regression/README.md) — Regression examples organized around the PyTorch MLP regressor, including base, static-validation, and dynamic-validation variants.

@@ -175,4 +175,4 @@ So the effective device depends on:
 
 After this check, start with:
 
-- [classification/07_torch_cla_mlp.md](classification/07_torch_cla_mlp.md)
+- [../classification/07_torch_cla_mlp.md](../classification/07_torch_cla_mlp.md)

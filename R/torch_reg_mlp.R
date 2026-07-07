@@ -115,13 +115,20 @@ torch_reg_prepare_features <- function(obj, data, fit_preprocess = FALSE) {
   list(obj = obj, x = adjust_data.frame(x))
 }
 
+torch_reg_prepare_fit_data <- function(obj, data) {
+  data <- adjust_data.frame(data)
+  obj$x <- setdiff(colnames(data), obj$attribute)
+  list(obj = obj, data = data)
+}
+
 #' @exportS3Method fit torch_reg_mlp
 fit.torch_reg_mlp <- function(obj, data, ...) {
   if (!exists("torch_reg_mlp_create"))
     reticulate::source_python(system.file("python", "torch_reg_mlp.py", package = "daltoolboxdp"))
 
-  df_train <- adjust_data.frame(data)
-  obj <- daltoolbox:::fit.predictor(obj, df_train)
+  prepared_fit <- torch_reg_prepare_fit_data(obj, data)
+  obj <- prepared_fit$obj
+  df_train <- prepared_fit$data
   prepared <- torch_reg_prepare_features(obj, df_train, fit_preprocess = TRUE)
   obj <- prepared$obj
   x_train <- prepared$x
