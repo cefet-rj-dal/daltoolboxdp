@@ -74,20 +74,27 @@ htop
 GPU:
 
 ```bash
-nvidia-smi -l 1
+nvtop
 ```
 
 Interpretation
 - In `htop`, watch the Python process started by `reticulate`.
-- In `nvidia-smi -l 1`, watch GPU memory usage and `GPU-Util`.
-- If the model is using GPU, the Python process should appear in `nvidia-smi` and GPU memory usage should increase during training.
+- In `nvtop`, watch GPU utilization, GPU memory usage, and the Python process using the device.
+- If the model is using GPU, GPU utilization or memory usage should increase during training.
 
-## 5. Minimal DAL test with PyTorch
+Fallback if `nvtop` is not installed:
 
-This is the shortest end-to-end test using the Iris dataset and the PyTorch classifier.
+```bash
+watch -n 1 'nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader'
+```
+
+## 5. Minimal DAL test with PyTorch on GPU
+
+This test tries to run the PyTorch-backed classifier on GPU.
 
 ```r
 library(reticulate)
+Sys.setenv(CUDA_VISIBLE_DEVICES = "0")
 use_virtualenv("/opt/venv/dal", required = TRUE)
 py_config()
 
@@ -115,7 +122,43 @@ pred <- predict(model, sr$test)
 evaluate(model, sr$test[, "Species"], pred)$metrics
 ```
 
-## 6. How `daltoolboxdp` chooses GPU or CPU
+## 6. Minimal DAL test with PyTorch on CPU
+
+This test forces the same example to run on CPU.
+
+Start a fresh R session before running this block, so `reticulate` does not reuse an already initialized Python process.
+
+```r
+library(reticulate)
+Sys.setenv(CUDA_VISIBLE_DEVICES = "")
+use_virtualenv("/opt/venv/dal", required = TRUE)
+py_config()
+
+library(daltoolbox)
+library(daltoolboxdp)
+
+iris <- datasets::iris
+slevels <- levels(iris$Species)
+
+set.seed(1)
+sr <- sample_random()
+sr <- train_test(sr, iris)
+
+model <- torch_cla_mlp(
+  attribute = "Species",
+  slevels = slevels,
+  input_size = 4L,
+  hidden_sizes = c(16L, 8L),
+  num_classes = 3L,
+  epochs = 100L
+)
+
+model <- fit(model, sr$train)
+pred <- predict(model, sr$test)
+evaluate(model, sr$test[, "Species"], pred)$metrics
+```
+
+## 7. How `daltoolboxdp` chooses GPU or CPU
 
 The PyTorch wrappers in `daltoolboxdp` choose the device automatically:
 
@@ -128,7 +171,7 @@ So the effective device depends on:
 - whether that environment has a CUDA-capable PyTorch build
 - whether the NVIDIA driver is available on the host
 
-## 7. Recommended next example
+## 8. Recommended next example
 
 After this check, start with:
 
