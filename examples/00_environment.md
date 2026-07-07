@@ -114,7 +114,7 @@ model <- torch_cla_mlp(
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
   num_classes = 3L,
-  epochs = 100L
+  epochs = 5000L
 )
 
 model <- fit(model, sr$train)
@@ -150,7 +150,7 @@ model <- torch_cla_mlp(
   input_size = 4L,
   hidden_sizes = c(16L, 8L),
   num_classes = 3L,
-  epochs = 100L
+  epochs = 5000L
 )
 
 model <- fit(model, sr$train)
