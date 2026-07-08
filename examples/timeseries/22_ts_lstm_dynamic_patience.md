@@ -39,10 +39,14 @@ ts_head(ts, 3)
 ```
 
 ```
-##             t9        t8        t7        t6        t5        t4        t3        t2        t1        t0
-## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732
-## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721
-## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974 0.7780732 0.5984721 0.3816610
+##             t9        t8        t7        t6        t5        t4        t3
+## [1,] 0.0000000 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950
+## [2,] 0.2474040 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859
+## [3,] 0.4794255 0.6816388 0.8414710 0.9489846 0.9974950 0.9839859 0.9092974
+##             t2        t1        t0
+## [1,] 0.9839859 0.9092974 0.7780732
+## [2,] 0.9092974 0.7780732 0.5984721
+## [3,] 0.7780732 0.5984721 0.3816610
 ```
 
 Before moving on, we visualize the series so the effect of the next transformation can be compared against the original signal.
@@ -117,7 +121,7 @@ ev_adjust$mse
 ```
 
 ```
-## [1] 0.3700092
+## [1] 1.155655
 ```
 
 We now forecast the test set and compare the predicted values with the observed ones.
@@ -138,7 +142,7 @@ print(sprintf("%.2f, %.2f", output, prediction))
 ```
 
 ```
-## [1] "0.41, 0.50"  "0.17, 0.47"  "-0.08, 0.42" "-0.32, 0.34" "-0.54, 0.24"
+## [1] "0.41, -0.60"  "0.17, -0.61"  "-0.08, -0.64" "-0.32, -0.67" "-0.54, -0.72"
 ```
 
 This chunk evaluates the custom component on the held-out test segment.
@@ -153,7 +157,7 @@ print(head(ev_test$metrics))
 
 ```
 ##         mse    smape        R2
-## 1 0.2797123 1.421294 -1.415889
+## 1 0.4250087 1.313605 -2.670822
 ```
 
 ``` r
@@ -161,7 +165,7 @@ print(sprintf("smape: %.2f", 100 * ev_test$metrics$smape))
 ```
 
 ```
-## [1] "smape: 142.13"
+## [1] "smape: 131.36"
 ```
 
 This final plot summarizes the result of the transformation so the effect can be interpreted visually.
@@ -205,7 +209,7 @@ print(model$epochs_done)
 ```
 
 ```
-## [1] 53
+## [1] 32
 ```
 
 Notes
