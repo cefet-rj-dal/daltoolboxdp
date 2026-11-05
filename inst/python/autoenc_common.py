@@ -16,18 +16,19 @@ STOPPING_RULES = {"none", "patience", "sma", "ema", "h"}
 
 @dataclass
 class AutoencTrainingConfig:
-    batch_size: int = 32
+    batch_size: int = 1
     num_epochs: int = 100
     learning_rate: float = 0.001
     validation_strategy: str = "static"
     stopping_rule: str = "none"
-    val_ratio: float = 0.3
-    patience: int = 100
-    min_delta: float = 1e-4
-    sma_window: int = 5
+    val_ratio: float = 0.33
+    patience: int = 3
+    min_delta: float = 0
+    sma_window: int = 30
     ema_alpha: float = 0.2
     test_window: int = 30
     p_value: float = 0.05
+    reshuffle_freq: int = 1
 
 
 def ensure_int_list(values, default: Optional[Sequence[int]] = None, allow_empty: bool = False) -> List[int]:
@@ -41,7 +42,7 @@ def ensure_int_list(values, default: Optional[Sequence[int]] = None, allow_empty
     return result
 
 
-def activation_module(name: str, negative_slope: float = 0.2) -> nn.Module:
+def activation_module(name: str, negative_slope: float = 0.01) -> nn.Module:
     name = str(name).lower()
     if name == "relu":
         return nn.ReLU(inplace=True)
@@ -70,7 +71,7 @@ def build_dense_stack(
     output_dim: int,
     activation: str = "relu",
     output_activation: str = "none",
-    negative_slope: float = 0.2,
+    negative_slope: float = 0.01,
 ) -> nn.Sequential:
     layers = []
     prev = int(input_dim)
@@ -149,7 +150,7 @@ class StopController:
                 self.patience_ctr = 0
             else:
                 self.patience_ctr += 1
-            return self.patience_ctr >= self.patience
+            return self.patience_ctr > self.patience
 
         if self.rule == "patience":
             monitor_value = float(current)
@@ -170,4 +171,4 @@ class StopController:
             self.patience_ctr = 0
         else:
             self.patience_ctr += 1
-        return self.patience_ctr >= self.patience
+        return self.patience_ctr > self.patience

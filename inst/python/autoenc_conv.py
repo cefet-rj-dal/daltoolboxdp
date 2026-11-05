@@ -18,16 +18,19 @@ from autoenc_common import AutoencTrainingConfig, StopController, split_indices,
 
 
 class ConvAutoencoder(nn.Module):
-    def __init__(self, input_size: int, encoding_size: int):
+    def __init__(self, input_size: int, encoding_size: int, hidden_channels: int = 16, bottleneck_channels: int = 32, kernel_size: int = 3, negative_slope: float = 0.01):
         super().__init__()
         self.input_size = int(input_size)
-        hidden_channels = 16
-        bottleneck_channels = 32
+
+        if kernel_size % 2 == 0:
+            raise ValueError("kernel_size must be an odd number")        
+        padding = kernel_size // 2
+
         self.encoder_features = nn.Sequential(
-            nn.Conv1d(1, hidden_channels, kernel_size=3, padding=1),
-            nn.LeakyReLU(),
-            nn.Conv1d(hidden_channels, bottleneck_channels, kernel_size=3, padding=1),
-            nn.LeakyReLU(),
+            nn.Conv1d(1, hidden_channels, kernel_size=kernel_size, padding=padding),
+            nn.LeakyReLU(negative_slope=negative_slope),
+            nn.Conv1d(hidden_channels, bottleneck_channels, kernel_size=kernel_size, padding=padding),
+            nn.LeakyReLU(negative_slope=negative_slope),
         )
         self.encoder_projection = nn.Sequential(
             nn.Flatten(),
@@ -35,13 +38,13 @@ class ConvAutoencoder(nn.Module):
         )
         self.decoder_projection = nn.Sequential(
             nn.Linear(int(encoding_size), bottleneck_channels * self.input_size),
-            nn.LeakyReLU(),
+            nn.LeakyReLU(negative_slope=negative_slope),
             nn.Unflatten(1, (bottleneck_channels, self.input_size)),
         )
         self.decoder = nn.Sequential(
-            nn.ConvTranspose1d(bottleneck_channels, hidden_channels, kernel_size=3, padding=1),
-            nn.LeakyReLU(),
-            nn.ConvTranspose1d(hidden_channels, 1, kernel_size=3, padding=1),
+            nn.ConvTranspose1d(bottleneck_channels, hidden_channels, kernel_size=kernel_size, padding=padding),
+            nn.LeakyReLU(negative_slope=negative_slope),
+            nn.ConvTranspose1d(hidden_channels, 1, kernel_size=kernel_size, padding=padding),
             nn.Sigmoid(),
         )
 
@@ -55,10 +58,10 @@ class ConvAutoencoder(nn.Module):
 
 
 class ConvAutoencoderModel:
-    def __init__(self, input_size: int, encoding_size: int, validation_strategy: str = "static", stopping_rule: str = "none"):
+    def __init__(self, input_size: int, encoding_size: int, hidden_channels: int = 16, bottleneck_channels: int = 32, kernel_size: int = 3, validation_strategy: str = "static", stopping_rule: str = "none", negative_slope: float = 0.01):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
         self.input_size = int(input_size)
-        self.model = ConvAutoencoder(self.input_size, encoding_size).float()
+        self.model = ConvAutoencoder(self.input_size, encoding_size, hidden_channels=hidden_channels, bottleneck_channels=bottleneck_channels, kernel_size=kernel_size, negative_slope=negative_slope).float()
         self.train_loss: List[float] = []
         self.val_loss: List[float] = []
         self.epochs_done: int = 0
@@ -118,9 +121,11 @@ class ConvAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
+
             self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
             if val_loader is not None:
                 val_loss = self._run_epoch(val_loader, None, criterion)
@@ -131,7 +136,7 @@ class ConvAutoencoderModel:
             self.model.load_state_dict(stopper.best_state)
         return self
 
-    def encode(self, data, batch_size=32):
+    def encode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -141,7 +146,7 @@ class ConvAutoencoderModel:
                 outs.append(self.model.encode(xb.float()).detach().numpy())
         return np.concatenate(outs, axis=0)
 
-    def encode_decode(self, data, batch_size=32):
+    def encode_decode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -152,11 +157,27 @@ class ConvAutoencoderModel:
         return np.concatenate(outs, axis=0)
 
 
-def autoenc_conv_create(input_size, encoding_size, validation_strategy="static", stopping_rule="none"):
-    return ConvAutoencoderModel(input_size, encoding_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule)
+def autoenc_conv_create(input_size, encoding_size, hidden_channels: int = 16, bottleneck_channels: int = 32, kernel_size: int = 3, validation_strategy="static", stopping_rule="none", negative_slope: float = 0.01):
+    return ConvAutoencoderModel(input_size, encoding_size, hidden_channels=hidden_channels, bottleneck_channels=bottleneck_channels, kernel_size=kernel_size, validation_strategy=validation_strategy, stopping_rule=stopping_rule, negative_slope=negative_slope)
 
 
-def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
+def autoenc_conv_fit(
+    cae, 
+    data, 
+    batch_size=1, 
+    num_epochs=100, 
+    learning_rate=0.001, 
+    validation_strategy="static", 
+    stopping_rule="none", 
+    val_ratio=0.33, 
+    patience=3, 
+    min_delta=0, 
+    sma_window=30, 
+    ema_alpha=0.2, 
+    test_window=30, 
+    p_value=0.05,
+    reshuffle_freq=1
+):
     cae.validation_strategy, cae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -171,14 +192,15 @@ def autoenc_conv_fit(cae, data, batch_size=32, num_epochs=100, learning_rate=0.0
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     cae.fit(data, config)
     return cae, np.array(cae.train_loss), np.array(cae.val_loss)
 
 
-def autoenc_conv_encode(cae, data, batch_size=32):
+def autoenc_conv_encode(cae, data, batch_size=1):
     return cae.encode(data, batch_size=batch_size)
 
 
-def autoenc_conv_encode_decode(cae, data, batch_size=32):
+def autoenc_conv_encode_decode(cae, data, batch_size=1):
     return cae.encode_decode(data, batch_size=batch_size)

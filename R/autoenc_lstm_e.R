@@ -16,19 +16,20 @@
 #'   must be divisible by `sequence_length`. If `NULL`, it defaults to `input_size`.
 #' @param num_layers Integer. Number of recurrent LSTM layers.
 #' @param dropout Numeric. Recurrent dropout applied between LSTM layers when `num_layers > 1`.
-#' @param batch_size Integer. Mini-batch size used during training. Default is 32.
+#' @param batch_size Integer. Mini-batch size used during training. Default is 1.
 #' @param epochs Integer. Maximum number of training epochs. Default is 100.
 #' @param num_epochs Deprecated compatibility alias for `epochs`. If informed, it overrides `epochs`.
 #' @param learning_rate Numeric. Optimizer learning rate. Default is 0.001.
 #' @param validation_strategy Character. One of `static` or `dynamic`.
 #' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
-#' @param val_ratio Numeric. Validation fraction used when validation is enabled. Default is 0.3.
-#' @param patience Integer. Early stopping patience. Default is 100.
-#' @param min_delta Numeric. Minimum improvement to reset early stopping. Default is 1e-4.
-#' @param sma_window Integer. Window size used by `sma`. Default is 5.
+#' @param val_ratio Numeric. Validation fraction used when validation is enabled. Default is 0.33.
+#' @param patience Integer. Early stopping patience. Default is 3.
+#' @param min_delta Numeric. Minimum improvement to reset early stopping. Default is 0.
+#' @param sma_window Integer. Window size used by `sma`. Default is 30.
 #' @param ema_alpha Numeric. Smoothing factor used by `ema`. Default is 0.2.
 #' @param test_window Integer. Window size used by `h`. Default is 30.
 #' @param p_value Numeric. Significance threshold used by `h`. Default is 0.05.
+#' @param reshuffle_freq Integer. Epoch interval for resampling dynamic validation splits. Default is 1.
 #' @return A `autoenc_lstm_e` object.
 #'
 #' @references
@@ -58,19 +59,20 @@ autoenc_lstm_e <- function(input_size, encoding_size,
                            sequence_length = NULL,
                            num_layers = 1L,
                            dropout = 0,
-                           batch_size = 32,
+                           batch_size = 1,
                            epochs = 100L,
                            num_epochs = NULL,
                            learning_rate = 0.001,
                            validation_strategy = c("static", "dynamic"),
                            stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                           val_ratio = 0.3,
-                           patience = 100L,
-                           min_delta = 1e-4,
-                           sma_window = 5L,
+                           val_ratio = 0.33,
+                           patience = 3L,
+                           min_delta = 0,
+                           sma_window = 30L,
                            ema_alpha = 0.2,
                            test_window = 30L,
-                           p_value = 0.05) {
+                           p_value = 0.05,
+                           reshuffle_freq = 1) {
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- daltoolbox::autoenc_base_e(input_size, encoding_size)
@@ -93,6 +95,7 @@ autoenc_lstm_e <- function(input_size, encoding_size,
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
+  obj$reshuffle_freq <- reshuffle_freq
   class(obj) <- append("autoenc_lstm_e", class(obj))
 
   obj
@@ -130,7 +133,8 @@ fit.autoenc_lstm_e <- function(obj, data, ...) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value
+    p_value = obj$p_value,
+    reshuffle_freq = obj$reshuffle_freq
   )
 
   obj$model <- result[[1]]

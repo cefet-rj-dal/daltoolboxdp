@@ -152,9 +152,11 @@ class LSTMAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
+
             self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
             if val_loader is not None:
                 val_loss = self._run_epoch(val_loader, None, criterion)
@@ -165,7 +167,7 @@ class LSTMAutoencoderModel:
             self.model.load_state_dict(stopper.best_state)
         return self
 
-    def encode(self, data, batch_size=20):
+    def encode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -175,7 +177,7 @@ class LSTMAutoencoderModel:
                 outs.append(self.model.encoder(xb.float()).detach().numpy().reshape(xb.size(0), -1))
         return np.concatenate(outs, axis=0)
 
-    def encode_decode(self, data, batch_size=20):
+    def encode_decode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -199,7 +201,24 @@ def autoenc_lstm_create(input_size, encoding_size, lstm_hidden_size=None, sequen
     )
 
 
-def autoenc_lstm_fit(lae, data, batch_size=20, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05, return_loss=False):
+def autoenc_lstm_fit(
+    lae, 
+    data, 
+    batch_size=1, 
+    num_epochs=100, 
+    learning_rate=0.001, 
+    validation_strategy="static", 
+    stopping_rule="none", 
+    val_ratio=0.33, 
+    patience=3, 
+    min_delta=0, 
+    sma_window=30, 
+    ema_alpha=0.2, 
+    test_window=30, 
+    p_value=0.05, 
+    return_loss=False,
+    reshuffle_freq=1
+):
     lae.validation_strategy, lae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -214,14 +233,15 @@ def autoenc_lstm_fit(lae, data, batch_size=20, num_epochs=100, learning_rate=0.0
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     lae.fit(data, config)
     return lae, np.array(lae.train_loss), np.array(lae.val_loss)
 
 
-def autoenc_lstm_encode(lae, data, batch_size=20):
+def autoenc_lstm_encode(lae, data, batch_size=1):
     return lae.encode(data, batch_size=batch_size)
 
 
-def autoenc_lstm_encode_decode(lae, data, batch_size=20):
+def autoenc_lstm_encode_decode(lae, data, batch_size=1):
     return lae.encode_decode(data, batch_size=batch_size)

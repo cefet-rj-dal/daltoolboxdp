@@ -21,7 +21,7 @@ class VariationalAutoencoder(nn.Module):
         encoder_hidden_sizes=None,
         decoder_hidden_sizes=None,
         activation: str = "leaky_relu",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
         output_activation: str = "sigmoid",
     ):
         super().__init__()
@@ -83,7 +83,7 @@ class VariationalAutoencoderModel:
         encoder_hidden_sizes=None,
         decoder_hidden_sizes=None,
         activation: str = "leaky_relu",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
         output_activation: str = "sigmoid",
         reconstruction_loss: str = "bce",
         validation_strategy: str = "static",
@@ -155,9 +155,11 @@ class VariationalAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
+
             self.train_loss.append(self._run_epoch(train_loader, optimizer))
             if val_loader is not None:
                 val_loss = self._run_epoch(val_loader, None)
@@ -168,7 +170,7 @@ class VariationalAutoencoderModel:
             self.model.load_state_dict(stopper.best_state)
         return self
 
-    def encode(self, data, batch_size=32):
+    def encode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -179,7 +181,7 @@ class VariationalAutoencoderModel:
                 outs.append(np.concatenate([mean.detach().numpy(), var.detach().numpy()], axis=1))
         return np.concatenate(outs, axis=0)
 
-    def encode_decode(self, data, batch_size=32):
+    def encode_decode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -197,7 +199,7 @@ def autoenc_variational_create(
     encoder_hidden_sizes=None,
     decoder_hidden_sizes=None,
     activation="leaky_relu",
-    negative_slope=0.2,
+    negative_slope=0.01,
     output_activation="sigmoid",
     reconstruction_loss="bce",
     validation_strategy="static",
@@ -217,7 +219,23 @@ def autoenc_variational_create(
     )
 
 
-def autoenc_variational_fit(vae, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
+def autoenc_variational_fit(
+    vae, 
+    data, 
+    batch_size=1, 
+    num_epochs=100, 
+    learning_rate=0.001, 
+    validation_strategy="static", 
+    stopping_rule="none", 
+    val_ratio=0.33, 
+    patience=3, 
+    min_delta=0, 
+    sma_window=30, 
+    ema_alpha=0.2, 
+    test_window=30, 
+    p_value=0.05,
+    reshuffle_freq=1
+):
     vae.validation_strategy, vae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -232,14 +250,15 @@ def autoenc_variational_fit(vae, data, batch_size=32, num_epochs=100, learning_r
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     vae.fit(data, config)
     return vae, np.array(vae.train_loss), np.array(vae.val_loss)
 
 
-def autoenc_variational_encode(vae, data, batch_size=32):
+def autoenc_variational_encode(vae, data, batch_size=1):
     return vae.encode(data, batch_size=batch_size)
 
 
-def autoenc_variational_encode_decode(vae, data, batch_size=32):
+def autoenc_variational_encode_decode(vae, data, batch_size=1):
     return vae.encode_decode(data, batch_size=batch_size)

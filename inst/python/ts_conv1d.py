@@ -26,14 +26,15 @@ STOPPING_RULES = {"none", "patience", "sma", "ema", "h"}
 class _TrainingConfig:
     n_epochs: int = 100
     lr: float = 0.001
-    val_ratio: float = 0.2
-    batch_size: int = 8
-    patience: int = 100
-    min_delta: float = 1e-4
-    sma_window: int = 5
+    val_ratio: float = 0.33
+    batch_size: int = 1
+    patience: int = 3
+    min_delta: float = 0
+    sma_window: int = 30
     ema_alpha: float = 0.2
     test_window: int = 30
     p_value: float = 0.05
+    reshuffle_freq: int = 1
 
 
 def _as_int_list(values, default):
@@ -44,12 +45,12 @@ def _as_int_list(values, default):
     return [int(v) for v in values]
 
 
-def _activation(name: str) -> nn.Module:
+def _activation(name: str, negative_slope: float = 0.01) -> nn.Module:
     name = str(name).lower()
     if name == "relu":
         return nn.ReLU(inplace=True)
     if name == "leaky_relu":
-        return nn.LeakyReLU(0.2, inplace=True)
+        return nn.LeakyReLU(negative_slope=negative_slope, inplace=True)
     if name == "elu":
         return nn.ELU(inplace=True)
     if name == "gelu":
@@ -71,6 +72,7 @@ class TsConv1DNet(nn.Module):
         pool_kernel_size: int = 2,
         dense_hidden_sizes=None,
         activation: str = "relu",
+        negative_slope: float = 0.01
     ):
         super().__init__()
         conv_channels = _as_int_list(conv_channels, default=[64])
@@ -84,7 +86,7 @@ class TsConv1DNet(nn.Module):
         prev_channels = int(in_channels)
         for out_channels, kernel_size, stride in zip(conv_channels, kernel_sizes, strides):
             layers.append(nn.Conv1d(prev_channels, int(out_channels), kernel_size=int(kernel_size), stride=int(stride)))
-            layers.append(_activation(activation))
+            layers.append(_activation(activation, negative_slope=negative_slope))
             if str(pooling).lower() == "max":
                 layers.append(nn.MaxPool1d(kernel_size=int(pool_kernel_size)))
             elif str(pooling).lower() == "avg":
@@ -101,7 +103,7 @@ class TsConv1DNet(nn.Module):
         prev_features = n_features
         for hidden_size in dense_hidden_sizes:
             head.append(nn.Linear(prev_features, int(hidden_size)))
-            head.append(_activation(activation))
+            head.append(_activation(activation, negative_slope=negative_slope))
             prev_features = int(hidden_size)
         head.append(nn.Linear(prev_features, 1))
         self.regressor = nn.Sequential(*head)
@@ -162,7 +164,7 @@ class _StopController:
                 self.patience_ctr = 0
             else:
                 self.patience_ctr += 1
-            return self.patience_ctr >= self.patience
+            return self.patience_ctr > self.patience
 
         if self.rule == "patience":
             monitor_value = float(current)
@@ -179,7 +181,7 @@ class _StopController:
             self.patience_ctr = 0
         else:
             self.patience_ctr += 1
-        return self.patience_ctr >= self.patience
+        return self.patience_ctr > self.patience
 
 
 class TsConv1DModel:
@@ -197,6 +199,7 @@ class TsConv1DModel:
         activation: str = "relu",
         validation_strategy: str = "static",
         stopping_rule: str = "none",
+        negative_slope: float = 0.01
     ):
         validation_strategy = str(validation_strategy).lower()
         stopping_rule = str(stopping_rule).lower()
@@ -220,6 +223,7 @@ class TsConv1DModel:
             pool_kernel_size=pool_kernel_size,
             dense_hidden_sizes=dense_hidden_sizes,
             activation=activation,
+            negative_slope=negative_slope
         ).to(self._device())
         self.train_loss_hist: List[float] = []
         self.val_loss_hist: List[float] = []
@@ -327,11 +331,12 @@ class TsConv1DModel:
             self.epochs_done += 1
 
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
-                X_train, y_train = X_all[train_idx], y_all[train_idx]
-                X_val, y_val = X_all[val_idx], y_all[val_idx]
-                train_loader = self._make_loader(X_train, y_train, config.batch_size, True)
-                val_loader = self._make_loader(X_val, y_val, config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
+                    X_train, y_train = X_all[train_idx], y_all[train_idx]
+                    X_val, y_val = X_all[val_idx], y_all[val_idx]
+                    train_loader = self._make_loader(X_train, y_train, config.batch_size, True)
+                    val_loader = self._make_loader(X_val, y_val, config.batch_size, False)
 
             train_loss = self._epoch(train_loader, optimizer, criterion)
             self.train_loss_hist.append(train_loss)
@@ -346,7 +351,7 @@ class TsConv1DModel:
             self.network.load_state_dict(stopper.best_state)
         return self
 
-    def predict(self, df_test: pd.DataFrame, batch_size: int = 8):
+    def predict(self, df_test: pd.DataFrame, batch_size: int = 1):
         X_test = df_test.drop(columns=["t0"], errors="ignore").to_numpy().astype(np.float32)
         X_test = self._reshape_inputs(X_test)
         loader = DataLoader(TensorDataset(X_test, torch.zeros(X_test.shape[0], 1)), batch_size=int(batch_size), shuffle=False, drop_last=False)
@@ -358,7 +363,7 @@ class TsConv1DModel:
         return torch.vstack(preds).squeeze(-1).numpy()
 
 
-def ts_conv1d_create(in_channels, input_dim, sequence_length=None, conv_channels=None, kernel_sizes=None, strides=None, pooling="none", pool_kernel_size=2, dense_hidden_sizes=None, activation="relu", validation_strategy="static", stopping_rule="none"):
+def ts_conv1d_create(in_channels, input_dim, sequence_length=None, conv_channels=None, kernel_sizes=None, strides=None, pooling="none", pool_kernel_size=2, dense_hidden_sizes=None, activation="relu", validation_strategy="static", stopping_rule="none", negative_slope=0.01):
     return TsConv1DModel(
         int(in_channels),
         int(input_dim),
@@ -372,6 +377,7 @@ def ts_conv1d_create(in_channels, input_dim, sequence_length=None, conv_channels
         activation=activation,
         validation_strategy=validation_strategy,
         stopping_rule=stopping_rule,
+        negative_slope=negative_slope
     )
 
 
@@ -382,14 +388,15 @@ def ts_conv1d_fit(
     lr=0.001,
     validation_strategy="static",
     stopping_rule="none",
-    val_ratio=0.2,
-    batch_size=8,
-    patience=100,
-    min_delta=1e-4,
-    sma_window=5,
+    val_ratio=0.33,
+    batch_size=1,
+    patience=3,
+    min_delta=0,
+    sma_window=30,
     ema_alpha=0.2,
     test_window=30,
     p_value=0.05,
+    reshuffle_freq=1
 ):
     model.validation_strategy = str(validation_strategy).lower()
     model.stopping_rule = str(stopping_rule).lower()
@@ -404,9 +411,10 @@ def ts_conv1d_fit(
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     return model.fit(df_train, config)
 
 
-def ts_conv1d_predict(model, df_test, batch_size=8):
+def ts_conv1d_predict(model, df_test, batch_size=1):
     return model.predict(df_test, batch_size=batch_size)

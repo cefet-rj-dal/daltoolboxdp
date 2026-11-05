@@ -6,7 +6,7 @@
 #' @param input_size Integer. Number of input attributes.
 #' @param hidden_sizes Integer vector with hidden layer sizes.
 #' @param num_classes Integer. Number of classes. Defaults to `length(slevels)`.
-#' @param dropout Numeric. Dropout rate.
+#' @param dropout Numeric. Dropout rate. Default is `0.5`
 #' @param activation Character. Hidden activation function. One of
 #'   `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, or `"tanh"`.
 #' @param normalization Character. Optional normalization after each hidden linear layer.
@@ -17,6 +17,7 @@
 #' @param lr Numeric. Learning rate.
 #' @param validation_strategy Character. One of `static` or `dynamic`.
 #' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
+#' @param negative_slope Numeric. Negative slope used when `activation = "leaky_relu"`.
 #' @param val_ratio Numeric. Validation fraction used when validation is enabled.
 #' @param batch_size Integer. Mini-batch size.
 #' @param patience Integer. Early stopping patience.
@@ -26,6 +27,7 @@
 #' @param test_window Integer. Window size used by `h`.
 #' @param p_value Numeric. Significance threshold used by `h`.
 #' @param weight_decay Numeric. L2 regularization.
+#' @param reshuffle_freq Integer. Epoch interval for resampling dynamic validation splits. Default is 1.
 #' @examples
 #' \dontrun{
 #' library(daltoolboxdp)
@@ -48,7 +50,7 @@ torch_cla_mlp <- function(attribute,
                           input_size,
                           hidden_sizes,
                           num_classes = length(slevels),
-                          dropout = 0,
+                          dropout = 0.5,
                           activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
                           normalization = c("none", "batch", "layer"),
                           init_method = c("default", "xavier_uniform", "xavier_normal", "kaiming_uniform", "kaiming_normal"),
@@ -56,15 +58,17 @@ torch_cla_mlp <- function(attribute,
                           lr = 1e-3,
                           validation_strategy = c("static", "dynamic"),
                           stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                          val_ratio = 0.2,
-                          batch_size = 64L,
-                          patience = 100L,
-                          min_delta = 1e-4,
-                          sma_window = 5L,
+                          negative_slope = 0.01,
+                          val_ratio = 0.33,
+                          batch_size = 1L,
+                          patience = 3L,
+                          min_delta = 0,
+                          sma_window = 30L,
                           ema_alpha = 0.2,
                           test_window = 30L,
                           p_value = 0.05,
-                          weight_decay = 0) {
+                          weight_decay = 0,
+                          reshuffle_freq = 1) {
   activation <- match.arg(activation)
   normalization <- match.arg(normalization)
   init_method <- match.arg(init_method)
@@ -85,6 +89,7 @@ torch_cla_mlp <- function(attribute,
     lr = as.numeric(lr),
     validation_strategy = validation_strategy,
     stopping_rule = stopping_rule,
+    negative_slope = as.numeric(negative_slope),
     val_ratio = as.numeric(val_ratio),
     batch_size = as.integer(batch_size),
     patience = as.integer(patience),
@@ -94,6 +99,7 @@ torch_cla_mlp <- function(attribute,
     test_window = as.integer(test_window),
     p_value = as.numeric(p_value),
     weight_decay = as.numeric(weight_decay),
+    reshuffle_freq = as.integer(reshuffle_freq),
     model = NULL,
     classes_ = NULL
   )
@@ -117,7 +123,8 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
       normalization = obj$normalization,
       init_method = obj$init_method,
       validation_strategy = obj$validation_strategy,
-      stopping_rule = obj$stopping_rule
+      stopping_rule = obj$stopping_rule,
+      negative_slope = obj$negative_slope
     )
   }
 
@@ -142,6 +149,7 @@ fit.torch_cla_mlp <- function(obj, data, ...) {
     test_window = obj$test_window,
     p_value = obj$p_value,
     weight_decay = obj$weight_decay,
+    reshuffle_freq = obj$reshuffle_freq,
     classes_ = obj$slevels
   )
 

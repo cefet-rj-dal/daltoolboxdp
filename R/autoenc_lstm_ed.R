@@ -32,19 +32,20 @@ autoenc_lstm_ed <- function(input_size, encoding_size,
                             sequence_length = NULL,
                             num_layers = 1L,
                             dropout = 0,
-                            batch_size = 32,
+                            batch_size = 1,
                             epochs = 100L,
                             num_epochs = NULL,
                             learning_rate = 0.001,
                             validation_strategy = c("static", "dynamic"),
                             stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                            val_ratio = 0.3,
-                            patience = 100L,
-                            min_delta = 1e-4,
-                            sma_window = 5L,
+                            val_ratio = 0.33,
+                            patience = 3L,
+                            min_delta = 0,
+                            sma_window = 30L,
                             ema_alpha = 0.2,
                             test_window = 30L,
-                            p_value = 0.05) {
+                            p_value = 0.05,
+                            reshuffle_freq = 1) {
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- daltoolbox::autoenc_base_ed(input_size, encoding_size)
@@ -67,6 +68,7 @@ autoenc_lstm_ed <- function(input_size, encoding_size,
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
+  obj$reshuffle_freq <- reshuffle_freq
   class(obj) <- append("autoenc_lstm_ed", class(obj))
 
   obj
@@ -104,7 +106,8 @@ fit.autoenc_lstm_ed <- function(obj, data, ...) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value
+    p_value = obj$p_value,
+    reshuffle_freq = obj$reshuffle_freq
   )
 
   obj$model <- result[[1]]

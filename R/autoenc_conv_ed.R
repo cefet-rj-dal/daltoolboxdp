@@ -4,19 +4,24 @@
 #' Wraps a PyTorch implementation.
 #'@param input_size Integer. Number of input features per observation.
 #'@param encoding_size Integer. Size of the latent (bottleneck) representation.
-#'@param batch_size Integer. Mini-batch size used during training. Default is 32.
+#'@param hidden_channels Integer. Number of channels in the first (encoder) and last (decoder) conv layers. Default is 16.
+#'@param bottleneck_channels Integer. Number of channels in the deepest conv layer. Default is 32.
+#'@param kernel_size Integer. Size of the 1D conv kernel (must be odd). Default is 3.
+#'@param batch_size Integer. Mini-batch size used during training. Default is 1.
 #'@param epochs Integer. Maximum number of training epochs. Default is 100.
 #'@param num_epochs Deprecated compatibility alias for `epochs`. If informed, it overrides `epochs`.
 #'@param learning_rate Numeric. Optimizer learning rate. Default is 0.001.
 #'@param validation_strategy Character. One of `static` or `dynamic`.
 #'@param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
-#'@param val_ratio Numeric. Validation fraction used when validation is enabled. Default is 0.3.
-#'@param patience Integer. Early stopping patience. Default is 100.
-#'@param min_delta Numeric. Minimum improvement to reset early stopping. Default is 1e-4.
-#'@param sma_window Integer. Window size used by `sma`. Default is 5.
+#'@param negative_slope Numeric. Negative slope of the LeakyReLU activation. Default is 0.01.
+#'@param val_ratio Numeric. Validation fraction used when validation is enabled. Default is 0.33.
+#'@param patience Integer. Early stopping patience. Default is 3.
+#'@param min_delta Numeric. Minimum improvement to reset early stopping. Default is 0.
+#'@param sma_window Integer. Window size used by `sma`. Default is 30.
 #'@param ema_alpha Numeric. Smoothing factor used by `ema`. Default is 0.2.
 #'@param test_window Integer. Window size used by `h`. Default is 30.
 #'@param p_value Numeric. Significance threshold used by `h`. Default is 0.05.
+#'@param reshuffle_freq Integer. Epoch interval for resampling dynamic validation splits. Default is 1.
 #'@return A `autoenc_conv_ed` object.
 #'@examples
 #'\dontrun{
@@ -32,22 +37,27 @@
 #'@importFrom daltoolbox autoenc_base_ed
 #'@import reticulate
 #'@export
-autoenc_conv_ed <- function(input_size, encoding_size, batch_size = 32, epochs = 100L, num_epochs = NULL, learning_rate = 0.001,
+autoenc_conv_ed <- function(input_size, encoding_size, batch_size = 1, epochs = 100L, num_epochs = NULL, learning_rate = 0.001,
+                            hidden_channels = 16, bottleneck_channels = 32, kernel_size = 3,
                             validation_strategy = c("static", "dynamic"),
                             stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                            val_ratio = 0.3, patience = 100L, min_delta = 1e-4,
-                            sma_window = 5L, ema_alpha = 0.2, test_window = 30L, p_value = 0.05) {
+                            negative_slope = 0.01, val_ratio = 0.33, patience = 3L, min_delta = 0,
+                            sma_window = 30L, ema_alpha = 0.2, test_window = 30L, p_value = 0.05, reshuffle_freq = 1) {
   validation_strategy <- match.arg(validation_strategy)
   stopping_rule <- match.arg(stopping_rule)
   obj <- daltoolbox::autoenc_base_ed(input_size, encoding_size)
   obj$input_size <- input_size
   obj$encoding_size <- encoding_size
+  obj$hidden_channels <- hidden_channels
+  obj$bottleneck_channels <- bottleneck_channels
+  obj$kernel_size <- kernel_size
   obj$batch_size <- batch_size
   obj$epochs <- resolve_autoenc_epochs(epochs, num_epochs)
   obj$num_epochs <- obj$epochs
   obj$learning_rate <- learning_rate
   obj$validation_strategy <- validation_strategy
   obj$stopping_rule <- stopping_rule
+  obj$negative_slope <- negative_slope
   obj$val_ratio <- val_ratio
   obj$patience <- patience
   obj$min_delta <- min_delta
@@ -55,6 +65,7 @@ autoenc_conv_ed <- function(input_size, encoding_size, batch_size = 32, epochs =
   obj$ema_alpha <- ema_alpha
   obj$test_window <- test_window
   obj$p_value <- p_value
+  obj$reshuffle_freq <- reshuffle_freq
   class(obj) <- append("autoenc_conv_ed", class(obj))
 
   return(obj)
@@ -66,12 +77,14 @@ fit.autoenc_conv_ed <- function(obj, data, ...) {
     reticulate::source_python(system.file("python", "autoenc_conv.py", package = "daltoolboxdp"))
 
   if (is.null(obj$model))
-    obj$model <- autoenc_conv_create(obj$input_size, obj$encoding_size, validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule)
+    obj$model <- autoenc_conv_create(input_size = obj$input_size, encoding_size = obj$encoding_size, hidden_channels = obj$hidden_channels, 
+                                    bottleneck_channels = obj$bottleneck_channels, kernel_size = obj$kernel_size, 
+                                    validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule, negative_slope = obj$negative_slope)
 
   result <- autoenc_conv_fit(obj$model, data, batch_size = obj$batch_size, num_epochs = obj$epochs, learning_rate = obj$learning_rate,
                              validation_strategy = obj$validation_strategy, stopping_rule = obj$stopping_rule, val_ratio = obj$val_ratio,
                              patience = obj$patience, min_delta = obj$min_delta, sma_window = obj$sma_window, ema_alpha = obj$ema_alpha,
-                             test_window = obj$test_window, p_value = obj$p_value)
+                             test_window = obj$test_window, p_value = obj$p_value, reshuffle_freq = obj$reshuffle_freq)
 
   obj$model <- result[[1]]
   obj$train_loss <- result[[2]]

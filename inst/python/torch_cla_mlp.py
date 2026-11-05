@@ -22,23 +22,24 @@ STOPPING_RULES = {"none", "patience", "sma", "ema", "h"}
 class _TrainingConfig:
     epochs: int = 100
     lr: float = 0.001
-    val_ratio: float = 0.2
-    batch_size: int = 64
-    patience: int = 100
-    min_delta: float = 1e-4
-    sma_window: int = 5
+    val_ratio: float = 0.33
+    batch_size: int = 1
+    patience: int = 3
+    min_delta: float = 0
+    sma_window: int = 30
     ema_alpha: float = 0.2
     test_window: int = 30
     p_value: float = 0.05
     weight_decay: float = 0.0
+    reshuffle_freq: int = 1
 
 
-def _activation_module(name: str) -> nn.Module:
+def _activation_module(name: str, negative_slope: float = 0.01) -> nn.Module:
     name = str(name).lower()
     if name == "relu":
         return nn.ReLU(inplace=True)
     if name == "leaky_relu":
-        return nn.LeakyReLU(0.2, inplace=True)
+        return nn.LeakyReLU(negative_slope=negative_slope, inplace=True)
     if name == "elu":
         return nn.ELU(inplace=True)
     if name == "gelu":
@@ -84,10 +85,11 @@ class TorchMLPClassifierNet(nn.Module):
         input_dim: int,
         hidden_sizes: List[int],
         num_classes: int,
-        dropout: float = 0.0,
+        dropout: float = 0.5,
         activation: str = "relu",
         normalization: str = "none",
         init_method: str = "default",
+        negative_slope: float = 0.01
     ):
         super().__init__()
         layers = []
@@ -99,7 +101,7 @@ class TorchMLPClassifierNet(nn.Module):
             norm = _normalization_module(normalization, int(h))
             if norm is not None:
                 layers.append(norm)
-            layers.append(_activation_module(activation))
+            layers.append(_activation_module(activation, negative_slope=negative_slope))
             if float(dropout) > 0:
                 layers.append(nn.Dropout(p=float(dropout)))
             prev = int(h)
@@ -151,7 +153,7 @@ class _StopController:
                 self.patience_ctr = 0
             else:
                 self.patience_ctr += 1
-            return self.patience_ctr >= self.patience
+            return self.patience_ctr > self.patience
 
         if self.rule == "patience":
             monitor_value = float(current)
@@ -172,7 +174,7 @@ class _StopController:
             self.patience_ctr = 0
         else:
             self.patience_ctr += 1
-        return self.patience_ctr >= self.patience
+        return self.patience_ctr > self.patience
 
 
 class TorchMLPClassifier:
@@ -181,12 +183,13 @@ class TorchMLPClassifier:
         input_dim: int,
         hidden_sizes: List[int],
         num_classes: int,
-        dropout: float = 0.0,
+        dropout: float = 0.5,
         activation: str = "relu",
         normalization: str = "none",
         init_method: str = "default",
         validation_strategy: str = "static",
         stopping_rule: str = "none",
+        negative_slope: float = 0.01
     ):
         validation_strategy = str(validation_strategy).lower()
         stopping_rule = str(stopping_rule).lower()
@@ -204,6 +207,7 @@ class TorchMLPClassifier:
             activation=activation,
             normalization=normalization,
             init_method=init_method,
+            negative_slope=negative_slope
         ).to(self._device())
         self.classes_: List = []
         self.train_loss_hist: List[float] = []
@@ -277,9 +281,10 @@ class TorchMLPClassifier:
         for epoch in range(int(config.epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
-                train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
-                val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = self._split_indices(X_all.shape[0], config.val_ratio)
+                    train_loader = DataLoader(TensorDataset(X_all[train_idx], y_all[train_idx]), batch_size=int(config.batch_size), shuffle=True, drop_last=False)
+                    val_loader = DataLoader(TensorDataset(X_all[val_idx], y_all[val_idx]), batch_size=int(config.batch_size), shuffle=False, drop_last=False)
 
             self.train_loss_hist.append(self._epoch(train_loader, optimizer, criterion))
             if val_loader is not None:
@@ -314,12 +319,13 @@ def torch_cla_mlp_create(
     input_dim: int,
     hidden_sizes: List[int],
     num_classes: int,
-    dropout: float = 0.0,
+    dropout: float = 0.5,
     activation: str = "relu",
     normalization: str = "none",
     init_method: str = "default",
     validation_strategy: str = "static",
     stopping_rule: str = "none",
+    negative_slope: float = 0.01
 ):
     return TorchMLPClassifier(
         input_dim,
@@ -331,6 +337,7 @@ def torch_cla_mlp_create(
         init_method=init_method,
         validation_strategy=validation_strategy,
         stopping_rule=stopping_rule,
+        negative_slope=negative_slope
     )
 
 
@@ -342,16 +349,17 @@ def torch_cla_mlp_fit(
     lr: float = 1e-3,
     validation_strategy: str = "static",
     stopping_rule: str = "none",
-    batch_size: int = 64,
-    val_ratio: float = 0.2,
-    patience: int = 100,
-    min_delta: float = 1e-4,
-    sma_window: int = 5,
+    batch_size: int = 1,
+    val_ratio: float = 0.33,
+    patience: int = 3,
+    min_delta: float = 0,
+    sma_window: int = 30,
     ema_alpha: float = 0.2,
     test_window: int = 30,
     p_value: float = 0.05,
     weight_decay: float = 0.0,
     classes_: Optional[List] = None,
+    reshuffle_freq: int = 1
 ):
     model.validation_strategy = str(validation_strategy).lower()
     model.stopping_rule = str(stopping_rule).lower()
@@ -367,6 +375,7 @@ def torch_cla_mlp_fit(
         test_window=int(test_window),
         p_value=float(p_value),
         weight_decay=float(weight_decay),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     return model.fit(df_train, target_column=target_column, config=config, classes_=classes_)
 

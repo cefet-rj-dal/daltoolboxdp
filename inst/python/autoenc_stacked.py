@@ -22,7 +22,7 @@ class StackUnit(nn.Module):
         decoder_hidden_sizes=None,
         activation: str = "relu",
         output_activation: str = "none",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
     ):
         super().__init__()
         encoder_hidden_sizes = [64] if encoder_hidden_sizes is None else encoder_hidden_sizes
@@ -58,7 +58,7 @@ class StackedAutoencoderModel:
         decoder_hidden_sizes=None,
         activation: str = "relu",
         output_activation: str = "none",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
         validation_strategy: str = "static",
         stopping_rule: str = "none",
     ):
@@ -146,9 +146,11 @@ class StackedAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or ((epoch+1) % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
+
             train_hist.append(self._run_epoch(unit, train_loader, optimizer, criterion))
             if val_loader is not None:
                 val_loss = self._run_epoch(unit, val_loader, None, criterion)
@@ -199,14 +201,14 @@ class StackedAutoencoderModel:
             current = self._encode_unit(unit, current, config.batch_size)
         return self
 
-    def encode(self, data, batch_size=32):
+    def encode(self, data, batch_size=1):
         array = self._array(data)
         current = array
         for unit in self.stack:
             current = self._encode_unit(unit, current, batch_size)
         return current
 
-    def encode_decode(self, data, batch_size=32):
+    def encode_decode(self, data, batch_size=1):
         array = self._array(data)
         encoded = array
         for unit in self.stack:
@@ -226,7 +228,7 @@ def autoenc_stacked_create(
     decoder_hidden_sizes=None,
     activation="relu",
     output_activation="none",
-    negative_slope=0.2,
+    negative_slope=0.01,
     validation_strategy="static",
     stopping_rule="none",
 ):
@@ -245,7 +247,23 @@ def autoenc_stacked_create(
     )
 
 
-def autoenc_stacked_fit(stack, data, batch_size=32, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
+def autoenc_stacked_fit(
+    stack, 
+    data, 
+    batch_size=1, 
+    num_epochs=100, 
+    learning_rate=0.001, 
+    validation_strategy="static", 
+    stopping_rule="none", 
+    val_ratio=0.33, 
+    patience=3, 
+    min_delta=0, 
+    sma_window=30, 
+    ema_alpha=0.2, 
+    test_window=30, 
+    p_value=0.05,
+    reshuffle_freq=1
+):
     stack.validation_strategy, stack.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -260,14 +278,15 @@ def autoenc_stacked_fit(stack, data, batch_size=32, num_epochs=100, learning_rat
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     stack.fit(data, config)
     return stack, np.array(stack.train_loss), np.array(stack.val_loss)
 
 
-def autoenc_stacked_encode(sae, data, batch_size=32):
+def autoenc_stacked_encode(sae, data, batch_size=1):
     return sae.encode(data, batch_size=batch_size)
 
 
-def autoenc_stacked_encode_decode(sae, data, batch_size=32):
+def autoenc_stacked_encode_decode(sae, data, batch_size=1):
     return sae.encode_decode(data, batch_size=batch_size)

@@ -22,7 +22,7 @@ class Autoencoder(nn.Module):
         decoder_hidden_sizes=None,
         activation: str = "relu",
         output_activation: str = "none",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
     ):
         super().__init__()
         encoder_hidden_sizes = [64] if encoder_hidden_sizes is None else encoder_hidden_sizes
@@ -56,7 +56,7 @@ class DenseAutoencoderModel:
         decoder_hidden_sizes=None,
         activation: str = "relu",
         output_activation: str = "none",
-        negative_slope: float = 0.2,
+        negative_slope: float = 0.01,
         validation_strategy: str = "static",
         stopping_rule: str = "none",
     ):
@@ -126,9 +126,10 @@ class DenseAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
 
             self.train_loss.append(self._run_epoch(train_loader, optimizer, criterion))
             if val_loader is not None:
@@ -141,7 +142,7 @@ class DenseAutoencoderModel:
             self.model.load_state_dict(stopper.best_state)
         return self
 
-    def encode(self, data, batch_size: int = 32):
+    def encode(self, data, batch_size: int = 1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         encoded = []
@@ -151,7 +152,7 @@ class DenseAutoencoderModel:
                 encoded.append(self.model.encoder(xb.float()).detach().numpy())
         return np.concatenate(encoded, axis=0)
 
-    def encode_decode(self, data, batch_size: int = 32):
+    def encode_decode(self, data, batch_size: int = 1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         decoded = []
@@ -169,7 +170,7 @@ def autoenc_create(
     decoder_hidden_sizes=None,
     activation="relu",
     output_activation="none",
-    negative_slope=0.2,
+    negative_slope=0.01,
     validation_strategy="static",
     stopping_rule="none",
 ):
@@ -189,18 +190,19 @@ def autoenc_create(
 def autoenc_fit(
     autoencoder,
     data,
-    batch_size=32,
+    batch_size=1,
     num_epochs=100,
     learning_rate=0.001,
     validation_strategy="static",
     stopping_rule="none",
-    val_ratio=0.3,
-    patience=100,
-    min_delta=1e-4,
-    sma_window=5,
+    val_ratio=0.33,
+    patience=3,
+    min_delta=0,
+    sma_window=30,
     ema_alpha=0.2,
     test_window=30,
     p_value=0.05,
+    reshuffle_freq=1
 ):
     autoencoder.validation_strategy, autoencoder.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
@@ -216,14 +218,15 @@ def autoenc_fit(
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     autoencoder.fit(data, config)
     return autoencoder, np.array(autoencoder.train_loss), np.array(autoencoder.val_loss)
 
 
-def autoenc_encode(autoencoder, data, batch_size=32):
+def autoenc_encode(autoencoder, data, batch_size=1):
     return autoencoder.encode(data, batch_size=batch_size)
 
 
-def autoenc_encode_decode(autoencoder, data, batch_size=32):
+def autoenc_encode_decode(autoencoder, data, batch_size=1):
     return autoencoder.encode_decode(data, batch_size=batch_size)

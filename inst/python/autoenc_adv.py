@@ -14,12 +14,12 @@ from torch.utils.data import DataLoader, TensorDataset
 from autoenc_common import AutoencTrainingConfig, StopController, ensure_int_list, split_indices, validate_strategy
 
 
-def _activation(name: str, x: torch.Tensor) -> torch.Tensor:
+def _activation(name: str, x: torch.Tensor, negative_slope: float = 0.01) -> torch.Tensor:
     name = str(name).lower()
     if name == "relu":
         return F.relu(x)
     if name == "leaky_relu":
-        return F.leaky_relu(x, negative_slope=0.2)
+        return F.leaky_relu(x, negative_slope=negative_slope)
     if name == "elu":
         return F.elu(x)
     if name == "gelu":
@@ -30,7 +30,7 @@ def _activation(name: str, x: torch.Tensor) -> torch.Tensor:
 
 
 class FeedForwardNet(nn.Module):
-    def __init__(self, input_size: int, hidden_sizes, output_size: int, activation: str = "relu", dropout: float = 0.4, output_activation: str = "none"):
+    def __init__(self, input_size: int, hidden_sizes, output_size: int, activation: str = "relu", dropout: float = 0.5, output_activation: str = "none", negative_slope: float = 0.01):
         super().__init__()
         self.layers = nn.ModuleList()
         prev = int(input_size)
@@ -41,10 +41,11 @@ class FeedForwardNet(nn.Module):
         self.activation = str(activation).lower()
         self.dropout = float(dropout)
         self.output_activation = str(output_activation).lower()
+        self.negative_slope = negative_slope
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         for layer in self.layers:
-            x = _activation(self.activation, layer(x))
+            x = _activation(self.activation, layer(x), self.negative_slope)
             if self.dropout > 0:
                 x = F.dropout(x, p=self.dropout, training=self.training)
         x = self.output(x)
@@ -64,7 +65,7 @@ class AdversarialAutoencoderModel:
         decoder_hidden_sizes=None,
         discriminator_hidden_sizes=None,
         activation: str = "relu",
-        dropout: float = 0.4,
+        dropout: float = 0.5,
         latent_prior_scale: float = 5.0,
         lr_encoder: Optional[float] = None,
         lr_decoder: Optional[float] = None,
@@ -72,6 +73,7 @@ class AdversarialAutoencoderModel:
         lr_discriminator: Optional[float] = None,
         validation_strategy: str = "static",
         stopping_rule: str = "none",
+        negative_slope: float = 0.01
     ):
         self.validation_strategy, self.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
         self.input_size = int(input_size)
@@ -86,10 +88,11 @@ class AdversarialAutoencoderModel:
         self.lr_decoder = None if lr_decoder is None else float(lr_decoder)
         self.lr_generator = None if lr_generator is None else float(lr_generator)
         self.lr_discriminator = None if lr_discriminator is None else float(lr_discriminator)
+        self.negative_slope = float(negative_slope)
 
-        self.Q = FeedForwardNet(self.input_size, self.encoder_hidden_sizes, self.encoding_size, activation=self.activation, dropout=self.dropout)
-        self.P = FeedForwardNet(self.encoding_size, self.decoder_hidden_sizes, self.input_size, activation=self.activation, dropout=self.dropout, output_activation="sigmoid")
-        self.D_gauss = FeedForwardNet(self.encoding_size, self.discriminator_hidden_sizes, 1, activation=self.activation, dropout=self.dropout, output_activation="sigmoid")
+        self.Q = FeedForwardNet(self.input_size, self.encoder_hidden_sizes, self.encoding_size, activation=self.activation, dropout=self.dropout, negative_slope=self.negative_slope)
+        self.P = FeedForwardNet(self.encoding_size, self.decoder_hidden_sizes, self.input_size, activation=self.activation, dropout=self.dropout, output_activation="sigmoid", negative_slope=self.negative_slope)
+        self.D_gauss = FeedForwardNet(self.encoding_size, self.discriminator_hidden_sizes, 1, activation=self.activation, dropout=self.dropout, output_activation="sigmoid", negative_slope=self.negative_slope)
         self._reset_optimizers()
 
         self.train_loss: List[float] = []
@@ -222,9 +225,11 @@ class AdversarialAutoencoderModel:
         for epoch in range(int(config.num_epochs)):
             self.epochs_done += 1
             if self.validation_strategy == "dynamic":
-                train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
-                train_loader = self._loader(array[train_idx], config.batch_size, True)
-                val_loader = self._loader(array[val_idx], config.batch_size, False)
+                if epoch == 0 or (self.epochs_done % config.reshuffle_freq) == 0:
+                    train_idx, val_idx = split_indices(array.shape[0], config.val_ratio)
+                    train_loader = self._loader(array[train_idx], config.batch_size, True)
+                    val_loader = self._loader(array[val_idx], config.batch_size, False)
+
             self.train_loss.append(self._train_epoch(train_loader))
             if val_loader is not None:
                 val_loss = self._eval_epoch(val_loader)
@@ -244,7 +249,7 @@ class AdversarialAutoencoderModel:
     def load_state_dict(self, state):
         self._load_state(state)
 
-    def encode(self, data, batch_size=32):
+    def encode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -254,7 +259,7 @@ class AdversarialAutoencoderModel:
                 outs.append(self.Q(xb.float().view(xb.size(0), -1)).detach().numpy())
         return np.concatenate(outs, axis=0)
 
-    def encode_decode(self, data, batch_size=350):
+    def encode_decode(self, data, batch_size=1):
         array = self._array(data)
         loader = self._loader(array, batch_size, False)
         outs = []
@@ -274,7 +279,7 @@ def autoenc_adv_create(
     decoder_hidden_sizes=None,
     discriminator_hidden_sizes=None,
     activation="relu",
-    dropout=0.4,
+    dropout=0.5,
     latent_prior_scale=5.0,
     lr_encoder=None,
     lr_decoder=None,
@@ -282,6 +287,7 @@ def autoenc_adv_create(
     lr_discriminator=None,
     validation_strategy="static",
     stopping_rule="none",
+    negative_slope=0.01
 ):
     return AdversarialAutoencoderModel(
         input_size,
@@ -298,10 +304,27 @@ def autoenc_adv_create(
         lr_discriminator=lr_discriminator,
         validation_strategy=validation_strategy,
         stopping_rule=stopping_rule,
+        negative_slope=negative_slope
     )
 
 
-def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.001, validation_strategy="static", stopping_rule="none", val_ratio=0.3, patience=100, min_delta=1e-4, sma_window=5, ema_alpha=0.2, test_window=30, p_value=0.05):
+def autoenc_adv_fit(
+    aae, 
+    data, 
+    batch_size=1, 
+    num_epochs=100, 
+    learning_rate=0.001, 
+    validation_strategy="static", 
+    stopping_rule="none", 
+    val_ratio=0.33, 
+    patience=3, 
+    min_delta=0, 
+    sma_window=30, 
+    ema_alpha=0.2, 
+    test_window=30, 
+    p_value=0.05,
+    reshuffle_freq=1
+):
     aae.validation_strategy, aae.stopping_rule = validate_strategy(validation_strategy, stopping_rule)
     config = AutoencTrainingConfig(
         batch_size=int(batch_size),
@@ -316,14 +339,15 @@ def autoenc_adv_fit(aae, data, batch_size=350, num_epochs=100, learning_rate=0.0
         ema_alpha=float(ema_alpha),
         test_window=int(test_window),
         p_value=float(p_value),
+        reshuffle_freq=max(1, int(reshuffle_freq))
     )
     aae.fit(data, config)
     return aae, np.array(aae.train_loss), np.array(aae.val_loss)
 
 
-def autoenc_adv_encode(aae, data, batch_size=32):
+def autoenc_adv_encode(aae, data, batch_size=1):
     return aae.encode(data, batch_size=batch_size)
 
 
-def autoenc_adv_encode_decode(aae, data, batch_size=350):
+def autoenc_adv_encode_decode(aae, data, batch_size=1):
     return aae.encode_decode(data, batch_size=batch_size)

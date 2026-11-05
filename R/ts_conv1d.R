@@ -35,6 +35,7 @@
 #' @param lr Numeric. Optimizer learning rate.
 #' @param validation_strategy Character. One of `static` or `dynamic`.
 #' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
+#' @param negative_slope Numeric. Negative slope used when `activation = "leaky_relu"`.
 #' @param val_ratio Numeric. Validation fraction used when validation is enabled.
 #' @param batch_size Integer. Mini-batch size.
 #' @param patience Integer. Early stopping patience.
@@ -43,6 +44,7 @@
 #' @param ema_alpha Numeric. Smoothing factor used by `ema`.
 #' @param test_window Integer. Window size used by `h`.
 #' @param p_value Numeric. Significance threshold used by `h`.
+#' @param reshuffle_freq Integer. Epoch interval for resampling dynamic validation splits. Default is 1.
 #' @return A `ts_conv1d` object.
 #' @examples
 #' \dontrun{
@@ -75,14 +77,16 @@ ts_conv1d <- function(preprocess = NA,
                       lr = 0.001,
                       validation_strategy = c("static", "dynamic"),
                       stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                      val_ratio = 0.2,
-                      batch_size = 8L,
-                      patience = 100L,
-                      min_delta = 1e-4,
-                      sma_window = 5L,
+                      negative_slope = 0.01,
+                      val_ratio = 0.33,
+                      batch_size = 1L,
+                      patience = 3L,
+                      min_delta = 0,
+                      sma_window = 30L,
                       ema_alpha = 0.2,
                       test_window = 30L,
-                      p_value = 0.05) {
+                      p_value = 0.05,
+                      reshuffle_freq = 1) {
   pooling <- match.arg(pooling)
   activation <- match.arg(activation)
   validation_strategy <- match.arg(validation_strategy)
@@ -102,6 +106,7 @@ ts_conv1d <- function(preprocess = NA,
   obj$lr <- as.numeric(lr)
   obj$validation_strategy <- validation_strategy
   obj$stopping_rule <- stopping_rule
+  obj$negative_slope <- as.numeric(negative_slope)
   obj$val_ratio <- as.numeric(val_ratio)
   obj$batch_size <- as.integer(batch_size)
   obj$patience <- as.integer(patience)
@@ -110,6 +115,7 @@ ts_conv1d <- function(preprocess = NA,
   obj$ema_alpha <- as.numeric(ema_alpha)
   obj$test_window <- as.integer(test_window)
   obj$p_value <- as.numeric(p_value)
+  obj$reshuffle_freq <- as.integer(reshuffle_freq)
   class(obj) <- append("ts_conv1d", class(obj))
   obj
 }
@@ -133,7 +139,8 @@ do_fit.ts_conv1d <- function(obj, x, y) {
       dense_hidden_sizes = obj$dense_hidden_sizes,
       activation = obj$activation,
       validation_strategy = obj$validation_strategy,
-      stopping_rule = obj$stopping_rule
+      stopping_rule = obj$stopping_rule,
+      negative_slope = obj$negative_slope
     )
   }
 
@@ -155,7 +162,8 @@ do_fit.ts_conv1d <- function(obj, x, y) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value
+    p_value = obj$p_value,
+    reshuffle_freq = obj$reshuffle_freq
   )
 
   obj$train_loss_hist <- obj$model$train_loss_hist

@@ -5,7 +5,7 @@
 #' @param input_size Optional integer. Number of input attributes. When omitted,
 #'   it is inferred from the training data and validated against the learned predictor set.
 #' @param hidden_sizes Integer vector with hidden layer sizes.
-#' @param dropout Numeric. Dropout rate.
+#' @param dropout Numeric. Dropout rate. Default is `0.5`
 #' @param activation Character. Hidden activation function. One of
 #'   `"relu"`, `"leaky_relu"`, `"elu"`, `"gelu"`, or `"tanh"`.
 #' @param output_activation Character. Output activation of the regressor head. One of
@@ -18,6 +18,7 @@
 #' @param lr Numeric. Learning rate.
 #' @param validation_strategy Character. One of `static` or `dynamic`.
 #' @param stopping_rule Character. One of `none`, `patience`, `sma`, `ema`, or `h`.
+#' @param negative_slope Numeric. Negative slope used when `activation = "leaky_relu"`.
 #' @param val_ratio Numeric. Validation fraction used when validation is enabled.
 #' @param batch_size Integer. Mini-batch size.
 #' @param patience Integer. Early stopping patience.
@@ -26,6 +27,7 @@
 #' @param ema_alpha Numeric. Smoothing factor used by `ema`.
 #' @param test_window Integer. Window size used by `h`.
 #' @param p_value Numeric. Significance threshold used by `h`.
+#' @param reshuffle_freq Integer. Epoch interval for resampling dynamic validation splits. Default is 1.
 #' @examples
 #' \dontrun{
 #' library(daltoolboxdp)
@@ -44,7 +46,7 @@ torch_reg_mlp <- function(attribute,
                           preprocess = NA,
                           input_size = NA,
                           hidden_sizes,
-                          dropout = 0,
+                          dropout = 0.5,
                           activation = c("relu", "leaky_relu", "elu", "gelu", "tanh"),
                           output_activation = c("none", "relu", "sigmoid", "tanh", "softplus"),
                           normalization = c("none", "batch", "layer"),
@@ -53,14 +55,16 @@ torch_reg_mlp <- function(attribute,
                           lr = 1e-3,
                           validation_strategy = c("static", "dynamic"),
                           stopping_rule = c("none", "patience", "sma", "ema", "h"),
-                          val_ratio = 0.2,
-                          batch_size = 64L,
-                          patience = 100L,
-                          min_delta = 1e-4,
-                          sma_window = 5L,
+                          negative_slope = 0.01,
+                          val_ratio = 0.33,
+                          batch_size = 1L,
+                          patience = 3L,
+                          min_delta = 0,
+                          sma_window = 30L,
                           ema_alpha = 0.2,
                           test_window = 30L,
-                          p_value = 0.05) {
+                          p_value = 0.05,
+                          reshuffle_freq = 1) {
   activation <- match.arg(activation)
   output_activation <- match.arg(output_activation)
   normalization <- match.arg(normalization)
@@ -82,6 +86,7 @@ torch_reg_mlp <- function(attribute,
     lr = as.numeric(lr),
     validation_strategy = validation_strategy,
     stopping_rule = stopping_rule,
+    negative_slope = as.numeric(negative_slope),
     val_ratio = as.numeric(val_ratio),
     batch_size = as.integer(batch_size),
     patience = as.integer(patience),
@@ -90,6 +95,7 @@ torch_reg_mlp <- function(attribute,
     ema_alpha = as.numeric(ema_alpha),
     test_window = as.integer(test_window),
     p_value = as.numeric(p_value),
+    reshuffle_freq = as.integer(reshuffle_freq),
     model = NULL,
     preprocess_model = NULL
   )
@@ -148,7 +154,8 @@ fit.torch_reg_mlp <- function(obj, data, ...) {
       normalization = obj$normalization,
       init_method = obj$init_method,
       validation_strategy = obj$validation_strategy,
-      stopping_rule = obj$stopping_rule
+      stopping_rule = obj$stopping_rule,
+      negative_slope = obj$negative_slope
     )
   }
 
@@ -168,7 +175,8 @@ fit.torch_reg_mlp <- function(obj, data, ...) {
     sma_window = obj$sma_window,
     ema_alpha = obj$ema_alpha,
     test_window = obj$test_window,
-    p_value = obj$p_value
+    p_value = obj$p_value,
+    reshuffle_freq = obj$reshuffle_freq
   )
 
   obj$train_loss_hist <- obj$model$train_loss_hist
